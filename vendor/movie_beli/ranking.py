@@ -35,6 +35,13 @@ Answer = str
 Ask = Callable[[str, str], Answer]  # ask(new_movie, old_movie) -> one of ANSWERS
 
 
+def _require_nonneg_int(value: object, label: str) -> int:
+    """Reject bools and floats. ``bool`` is an ``int`` subclass, so it is checked first."""
+    if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+        raise ValidationError(f"{label} must be a non-negative integer")
+    return value
+
+
 # --------------------------------------------------------------------------- score
 
 
@@ -137,17 +144,36 @@ class Insertion:
         if not isinstance(data, Mapping):
             raise ValidationError("insertion state must be a JSON object")
         try:
-            candidates = tuple(str(t) for t in data["candidates"])
-            lo, hi = int(data["lo"]), int(data["hi"])
+            raw_candidates = data["candidates"]
+            raw_lo, raw_hi = data["lo"], data["hi"]
+            member, movie, bucket = data["member"], data["movie"], data["bucket"]
+        except KeyError as exc:
+            raise ValidationError(f"malformed insertion state: missing {exc.args[0]!r}") from exc
+        if (
+            not isinstance(raw_candidates, list)
+            or any(not isinstance(item, str) for item in raw_candidates)
+        ):
+            raise ValidationError("candidates must be a list of strings")
+        lo = _require_nonneg_int(raw_lo, "lo")
+        hi = _require_nonneg_int(raw_hi, "hi")
+        if "rerank" not in data:
+            rerank = False
+        elif isinstance(data["rerank"], bool):
+            rerank = data["rerank"]
+        else:
+            raise ValidationError("rerank must be a boolean")
+        try:
             history = tuple((int(a), int(b)) for a, b in data.get("history", ()))
             state = cls(
-                str(data["member"]), str(data["movie"]), check_bucket(data["bucket"]),
-                candidates, lo, hi, history, bool(data.get("rerank", False)),
+                str(member), str(movie), check_bucket(bucket),
+                tuple(raw_candidates), lo, hi, history, rerank,
             )
-        except (KeyError, TypeError, ValueError) as exc:
+        except ValidationError:
+            raise
+        except (TypeError, ValueError) as exc:
             raise ValidationError(f"malformed insertion state: {exc!r}") from exc
         for a, b in state.history + ((state.lo, state.hi),):
-            if not 0 <= a <= b <= len(candidates):
+            if not 0 <= a <= b <= len(state.candidates):
                 raise ValidationError("insertion state has lo/hi outside the candidate list")
         return state
 
@@ -248,6 +274,9 @@ class Rankings:
         if not insertion.done:
             raise ValidationError("insertion is not finished")
         member, title = insertion.member, insertion.movie
+        movie = self.movie(title)
+        if movie.submitted_by == member:
+            raise OwnSubmissionError(f"{member!r} cannot rank their own submission {title!r}")
         current = self.bucket_list(member, insertion.bucket)
         ranked = self.bucket_of(member, title) is not None
         if insertion.rerank:
