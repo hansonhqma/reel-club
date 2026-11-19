@@ -19,6 +19,10 @@ export default async function BeliLeaderboardPage() {
         <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground">
           Each member&apos;s value is the average community score of the movies they added that someone has ranked.
           Ties go to whoever has more ranked picks. This is separate from the Elo board.{" "}
+          <Link href="/how#beli" className="text-primary underline-offset-4 hover:underline">
+            How Beli rankings work
+          </Link>
+          {" · "}
           <Link href="/beli" className="text-primary underline-offset-4 hover:underline">
             Back to your ranking
           </Link>

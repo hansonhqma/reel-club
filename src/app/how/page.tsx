@@ -1,6 +1,17 @@
 import Link from "next/link"
 import { formatScore } from "@/lib/format"
 import {
+  AFTER_REMOVAL,
+  BEA_PREFER_NEW,
+  BEA_TOO_TOUGH,
+  BELI_BANDS,
+  BELI_BOARD,
+  BELI_COMMUNITY,
+  beliTenths,
+  CAM_LIST,
+  LANTERN,
+} from "@/lib/how-beli-example"
+import {
   blend,
   NIGHT_BUS,
   ROOFTOP,
@@ -38,6 +49,11 @@ const CONTENTS = [
   { href: "#example", label: "An example" },
   { href: "#order", label: "Why order matters" },
   { href: "#faq", label: "Questions" },
+  { href: "#beli", label: "Beli" },
+  { href: "#beli-buckets", label: "Buckets" },
+  { href: "#beli-questions", label: "The questions" },
+  { href: "#beli-score", label: "The 0–10" },
+  { href: "#beli-example", label: "A Beli example" },
 ]
 
 function gap(movieEnjoy: number, movieFilm: number, olderEnjoy: number, olderFilm: number): number {
@@ -60,8 +76,13 @@ export default function HowPage() {
         <p className="text-xs font-medium tracking-[0.18em] text-primary uppercase">The rules we actually use</p>
         <h1 className="font-heading text-4xl tracking-tight sm:text-5xl">Two honest scores, then a small argument</h1>
         <p className="max-w-xl text-lg leading-relaxed text-foreground/80">
-          Anyone can suggest a movie whenever. After you watch it, everyone except the person who suggested it leaves
-          two scores. Those scores don&apos;t crown the film. They nudge the people who pick.
+          The club keeps two rankings. Each has its own movie list and its own scores. This half of the page is the Elo
+          board. Anyone can suggest a movie whenever. After you watch it, everyone except the person who suggested it
+          leaves two scores. Those scores don&apos;t crown the film. They nudge the people who pick.{" "}
+          <a href="#beli" className="text-primary underline-offset-4 hover:underline">
+            Beli
+          </a>{" "}
+          is the other list, further down.
         </p>
         <nav aria-label="On this page" className="flex flex-wrap gap-2">
           {CONTENTS.map((item) => (
@@ -327,12 +348,311 @@ export default function HowPage() {
         </div>
       </section>
 
-      <p className="text-sm">
+      <BeliGuide />
+
+      <p className="flex flex-wrap gap-x-4 gap-y-2 text-sm">
         <Link href="/leaderboard" className="text-primary underline-offset-4 hover:underline">
-          See the board
+          See the Elo board
+        </Link>
+        <Link href="/beli" className="text-primary underline-offset-4 hover:underline">
+          Open your Beli list
         </Link>
       </p>
     </article>
+  )
+}
+
+function BeliGuide() {
+  const liked = BELI_BANDS.liked
+  const fine = BELI_BANDS.fine
+  const disliked = BELI_BANDS.disliked
+  const beaNightBus = BEA_PREFER_NEW[1].score
+  const camNightBus = CAM_LIST[0].score
+  const nightBusAverage = ((beaNightBus + camNightBus) / 2).toFixed(2)
+
+  return (
+    <>
+      <header id="beli" className="scroll-mt-6 space-y-4 border-t border-border pt-4">
+        <p className="text-xs font-medium tracking-[0.18em] text-primary uppercase">The other ranking</p>
+        <h2 className="font-heading text-4xl tracking-tight sm:text-5xl">Sort the movies, then read the average</h2>
+        <p className="max-w-xl text-lg leading-relaxed text-foreground/80">
+          Beli is a separate game from the Elo board. It has its own tab, its own movies, and its own scores. An Elo
+          score leaves your Beli list where it was. A Beli ranking leaves the Elo board where it was.
+        </p>
+      </header>
+
+      <section className="scroll-mt-6 space-y-4">
+        <h2 className="font-heading text-2xl">What the two are for</h2>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <div className="rounded-2xl bg-card p-4 ring-1 ring-foreground/10">
+            <p className="text-xs font-medium tracking-[0.16em] text-primary uppercase">Elo board</p>
+            <h3 className="mt-1 font-heading text-2xl leading-tight">Who is picking well</h3>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+              Two scores per movie, then a small argument between films. Points move from one member to another. The
+              movies on that list are the suggestions under Movies.
+            </p>
+          </div>
+          <div className="rounded-2xl bg-card p-4 ring-1 ring-foreground/10">
+            <p className="text-xs font-medium tracking-[0.16em] text-primary uppercase">Beli</p>
+            <h3 className="mt-1 font-heading text-2xl leading-tight">Where each movie sits for you</h3>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+              You sort other people&apos;s picks into your own list. Each movie gets a 0–10 from that spot, the club
+              averages those, and the Beli leaderboard scores the person who added the film.
+            </p>
+          </div>
+        </div>
+        <p className="text-sm leading-relaxed">
+          Adding a movie on Beli puts it on the Beli list only. Everyone else can rank it. You rank theirs. Your own
+          pick stays off your list, so the number next to your name is what the rest of the club thought of your taste.
+        </p>
+      </section>
+
+      <section id="beli-buckets" className="scroll-mt-6 space-y-4">
+        <h2 className="font-heading text-2xl">Liked, Fine, or Didn&apos;t like</h2>
+        <p className="text-sm leading-relaxed">
+          Ranking starts by sorting the movie into a bucket. On your list, every Liked movie sits above every Fine one,
+          and every Fine one sits above every Didn&apos;t like. The scores keep that order: the lowest Liked score is{" "}
+          {beliTenths(liked.bottom)}, and the highest Fine score is {beliTenths(fine.top)}.
+        </p>
+        <BandTable />
+        <p className="text-sm leading-relaxed">
+          A movie alone in its bucket gets the middle of the band: {beliTenths(liked.alone)} for Liked,{" "}
+          {beliTenths(fine.alone)} for Fine, {beliTenths(disliked.alone)} for Didn&apos;t like. The first movie in a
+          bucket takes that middle. It waits for company before anyone can be a {beliTenths(liked.top)}.
+        </p>
+      </section>
+
+      <section id="beli-questions" className="scroll-mt-6 space-y-4">
+        <h2 className="font-heading text-2xl">Which did you like more?</h2>
+        <p className="text-sm leading-relaxed">
+          An empty bucket asks nothing. There is nobody to compare, and the movie takes the middle of the band. Once
+          the bucket has other movies, the next screen is a question. One card is the movie you are placing. The other
+          is one you already ranked in that same bucket. Comparisons stay inside the bucket. A Liked movie is only held
+          up against other Liked movies.
+        </p>
+        <ul className="space-y-3">
+          {[
+            [
+              "The new movie",
+              "You liked the one you are placing more. It belongs above the movie on the card, so that movie and everything below it drop out. If any movies are still above it, the next question is about those.",
+            ],
+            [
+              "The one already ranked",
+              "You liked the movie already on your list more. The new one belongs below it, so that movie and everything above it drop out. If any movies are still below it, the next question is about those.",
+            ],
+            [
+              "Too tough to call",
+              "The questions stop. The new movie lands just under the one it was compared with. You can re-rank later if that spot feels wrong.",
+            ],
+            [
+              "Back",
+              "One step back to the previous question. The button stays quiet until you have answered one.",
+            ],
+            [
+              "Start over",
+              "The unfinished questions are dropped and the three buckets come back. A movie you have not finished placing stays off your list. If you were re-ranking, the saved score stays. The club keeps one unfinished ranking for you, so you can leave and pick it up. Starting a different movie clears that unfinished one too.",
+            ],
+          ].map(([title, body]) => (
+            <li key={title} className="rounded-2xl bg-card px-4 py-3 ring-1 ring-foreground/10">
+              <p className="font-medium">{title}</p>
+              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{body}</p>
+            </li>
+          ))}
+        </ul>
+        <p className="text-sm leading-relaxed text-muted-foreground">
+          Each answer cuts the movies still in play about in half, so a long bucket stays a few questions.
+        </p>
+      </section>
+
+      <section id="beli-score" className="scroll-mt-6 space-y-4">
+        <h2 className="font-heading text-2xl">How a place becomes a 0–10</h2>
+        <p className="text-sm leading-relaxed">
+          You never type the score. It comes from the bucket and from how many movies sit above it in that bucket. With
+          two or more, the top movie gets the top of the band and the bottom movie gets the bottom. Movies between them
+          are spaced in equal steps, then rounded to a tenth. Two Liked movies are {beliTenths(liked.top)} and{" "}
+          {beliTenths(liked.bottom)}. Two Fine movies are {beliTenths(fine.top)} and {beliTenths(fine.bottom)}. Two you
+          didn&apos;t like are {beliTenths(disliked.top)} and {beliTenths(disliked.bottom)}.
+        </p>
+        <p className="text-sm leading-relaxed">
+          Those numbers describe the list as it is now. Place something new above a movie and the older one steps down.
+          Remove one and the rest close up. A {beliTenths(liked.top)} means it is your favorite of the Liked ones today.
+        </p>
+        <h3 className="font-heading text-xl">The community score</h3>
+        <p className="text-sm leading-relaxed">
+          Open a Beli movie and the big number is the community score: the average of every member&apos;s score for it,
+          rounded to one decimal. A 5 in the next place rounds up. Until someone ranks it, there is no community score.
+          The person who added the movie has no score in that average, because they never rank their own pick.
+        </p>
+        <h3 id="beli-board" className="scroll-mt-6 font-heading text-xl">
+          The Beli leaderboard
+        </h3>
+        <p className="text-sm leading-relaxed">
+          Members are ordered by the average community score of the movies they added, counting only movies someone has
+          ranked. That average is rounded to a tenth the same way. A pick nobody has ranked yet stays out of the
+          average. If none of your picks have been ranked, your spot is blank and sits at the bottom. The same average
+          puts the person with more ranked picks higher. If the counts match too, the name that comes first is higher.
+        </p>
+        <p className="text-sm leading-relaxed">
+          You can&apos;t rank your own pick. The rank page won&apos;t start, and your name never shows up among the
+          people who scored your movie. The leaderboard is measuring your picks, not how generously you score your
+          friends.
+        </p>
+      </section>
+
+      <section id="beli-example" className="scroll-mt-6 space-y-4">
+        <h2 className="font-heading text-2xl">A made-up Beli list</h2>
+        <p className="rounded-xl bg-accent px-4 py-3 text-sm leading-relaxed">
+          Alex, Bea, and Cam are not in your club. {NIGHT_BUS.movie}, {ROOFTOP.movie}, and {LANTERN} are fake titles.
+          The scores are what this site&apos;s Beli ranking actually returns, shown to one decimal the way the Beli
+          pages do.
+        </p>
+
+        <div className="space-y-3">
+          <h3 className="font-heading text-xl">Bea ranks {NIGHT_BUS.movie}, then {LANTERN}</h3>
+          <p className="text-sm leading-relaxed">
+            Alex added {NIGHT_BUS.movie}. Bea puts it in Liked. The bucket is empty, so there is no question, and the
+            score is {beliTenths(liked.alone)}.
+          </p>
+          <p className="text-sm leading-relaxed">
+            Cam added {LANTERN}. Bea puts that in Liked too. The only question is {LANTERN} against {NIGHT_BUS.movie}.
+            She likes {LANTERN} more. {LANTERN} takes the top of the band at {beliTenths(BEA_PREFER_NEW[0].score)}, and{" "}
+            {NIGHT_BUS.movie} steps down to {beliTenths(BEA_PREFER_NEW[1].score)}.
+          </p>
+          <PlaceList rows={BEA_PREFER_NEW} caption="Bea's Liked list after she prefers Lantern" />
+          <p className="text-sm leading-relaxed">
+            Too tough to call on that same question would stop immediately and place {LANTERN} just under{" "}
+            {NIGHT_BUS.movie}. {NIGHT_BUS.movie} would be {beliTenths(BEA_TOO_TOUGH[0].score)}, and {LANTERN} would be{" "}
+            {beliTenths(BEA_TOO_TOUGH[1].score)}.
+          </p>
+          <PlaceList rows={BEA_TOO_TOUGH} caption="The same bucket if Bea calls it too tough" />
+        </div>
+
+        <div className="space-y-3">
+          <h3 className="font-heading text-xl">Cam ranks both, in different buckets</h3>
+          <p className="text-sm leading-relaxed">
+            Cam puts {NIGHT_BUS.movie} in Liked, alone, at {beliTenths(CAM_LIST[0].score)}. He puts {ROOFTOP.movie},
+            which Bea added, in Fine. That bucket is empty too, so {ROOFTOP.movie} is {beliTenths(CAM_LIST[1].score)}{" "}
+            and no question is asked. Fine never mixes into the Liked comparisons, and on Cam&apos;s list the Liked
+            movie still sits above the Fine one.
+          </p>
+          <PlaceList
+            rows={CAM_LIST.map((row) => ({ movie: `${row.movie} · ${row.bucket}`, score: row.score }))}
+            caption="Cam's list, best first"
+          />
+        </div>
+
+        <div className="space-y-3">
+          <h3 className="font-heading text-xl">The club&apos;s numbers</h3>
+          <p className="text-sm leading-relaxed">
+            {NIGHT_BUS.movie} has two scores, Bea&apos;s {beliTenths(beaNightBus)} and Cam&apos;s{" "}
+            {beliTenths(camNightBus)}. The average is {nightBusAverage}, which rounds to a community score of{" "}
+            {beliTenths(BELI_COMMUNITY.nightBus)}. {LANTERN} has only Bea, so its community score stays{" "}
+            {beliTenths(BELI_COMMUNITY.lantern)}. {ROOFTOP.movie} has only Cam, so it stays{" "}
+            {beliTenths(BELI_COMMUNITY.rooftop)}. Alex, Bea, and Cam are each missing from the movie they added.
+          </p>
+          <p className="text-sm leading-relaxed">
+            The Beli leaderboard reads those community scores as the picker&apos;s result. {BELI_BOARD[0].member} is at{" "}
+            {beliTenths(BELI_BOARD[0].score)} from {LANTERN}. {BELI_BOARD[1].member} is at{" "}
+            {beliTenths(BELI_BOARD[1].score)} from {NIGHT_BUS.movie}. {BELI_BOARD[2].member} is at{" "}
+            {beliTenths(BELI_BOARD[2].score)} from {ROOFTOP.movie}. Each of them added one movie that someone ranked, so
+            the leaderboard number is that movie&apos;s community score.
+          </p>
+        </div>
+
+        <div className="space-y-3">
+          <h3 className="font-heading text-xl">Re-rank, or take it off your list</h3>
+          <p className="text-sm leading-relaxed">
+            Re-rank asks for a bucket again, then the questions. The movie is held out of its own comparisons, so Bea
+            re-ranking {NIGHT_BUS.movie} would be asked about {LANTERN}, and never about {NIGHT_BUS.movie} itself. The
+            saved score stays until she finishes. Start over in the middle leaves that saved score alone.
+          </p>
+          <p className="text-sm leading-relaxed">
+            Remove from my list drops the movie from your ranking. The others in that bucket close up and the scores
+            are worked out again. The movie stays on the club&apos;s Beli list, and everyone else&apos;s rankings of it
+            stay. If Bea removes {LANTERN}, {NIGHT_BUS.movie} is alone in Liked again and her score returns to{" "}
+            {beliTenths(AFTER_REMOVAL.beaNightBus)}. Cam still has it at {beliTenths(camNightBus)}, so the community
+            score is {beliTenths(AFTER_REMOVAL.communityNightBus)} and Alex&apos;s leaderboard number is{" "}
+            {beliTenths(AFTER_REMOVAL.alex)}. {LANTERN} has no rankings left, so its community score disappears and
+            Cam&apos;s spot goes blank. Bea stays at {beliTenths(AFTER_REMOVAL.bea)} from {ROOFTOP.movie}.
+          </p>
+        </div>
+      </section>
+    </>
+  )
+}
+
+function BandTable() {
+  const columns = [
+    ["On its own", "alone"],
+    ["Top of a longer bucket", "top"],
+    ["Bottom of a longer bucket", "bottom"],
+  ] as const
+  return (
+    <div className="overflow-x-auto rounded-2xl bg-card ring-1 ring-foreground/10">
+      <table className="w-full min-w-[22rem] text-sm">
+        <caption className="sr-only">Score bands for Liked, Fine, and Didn&apos;t like</caption>
+        <thead className="text-left text-xs tracking-wide text-muted-foreground uppercase">
+          <tr>
+            <th scope="col" className="px-4 py-2 font-medium">
+              Bucket
+            </th>
+            {columns.map(([label]) => (
+              <th key={label} scope="col" className="px-2 py-2 font-medium">
+                {label}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {Object.values(BELI_BANDS).map((band) => (
+            <tr key={band.label} className="border-t border-border">
+              <th scope="row" className="px-4 py-2 text-left font-medium">
+                {band.label}
+              </th>
+              {columns.map(([, key]) => (
+                <td key={key} className="px-2 py-2 tabular-nums">
+                  {beliTenths(band[key])}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
+function PlaceList({ rows, caption }: { rows: readonly { movie: string; score: number }[]; caption: string }) {
+  return (
+    <div className="overflow-x-auto rounded-2xl bg-card ring-1 ring-foreground/10">
+      <table className="w-full min-w-[18rem] text-sm">
+        <caption className="sr-only">{caption}</caption>
+        <thead className="text-left text-xs tracking-wide text-muted-foreground uppercase">
+          <tr>
+            <th scope="col" className="px-4 py-2 font-medium">
+              Place
+            </th>
+            <th scope="col" className="px-2 py-2 font-medium">
+              Movie
+            </th>
+            <th scope="col" className="px-4 py-2 font-medium">
+              Score
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row, index) => (
+            <tr key={`${caption}-${row.movie}`} className="border-t border-border">
+              <td className="px-4 py-2 tabular-nums">{index + 1}</td>
+              <th scope="row" className="px-2 py-2 text-left font-medium">
+                {row.movie}
+              </th>
+              <td className="px-4 py-2 tabular-nums">{beliTenths(row.score)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   )
 }
 

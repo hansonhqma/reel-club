@@ -24,6 +24,10 @@ export default async function BeliPage() {
         <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground">
           Add a movie for the club. Rank the others by picking a bucket, then answering a few &ldquo;which did you like
           more?&rdquo; questions. Scores run 0 to 10 and come from where each movie sits in your list.{" "}
+          <Link href="/how#beli" className="text-primary underline-offset-4 hover:underline">
+            How this ranking works
+          </Link>
+          {" · "}
           <Link href="/beli/leaderboard" className="text-primary underline-offset-4 hover:underline">
             Whose picks score best
           </Link>

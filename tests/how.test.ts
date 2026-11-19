@@ -7,7 +7,21 @@ import { renderToStaticMarkup } from "react-dom/server"
 // The Next compiler rewrites JSX. This test runner leaves `React` free, so
 // publish it before loading the page module.
 globalThis.React = React
+import { BeliBridgeError, beliRemove, beliStart, beliStep, beliView, type BeliState } from "../src/lib/beli-bridge.ts"
 import { formatDelta, formatElo } from "../src/lib/format.ts"
+import {
+  AFTER_REMOVAL,
+  BEA_PREFER_NEW,
+  BEA_TOO_TOUGH,
+  BELI_BANDS,
+  BELI_BOARD,
+  BELI_COMMUNITY,
+  BELI_MEMBERS,
+  BELI_MOVIES,
+  beliTenths,
+  CAM_LIST,
+  LANTERN,
+} from "../src/lib/how-beli-example.ts"
 import {
   EXAMPLE_MEMBERS,
   NIGHT_BUS,
@@ -122,8 +136,206 @@ test("the how page is public and states the example the engine produced", async 
   assert.match(html, /first score/)
   assert.match(html, /does not move it to the end/)
   assert.match(html, /don&#x27;t score your own suggestion|don't score your own suggestion/)
+  assert.match(html, /Sort the movies, then read the average/)
+  assert.match(html, /Which did you like more\?/)
+  assert.match(html, /Too tough to call/)
+  assert.match(html, /Start over/)
+  assert.match(html, /community score/)
+  assert.match(html, /can&#x27;t rank your own pick|can't rank your own pick/)
+  assert.match(html, /Remove from my list/)
+  assert.match(html, new RegExp(LANTERN))
+  for (const score of [
+    BELI_BANDS.liked.alone,
+    BELI_BANDS.liked.top,
+    BELI_BANDS.liked.bottom,
+    BELI_BANDS.fine.alone,
+    BELI_BANDS.fine.top,
+    BELI_BANDS.fine.bottom,
+    BELI_BANDS.disliked.alone,
+    BELI_BANDS.disliked.top,
+    BELI_BANDS.disliked.bottom,
+    BELI_COMMUNITY.nightBus,
+    BELI_COMMUNITY.lantern,
+    BELI_COMMUNITY.rooftop,
+    AFTER_REMOVAL.alex,
+    AFTER_REMOVAL.bea,
+  ]) {
+    assert.match(html, new RegExp(beliTenths(score).replace(".", "\\.")))
+  }
+  assert.match(html, /7\.75/)
   assert.doesNotMatch(html, /voter/)
   assert.equal(html.includes("redirect"), false)
+})
+
+function emptyLists(): BeliState["lists"][string] {
+  return { liked: [], fine: [], disliked: [] }
+}
+
+function beliState(
+  members: readonly string[],
+  movies: readonly { title: string; submittedBy: string }[],
+): BeliState {
+  return {
+    members: [...members],
+    movies: movies.map((movie) => ({ title: movie.title, submitted_by: movie.submittedBy })),
+    lists: Object.fromEntries(members.map((member) => [member, emptyLists()])),
+  }
+}
+
+function withLists(state: BeliState, member: string, lists: BeliState["lists"][string]): BeliState {
+  return { ...state, lists: { ...state.lists, [member]: lists } }
+}
+
+function shown(value: number | null | undefined): string | null {
+  return value == null ? null : beliTenths(value)
+}
+
+function place(
+  state: BeliState,
+  member: string,
+  title: string,
+  bucket: keyof typeof BELI_BANDS,
+  answers: Array<"new" | "old" | "too_tough" | "back"> = [],
+): BeliState {
+  let step = beliStart(state, member, title, bucket, false)
+  for (const answer of answers) {
+    assert.equal(step.done, false)
+    if (step.done) throw new Error("the search finished before the answer")
+    step = beliStep(state, step.insertion, answer)
+  }
+  assert.equal(step.done, true)
+  if (!step.done) throw new Error("the search still has a question")
+  return withLists(state, member, step.lists)
+}
+
+test("the how-page Beli example matches movie_beli", () => {
+  let state = beliState(BELI_MEMBERS, BELI_MOVIES)
+
+  assert.throws(
+    () => beliStart(state, "Alex", NIGHT_BUS.movie, "liked", false),
+    (error: unknown) => {
+      assert.ok(error instanceof BeliBridgeError)
+      assert.equal(error.type, "OwnSubmissionError")
+      return true
+    },
+  )
+
+  const nightBusAlone = beliStart(state, "Bea", NIGHT_BUS.movie, "liked", false)
+  assert.equal(nightBusAlone.done, true)
+  if (!nightBusAlone.done) throw new Error("an empty bucket should ask nothing")
+  state = withLists(state, "Bea", nightBusAlone.lists)
+  assert.equal(beliTenths(beliView(state, "Bea").my_list[0].score), beliTenths(BELI_BANDS.liked.alone))
+
+  const asking = beliStart(state, "Bea", LANTERN, "liked", false)
+  assert.equal(asking.done, false)
+  if (asking.done) throw new Error("Lantern should be compared with Night Bus")
+  assert.equal(asking.pivot, NIGHT_BUS.movie)
+  assert.equal(asking.questions_left, 1)
+
+  const preferred = beliStep(state, asking.insertion, "new")
+  assert.equal(preferred.done, true)
+  if (!preferred.done) throw new Error("one answer should finish a bucket of one")
+  const ranked = withLists(state, "Bea", preferred.lists)
+  assert.deepEqual(
+    beliView(ranked, "Bea").my_list.map((row) => [row.movie, beliTenths(row.score)]),
+    BEA_PREFER_NEW.map((row) => [row.movie, beliTenths(row.score)]),
+  )
+
+  const tough = beliStep(state, asking.insertion, "too_tough")
+  assert.equal(tough.done, true)
+  if (!tough.done) throw new Error("too tough should place the movie and stop")
+  assert.deepEqual(
+    beliView(withLists(state, "Bea", tough.lists), "Bea").my_list.map((row) => [row.movie, beliTenths(row.score)]),
+    BEA_TOO_TOUGH.map((row) => [row.movie, beliTenths(row.score)]),
+  )
+
+  state = ranked
+  state = place(state, "Cam", NIGHT_BUS.movie, "liked")
+  state = place(state, "Cam", ROOFTOP.movie, "fine")
+  assert.deepEqual(
+    beliView(state, "Cam").my_list.map((row) => [row.movie, beliTenths(row.score)]),
+    CAM_LIST.map((row) => [row.movie, beliTenths(row.score)]),
+  )
+
+  const view = beliView(state, "Bea")
+  const community = Object.fromEntries(view.movies.map((movie) => [movie.title, movie.community_score]))
+  assert.equal(shown(community[NIGHT_BUS.movie]), beliTenths(BELI_COMMUNITY.nightBus))
+  assert.equal(shown(community[LANTERN]), beliTenths(BELI_COMMUNITY.lantern))
+  assert.equal(shown(community[ROOFTOP.movie]), beliTenths(BELI_COMMUNITY.rooftop))
+  for (const movie of view.movies) {
+    assert.equal(
+      movie.scores.some((score) => score.member === movie.submitted_by),
+      false,
+    )
+  }
+  assert.deepEqual(
+    view.leaderboard.map((row) => [row.member, shown(row.value)]),
+    BELI_BOARD.map((row) => [row.member, beliTenths(row.score)]),
+  )
+
+  const rerank = beliStart(state, "Bea", NIGHT_BUS.movie, "liked", true)
+  assert.equal(rerank.done, false)
+  if (rerank.done) throw new Error("re-ranking Night Bus still has Lantern to compare")
+  assert.equal(rerank.pivot, LANTERN)
+  assert.equal(rerank.insertion.candidates.includes(NIGHT_BUS.movie), false)
+  assert.deepEqual(
+    beliView(state, "Bea").my_list.map((row) => row.movie),
+    BEA_PREFER_NEW.map((row) => row.movie),
+  )
+
+  const removed = beliRemove(state, "Bea", LANTERN)
+  const after = withLists(state, "Bea", removed.lists)
+  const afterView = beliView(after, "Alex")
+  const afterCommunity = Object.fromEntries(afterView.movies.map((movie) => [movie.title, movie.community_score]))
+  assert.equal(beliTenths(beliView(after, "Bea").my_list[0].score), beliTenths(AFTER_REMOVAL.beaNightBus))
+  assert.equal(shown(afterCommunity[NIGHT_BUS.movie]), beliTenths(AFTER_REMOVAL.communityNightBus))
+  assert.equal(afterCommunity[LANTERN], null)
+  const alex = afterView.leaderboard.find((row) => row.member === "Alex")
+  const bea = afterView.leaderboard.find((row) => row.member === "Bea")
+  const cam = afterView.leaderboard.find((row) => row.member === "Cam")
+  assert.equal(shown(alex?.value), beliTenths(AFTER_REMOVAL.alex))
+  assert.equal(shown(bea?.value), beliTenths(AFTER_REMOVAL.bea))
+  assert.equal(cam?.value, null)
+
+  const withHarbor = beliState([...BELI_MEMBERS, "Dee"], [...BELI_MOVIES, { title: "Harbor", submittedBy: "Dee" }])
+  withHarbor.lists.Bea = state.lists.Bea
+  withHarbor.lists.Cam = state.lists.Cam
+  let back = beliStart(withHarbor, "Bea", "Harbor", "liked", false)
+  assert.equal(back.done, false)
+  if (back.done) throw new Error("Harbor should open a question")
+  assert.equal(back.pivot, NIGHT_BUS.movie)
+  back = beliStep(withHarbor, back.insertion, "new")
+  assert.equal(back.done, false)
+  if (back.done) throw new Error("preferring Harbor should leave Lantern to compare")
+  assert.equal(back.pivot, LANTERN)
+  back = beliStep(withHarbor, back.insertion, "back")
+  assert.equal(back.done, false)
+  if (back.done) throw new Error("Back should restore the previous question")
+  assert.equal(back.pivot, NIGHT_BUS.movie)
+})
+
+test("Beli score bands match a bucket of one and a bucket of two", () => {
+  for (const bucket of ["liked", "fine", "disliked"] as const) {
+    const band = BELI_BANDS[bucket]
+    let state = beliState(["Ada", "Bea"], [
+      { title: "One", submittedBy: "Ada" },
+      { title: "Two", submittedBy: "Ada" },
+    ])
+    state = place(state, "Bea", "One", bucket)
+    assert.equal(beliTenths(beliView(state, "Bea").my_list[0].score), beliTenths(band.alone))
+    state = place(state, "Bea", "Two", bucket, ["old"])
+    assert.deepEqual(
+      beliView(state, "Bea").my_list.map((row) => beliTenths(row.score)),
+      [beliTenths(band.top), beliTenths(band.bottom)],
+    )
+  }
+})
+
+test("the Beli pages link to the Beli section of how", () => {
+  const page = fs.readFileSync(new URL("../src/app/beli/page.tsx", import.meta.url), "utf8")
+  const board = fs.readFileSync(new URL("../src/app/beli/leaderboard/page.tsx", import.meta.url), "utf8")
+  assert.match(page, /href="\/how#beli"/)
+  assert.match(board, /href="\/how#beli"/)
 })
 
 test("how is linked from the member nav and the pages members already use", () => {
