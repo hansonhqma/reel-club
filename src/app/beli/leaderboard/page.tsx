@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { redirect } from "next/navigation"
 import { loadBeliView } from "@/lib/beli"
+import { addedMoviesScoreLine } from "@/lib/format"
 import { getCurrentUser } from "@/lib/session"
 
 export const metadata = { title: "Beli leaderboard" }
@@ -51,7 +52,7 @@ export default async function BeliLeaderboardPage() {
                 {row.member === user.name ? " · you" : ""}
               </p>
               <p className="truncate text-sm text-muted-foreground">
-                {row.ranked} of {row.submitted} {row.submitted === 1 ? "pick" : "picks"} ranked
+                {addedMoviesScoreLine(row.ranked, row.submitted)}
               </p>
             </div>
             <p className="font-heading text-2xl tabular-nums">{row.value == null ? "–" : row.value.toFixed(1)}</p>
