@@ -37,3 +37,11 @@ export function formatDelta(value: number): string {
 export function formatScore(value: number): string {
   return Number.isInteger(value) ? String(value) : value.toFixed(1)
 }
+
+// Leaderboard row: how many of the movies this member added have a community score.
+export function addedMoviesScoreLine(ranked: number, submitted: number): string {
+  if (submitted === 1 && ranked === 0) return "0 of 1 added movie, no score yet"
+  const movies = submitted === 1 ? "movie" : "movies"
+  const verb = ranked === 1 ? "has" : "have"
+  return `${ranked} of ${submitted} added ${movies} ${verb} a score`
+}
