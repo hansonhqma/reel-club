@@ -1,10 +1,10 @@
 import Link from "next/link"
 import { notFound, redirect } from "next/navigation"
-import { beliRemoveAction } from "@/app/beli/actions"
+import { beliDeleteAction, beliRemoveAction } from "@/app/beli/actions"
 import { SubmitButton } from "@/components/submit-button"
 import { Badge } from "@/components/ui/badge"
 import { buttonVariants } from "@/components/ui/button"
-import { getBeliMovie, loadBeliView } from "@/lib/beli"
+import { beliRankingCount, getBeliMovie, loadBeliView } from "@/lib/beli"
 import { BELI_BUCKET_LABELS } from "@/lib/beli-bridge"
 import { formatWhen } from "@/lib/format"
 import { getCurrentUser } from "@/lib/session"
@@ -37,6 +37,8 @@ export default async function BeliMoviePage({
   const scores = detail?.scores ?? []
   const mine = scores.find((row) => row.member === user.name) ?? null
   const own = movie.submitterId === user.id
+  const ranked = beliRankingCount(movie.id) > 0
+  const canDelete = ranked ? user.isAdmin : own || user.isAdmin
 
   return (
     <article className="mx-auto max-w-3xl space-y-6">
@@ -135,6 +137,21 @@ export default async function BeliMoviePage({
           ) : null}
         </section>
       )}
+
+      {canDelete ? (
+        <form action={beliDeleteAction} className="flex flex-wrap items-center gap-3 border-t border-border pt-4">
+          <input type="hidden" name="movieId" value={movie.id} />
+          {ranked ? (
+            <label className="flex items-center gap-2 text-sm">
+              <input type="checkbox" name="confirm" value="yes" required />
+              Remove everyone&apos;s rankings of this movie
+            </label>
+          ) : null}
+          <SubmitButton variant="outline" pendingLabel="Removing…">
+            Remove from the club
+          </SubmitButton>
+        </form>
+      ) : null}
     </article>
   )
 }

@@ -202,6 +202,39 @@ export function getBeliPending(userId: number): BeliPending | null {
   return { movieId: row.movie_id, insertion: JSON.parse(row.state) as BeliInsertion, startedAt: row.started_at }
 }
 
+// Identifies the pending row a form was rendered against. Empty when nothing
+// is in progress. started_at plus the search position, so a second submit of
+// the same question no longer matches after the first one lands.
+export function beliStepToken(pending: BeliPending | null): string {
+  if (!pending) return ""
+  const { bucket, lo, hi, history } = pending.insertion
+  return [pending.movieId, pending.startedAt, bucket, lo, hi, history.length].join(":")
+}
+
+const STALE_STEP =
+  "That step was already submitted. Refresh and continue from the current question."
+
+function assertCurrentStep(userId: number, token: string): BeliPending | null {
+  const pending = getBeliPending(userId)
+  if (beliStepToken(pending) !== token) throw new BeliError(STALE_STEP, "stale_step")
+  return pending
+}
+
+export type OtherBeliPending = {
+  movieId: number
+  title: string
+  bucket: BeliBucket
+}
+
+// A search for a different movie than the one this page is showing.
+export function otherBeliPending(userId: number, movieId: number): OtherBeliPending | null {
+  const pending = getBeliPending(userId)
+  if (!pending || pending.movieId === movieId) return null
+  const movie = getBeliMovie(pending.movieId)
+  if (!movie) return null
+  return { movieId: movie.id, title: movie.title, bucket: pending.insertion.bucket }
+}
+
 export function cancelBeliRanking(userId: number): void {
   getDb().prepare("DELETE FROM beli_pending WHERE user_id = ?").run(userId)
 }
@@ -261,15 +294,26 @@ function applyStep(
   return result
 }
 
-// Picks a bucket and begins the binary search. An existing pending search (for
-// any movie) is replaced. A movie the member already placed is re-ranked: the
-// old placement stays until the search finishes.
-export function startBeliRanking(userId: number, movieIdRaw: unknown, bucketRaw: unknown): BeliStepResult {
+// Picks a bucket and begins the binary search. `token` is the pending row the
+// form was rendered against. A matching search for this movie and bucket is
+// resumed; anything else whose token still matches replaces that search. A
+// movie the member already placed is re-ranked: the old placement stays until
+// the search finishes.
+export function startBeliRanking(
+  userId: number,
+  movieIdRaw: unknown,
+  bucketRaw: unknown,
+  token: string,
+): BeliStepResult {
   const user = requireUser(userId)
   const movie = requireMovie(movieIdRaw)
   const bucket = parseBucket(bucketRaw)
   if (movie.submitterId === user.id) {
     throw new BeliError("You submitted this one, so you don't rank it. Others decide where it lands.", "own_submission")
+  }
+  const pending = assertCurrentStep(user.id, token)
+  if (pending && pending.movieId === movie.id && pending.insertion.bucket === bucket) {
+    return stepPending(user, movie, null)
   }
   const { state, idByTitle } = loadState()
   const rerank = BELI_BUCKETS.some((b) => state.lists[user.name]?.[b].includes(movie.title))
@@ -301,9 +345,15 @@ function stepPending(user: PublicUser, movie: BeliMovie, answer: BeliAnswer | nu
 
 // Answers the current "which did you like more?" question. When the search
 // ends, the movie is placed in one transaction and the pending row is removed.
-export function answerBeliRanking(userId: number, movieIdRaw: unknown, answerRaw: unknown): BeliStepResult {
+export function answerBeliRanking(
+  userId: number,
+  movieIdRaw: unknown,
+  answerRaw: unknown,
+  token: string,
+): BeliStepResult {
   const user = requireUser(userId)
   const movie = requireMovie(movieIdRaw)
+  assertCurrentStep(user.id, token)
   const answer = parseAnswer(answerRaw)
   return stepPending(user, movie, answer)
 }
@@ -321,15 +371,47 @@ export function peekBeliRanking(userId: number, movieIdRaw: unknown): BeliStepRe
 export function removeBeliRanking(userId: number, movieIdRaw: unknown): void {
   const user = requireUser(userId)
   const movie = requireMovie(movieIdRaw)
+  const placement = getBeliPlacement(user.id, movie.id)
+  // A second click finds nothing left to remove.
+  if (!placement) return
+  const pending = getBeliPending(user.id)
+  const dropPending =
+    pending != null &&
+    (pending.movieId === movie.id || pending.insertion.bucket === placement.bucket)
   const { state, idByTitle } = loadState()
   const { lists } = beliRemove(state, user.name, movie.title)
   const db = getDb()
   const apply = db.transaction(() => {
     writeLists(user.id, lists, idByTitle)
-    // Any pending search for this member has a stale candidate list now.
-    db.prepare("DELETE FROM beli_pending WHERE user_id = ?").run(user.id)
+    if (dropPending) db.prepare("DELETE FROM beli_pending WHERE user_id = ?").run(user.id)
   })
   apply()
+}
+
+export function beliRankingCount(movieId: number): number {
+  const row = getDb().prepare("SELECT COUNT(*) AS c FROM beli_rankings WHERE movie_id = ?").get(movieId) as {
+    c: number
+  }
+  return row.c
+}
+
+// Unranked: the submitter or an admin. Ranked: an admin, and only with confirm,
+// because the delete cascades through everyone's placements.
+export function deleteBeliMovie(userId: number, movieIdRaw: unknown, opts?: { confirm?: boolean }): void {
+  const user = requireUser(userId)
+  const movie = requireMovie(movieIdRaw)
+  const ranked = beliRankingCount(movie.id) > 0
+  if (ranked) {
+    if (!user.isAdmin) {
+      throw new BeliError("Only an admin can remove a movie people have ranked.", "forbidden")
+    }
+    if (!opts?.confirm) {
+      throw new BeliError("Confirm removing this movie for the whole club.", "confirm_delete")
+    }
+  } else if (movie.submitterId !== user.id && !user.isAdmin) {
+    throw new BeliError("Only the person who added this, or an admin, can remove it.", "forbidden")
+  }
+  getDb().prepare("DELETE FROM beli_movies WHERE id = ?").run(movie.id)
 }
 
 export function getBeliView(userId: number): BeliView {
