@@ -98,7 +98,14 @@ npm test
 - `tests/ratings.test.ts` covers several suggestions at once, scoring out of suggestion order, edits that do not reshuffle replay, and a replay whose total Elo stays `1500 × members`.
 - `tests/migrate.test.ts` upgrades a weekly SQLite file in place and checks that users, movies, and ratings survive.
 - `tests/ranking.test.ts` and `tests/test_bridge.py` check the adapter against `movie_elo.replay` directly.
-- `vendor/upstream_tests` is the library's own suite, including the README worked example.
+- `tests/beli.test.ts` and `tests/test_beli_bridge.py` cover the Beli pages' library code and adapter against `movie_beli` directly.
+- `vendor/upstream_tests` is the library's own suite, including the README worked example, plus the `movie_beli` suite.
+
+## Beli rankings
+
+`/beli` is a second, independent ranking in the style of the Beli app. Members add movies and rank the other members' picks: pick a bucket (Liked, Fine, Didn't like), then answer a few "which did you like more?" questions that binary-search the movie into that bucket. Each member gets a sorted list with 0–10 scores derived from position, every movie gets a community score (mean of members' scores), and `/beli/leaderboard` ranks members by the average score their picks received. Nobody ranks their own pick.
+
+The math is [`movie_beli`](vendor/UPSTREAM.md), vendored from `hansonhqma/elo-grouprating` (branch `feature/beli-rankings`), reached through `scripts/beli_bridge.py` the same way `movie_elo` is. SQLite holds the ordered lists in `beli_movies`, `beli_rankings` and `beli_pending` (one unfinished search per member, resumable). The Elo flow (`/movies`, `/leaderboard`, `club.ts`, `ranking.ts`, `elo_bridge.py`) is not involved and does not change.
 
 ## Deploying on Railway
 

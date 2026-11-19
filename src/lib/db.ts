@@ -60,6 +60,40 @@ CREATE INDEX IF NOT EXISTS movies_ranked ON movies(ranked_at);
 CREATE INDEX IF NOT EXISTS ratings_movie ON ratings(movie_id);
 `
 
+// Beli-style personal rankings. Independent of movies/ratings: its own movie
+// list, one ordered (bucket, position) row per member per movie, and at most
+// one in-progress binary search per member. Idempotent, so it runs on every
+// open like CORE_SCHEMA. Scores are never stored; movie_beli derives them from
+// position and bucket size.
+const BELI_SCHEMA = `
+CREATE TABLE IF NOT EXISTS beli_movies (
+  id INTEGER PRIMARY KEY,
+  title TEXT NOT NULL COLLATE NOCASE UNIQUE,
+  submitter_id INTEGER NOT NULL REFERENCES users(id),
+  submitted_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS beli_rankings (
+  user_id INTEGER NOT NULL REFERENCES users(id),
+  movie_id INTEGER NOT NULL REFERENCES beli_movies(id) ON DELETE CASCADE,
+  bucket TEXT NOT NULL CHECK (bucket IN ('liked', 'fine', 'disliked')),
+  position INTEGER NOT NULL CHECK (position >= 0),
+  ranked_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  PRIMARY KEY (user_id, movie_id),
+  UNIQUE (user_id, bucket, position)
+);
+
+CREATE TABLE IF NOT EXISTS beli_pending (
+  user_id INTEGER PRIMARY KEY REFERENCES users(id),
+  movie_id INTEGER NOT NULL REFERENCES beli_movies(id) ON DELETE CASCADE,
+  state TEXT NOT NULL,
+  started_at TEXT NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS beli_rankings_movie ON beli_rankings(movie_id);
+`
+
 const MOVIES_VERSION = 1
 
 export function dbPath(): string {
@@ -201,6 +235,7 @@ function migrateLegacyWeeks(db: Database.Database): void {
 
 export function migrate(db: Database.Database): void {
   db.exec(CORE_SCHEMA)
+  db.exec(BELI_SCHEMA)
   if (tableExists(db, "weeks")) {
     migrateLegacyWeeks(db)
     return
