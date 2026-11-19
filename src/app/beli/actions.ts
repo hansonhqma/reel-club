@@ -8,6 +8,7 @@ import {
   answerBeliRanking,
   BeliError,
   cancelBeliRanking,
+  deleteBeliMovie,
   removeBeliRanking,
   startBeliRanking,
   submitBeliMovie,
@@ -48,13 +49,17 @@ function moviePath(movieId: string, error?: unknown): string {
   return error === undefined ? base : `${base}?error=${encodeURIComponent(message(error))}`
 }
 
+function stepToken(formData: FormData): string {
+  return String(formData.get("step") ?? "")
+}
+
 export async function beliStartAction(formData: FormData): Promise<void> {
   const user = await getCurrentUser()
   if (!user) redirect("/login")
   const movieId = String(formData.get("movieId") ?? "")
   let done = false
   try {
-    done = startBeliRanking(user.id, movieId, formData.get("bucket")).done
+    done = startBeliRanking(user.id, movieId, formData.get("bucket"), stepToken(formData)).done
   } catch (error) {
     redirect(rankPath(movieId, error))
   }
@@ -68,7 +73,7 @@ export async function beliAnswerAction(formData: FormData): Promise<void> {
   const movieId = String(formData.get("movieId") ?? "")
   let done = false
   try {
-    done = answerBeliRanking(user.id, movieId, formData.get("answer")).done
+    done = answerBeliRanking(user.id, movieId, formData.get("answer"), stepToken(formData)).done
   } catch (error) {
     redirect(rankPath(movieId, error))
   }
@@ -95,4 +100,17 @@ export async function beliRemoveAction(formData: FormData): Promise<void> {
   }
   refresh()
   redirect(moviePath(movieId))
+}
+
+export async function beliDeleteAction(formData: FormData): Promise<void> {
+  const user = await getCurrentUser()
+  if (!user) redirect("/login")
+  const movieId = String(formData.get("movieId") ?? "")
+  try {
+    deleteBeliMovie(user.id, movieId, { confirm: formData.get("confirm") === "yes" })
+  } catch (error) {
+    redirect(moviePath(movieId, error))
+  }
+  refresh()
+  redirect("/beli")
 }

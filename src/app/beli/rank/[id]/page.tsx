@@ -4,7 +4,7 @@ import { beliAnswerAction, beliCancelAction, beliStartAction } from "@/app/beli/
 import { SubmitButton } from "@/components/submit-button"
 import { Badge } from "@/components/ui/badge"
 import { buttonVariants } from "@/components/ui/button"
-import { getBeliMovie, getBeliPlacement, peekBeliRanking } from "@/lib/beli"
+import { beliStepToken, getBeliMovie, getBeliPending, getBeliPlacement, peekBeliRanking } from "@/lib/beli"
 import { BELI_BUCKET_LABELS, BELI_BUCKETS, type BeliStepResult } from "@/lib/beli-bridge"
 import { getCurrentUser } from "@/lib/session"
 import { cn } from "cn"
@@ -44,6 +44,7 @@ export default async function BeliRankPage({
   }
   // A stored search that was already complete got placed just now.
   if (step?.done) redirect(`/beli/movies/${movie.id}`)
+  const stepToken = beliStepToken(getBeliPending(user.id))
 
   return (
     <article className="mx-auto max-w-3xl space-y-6">
@@ -90,6 +91,7 @@ export default async function BeliRankPage({
           </div>
           <form action={beliAnswerAction} className="grid gap-3 sm:grid-cols-2">
             <input type="hidden" name="movieId" value={movie.id} />
+            <input type="hidden" name="step" value={stepToken} />
             <button
               type="submit"
               name="answer"
@@ -149,6 +151,7 @@ export default async function BeliRankPage({
           </div>
           <form action={beliStartAction} className="grid gap-3 sm:grid-cols-3">
             <input type="hidden" name="movieId" value={movie.id} />
+            <input type="hidden" name="step" value={stepToken} />
             {BELI_BUCKETS.map((bucket) => (
               <button
                 key={bucket}
