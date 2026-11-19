@@ -1,0 +1,150 @@
+diff --git a/movie_beli/ranking.py b/movie_beli/ranking.py
+index 451f25d..4463f35 100644
+--- a/movie_beli/ranking.py
++++ b/movie_beli/ranking.py
+@@ -35,6 +35,13 @@ Answer = str
+ Ask = Callable[[str, str], Answer]  # ask(new_movie, old_movie) -> one of ANSWERS
+ 
+ 
++def _require_nonneg_int(value: object, label: str) -> int:
++    """Reject bools and floats. ``bool`` is an ``int`` subclass, so it is checked first."""
++    if isinstance(value, bool) or not isinstance(value, int) or value < 0:
++        raise ValidationError(f"{label} must be a non-negative integer")
++    return value
++
++
+ # --------------------------------------------------------------------------- score
+ 
+ 
+@@ -137,17 +144,36 @@ class Insertion:
+         if not isinstance(data, Mapping):
+             raise ValidationError("insertion state must be a JSON object")
+         try:
+-            candidates = tuple(str(t) for t in data["candidates"])
+-            lo, hi = int(data["lo"]), int(data["hi"])
++            raw_candidates = data["candidates"]
++            raw_lo, raw_hi = data["lo"], data["hi"]
++            member, movie, bucket = data["member"], data["movie"], data["bucket"]
++        except KeyError as exc:
++            raise ValidationError(f"malformed insertion state: missing {exc.args[0]!r}") from exc
++        if (
++            not isinstance(raw_candidates, list)
++            or any(not isinstance(item, str) for item in raw_candidates)
++        ):
++            raise ValidationError("candidates must be a list of strings")
++        lo = _require_nonneg_int(raw_lo, "lo")
++        hi = _require_nonneg_int(raw_hi, "hi")
++        if "rerank" not in data:
++            rerank = False
++        elif isinstance(data["rerank"], bool):
++            rerank = data["rerank"]
++        else:
++            raise ValidationError("rerank must be a boolean")
++        try:
+             history = tuple((int(a), int(b)) for a, b in data.get("history", ()))
+             state = cls(
+-                str(data["member"]), str(data["movie"]), check_bucket(data["bucket"]),
+-                candidates, lo, hi, history, bool(data.get("rerank", False)),
++                str(member), str(movie), check_bucket(bucket),
++                tuple(raw_candidates), lo, hi, history, rerank,
+             )
+-        except (KeyError, TypeError, ValueError) as exc:
++        except ValidationError:
++            raise
++        except (TypeError, ValueError) as exc:
+             raise ValidationError(f"malformed insertion state: {exc!r}") from exc
+         for a, b in state.history + ((state.lo, state.hi),):
+-            if not 0 <= a <= b <= len(candidates):
++            if not 0 <= a <= b <= len(state.candidates):
+                 raise ValidationError("insertion state has lo/hi outside the candidate list")
+         return state
+ 
+@@ -248,6 +274,9 @@ class Rankings:
+         if not insertion.done:
+             raise ValidationError("insertion is not finished")
+         member, title = insertion.member, insertion.movie
++        movie = self.movie(title)
++        if movie.submitted_by == member:
++            raise OwnSubmissionError(f"{member!r} cannot rank their own submission {title!r}")
+         current = self.bucket_list(member, insertion.bucket)
+         ranked = self.bucket_of(member, title) is not None
+         if insertion.rerank:
+diff --git a/tests/test_beli_ranking.py b/tests/test_beli_ranking.py
+index cda76c5..dc118bc 100644
+--- a/tests/test_beli_ranking.py
++++ b/tests/test_beli_ranking.py
+@@ -162,6 +162,27 @@ class InsertionTests(unittest.TestCase):
+             with self.assertRaises(ValidationError):
+                 Insertion.from_dict(bad)
+ 
++    def test_from_dict_rejects_coerced_fields(self):
++        base = Insertion("R", "M", LIKED, ("A",), 0, 1).to_dict()
++        self.assertEqual(Insertion.from_dict(base), Insertion("R", "M", LIKED, ("A",), 0, 1))
++        omitted = dict(base)
++        del omitted["rerank"]
++        self.assertFalse(Insertion.from_dict(omitted).rerank)
++        for bad in (
++            {**base, "candidates": "AB"},
++            {**base, "candidates": ("A",)},
++            {**base, "candidates": ["A", 1]},
++            {**base, "lo": True},
++            {**base, "lo": 1.5},
++            {**base, "lo": -1},
++            {**base, "hi": False},
++            {**base, "hi": -1},
++            {**base, "rerank": "false"},
++            {**base, "rerank": 0},
++        ):
++            with self.assertRaises(ValidationError, msg=repr(bad)):
++                Insertion.from_dict(bad)
++
+ 
+ class RerankRemoveTests(unittest.TestCase):
+     def test_remove_closes_the_gap_and_rescales(self):
+@@ -220,6 +241,21 @@ class RulesTests(unittest.TestCase):
+         self.assertEqual(r.rankable("Sub"), ())
+         self.assertEqual([m.title for m in r.rankable("Ria")], ["Mine"])
+ 
++    def test_finish_ranking_rejects_own_submission_without_changing_state(self):
++        r = club("Mine")
++        before = r.to_dict()
++        # Empty search is already finished, so this skips start_ranking's check.
++        for state in (
++            Insertion("Sub", "Mine", LIKED, ()),
++            Insertion("Sub", "Mine", LIKED, (), rerank=True),
++        ):
++            self.assertTrue(state.done)
++            with self.assertRaises(OwnSubmissionError):
++                r.finish_ranking(state)
++            self.assertEqual(r.to_dict(), before)
++        self.assertIsNone(r.bucket_of("Sub", "Mine"))
++        self.assertIsNone(r.community_score("Mine"))
++
+     def test_members_and_movies_are_validated(self):
+         r = Rankings(["A"])
+         with self.assertRaises(ValidationError):
+@@ -295,6 +331,24 @@ class CommunityAndLeaderboardTests(unittest.TestCase):
+         sub = r.leaderboard()[1]
+         self.assertEqual((sub.member, sub.value), ("Sub", 7.8))  # mean(8.5, 7.0) = 7.75 -> 7.8
+ 
++    def test_leaderboard_tie_breaks_on_ranked_count_then_name(self):
++        # Each film is alone in Liked, so every community score is 8.5.
++        r = Rankings(["Amy", "Bo", "Cal", "Dee", "R1", "R2", "R3", "R4", "R5"])
++        r.submit_movie("A1", "Amy")
++        r.submit_movie("A2", "Amy")
++        r.submit_movie("B1", "Bo")
++        r.submit_movie("C1", "Cal")
++        r.submit_movie("D1", "Dee")
++        for rater, title in (("R1", "A1"), ("R2", "A2"), ("R3", "B1"), ("R4", "C1"), ("R5", "D1")):
++            r.rank_movie(rater, title, LIKED, scripted())
++        board = r.leaderboard()
++        scored = [(row.member, row.value, row.ranked) for row in board if row.value is not None]
++        self.assertEqual(
++            scored,
++            [("Amy", 8.5, 2), ("Bo", 8.5, 1), ("Cal", 8.5, 1), ("Dee", 8.5, 1)],
++        )
++        self.assertEqual([row.member for row in board if row.value is None], ["R1", "R2", "R3", "R4", "R5"])
++
+ 
+ if __name__ == "__main__":
+     unittest.main()

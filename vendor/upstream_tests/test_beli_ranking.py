@@ -162,6 +162,27 @@ class InsertionTests(unittest.TestCase):
             with self.assertRaises(ValidationError):
                 Insertion.from_dict(bad)
 
+    def test_from_dict_rejects_coerced_fields(self):
+        base = Insertion("R", "M", LIKED, ("A",), 0, 1).to_dict()
+        self.assertEqual(Insertion.from_dict(base), Insertion("R", "M", LIKED, ("A",), 0, 1))
+        omitted = dict(base)
+        del omitted["rerank"]
+        self.assertFalse(Insertion.from_dict(omitted).rerank)
+        for bad in (
+            {**base, "candidates": "AB"},
+            {**base, "candidates": ("A",)},
+            {**base, "candidates": ["A", 1]},
+            {**base, "lo": True},
+            {**base, "lo": 1.5},
+            {**base, "lo": -1},
+            {**base, "hi": False},
+            {**base, "hi": -1},
+            {**base, "rerank": "false"},
+            {**base, "rerank": 0},
+        ):
+            with self.assertRaises(ValidationError, msg=repr(bad)):
+                Insertion.from_dict(bad)
+
 
 class RerankRemoveTests(unittest.TestCase):
     def test_remove_closes_the_gap_and_rescales(self):
@@ -219,6 +240,21 @@ class RulesTests(unittest.TestCase):
             r.rank_movie("Sub", "Mine", LIKED, scripted())
         self.assertEqual(r.rankable("Sub"), ())
         self.assertEqual([m.title for m in r.rankable("Ria")], ["Mine"])
+
+    def test_finish_ranking_rejects_own_submission_without_changing_state(self):
+        r = club("Mine")
+        before = r.to_dict()
+        # Empty search is already finished, so this skips start_ranking's check.
+        for state in (
+            Insertion("Sub", "Mine", LIKED, ()),
+            Insertion("Sub", "Mine", LIKED, (), rerank=True),
+        ):
+            self.assertTrue(state.done)
+            with self.assertRaises(OwnSubmissionError):
+                r.finish_ranking(state)
+            self.assertEqual(r.to_dict(), before)
+        self.assertIsNone(r.bucket_of("Sub", "Mine"))
+        self.assertIsNone(r.community_score("Mine"))
 
     def test_members_and_movies_are_validated(self):
         r = Rankings(["A"])
@@ -294,6 +330,24 @@ class CommunityAndLeaderboardTests(unittest.TestCase):
         self.assertEqual(r.leaderboard()[0].member, "Zed")  # 10.0
         sub = r.leaderboard()[1]
         self.assertEqual((sub.member, sub.value), ("Sub", 7.8))  # mean(8.5, 7.0) = 7.75 -> 7.8
+
+    def test_leaderboard_tie_breaks_on_ranked_count_then_name(self):
+        # Each film is alone in Liked, so every community score is 8.5.
+        r = Rankings(["Amy", "Bo", "Cal", "Dee", "R1", "R2", "R3", "R4", "R5"])
+        r.submit_movie("A1", "Amy")
+        r.submit_movie("A2", "Amy")
+        r.submit_movie("B1", "Bo")
+        r.submit_movie("C1", "Cal")
+        r.submit_movie("D1", "Dee")
+        for rater, title in (("R1", "A1"), ("R2", "A2"), ("R3", "B1"), ("R4", "C1"), ("R5", "D1")):
+            r.rank_movie(rater, title, LIKED, scripted())
+        board = r.leaderboard()
+        scored = [(row.member, row.value, row.ranked) for row in board if row.value is not None]
+        self.assertEqual(
+            scored,
+            [("Amy", 8.5, 2), ("Bo", 8.5, 1), ("Cal", 8.5, 1), ("Dee", 8.5, 1)],
+        )
+        self.assertEqual([row.member for row in board if row.value is None], ["R1", "R2", "R3", "R4", "R5"])
 
 
 if __name__ == "__main__":
