@@ -4,6 +4,7 @@ import { hashSessionToken } from "@/lib/config"
 import { getDb } from "@/lib/db"
 import { AuthError } from "@/lib/errors"
 import { appendRatingEvent } from "@/lib/rating-events"
+import { ensureUtrMember } from "@/lib/utr-migrate"
 
 export type UserRow = {
   id: number
@@ -138,6 +139,7 @@ function insertUser(
         occurredAt: now,
         payload: { userId: id, username, name, isAdmin: input.isAdmin, via: meta.via },
       })
+      ensureUtrMember(db, id)
       return created
     })()
   } catch (error) {

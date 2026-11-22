@@ -3,6 +3,7 @@ import { findUserByUsername } from "@/lib/auth"
 import { getRatings, listMovies, submitRating, suggestMovie } from "@/lib/club"
 import { getDb } from "@/lib/db"
 import { appendRatingEvent } from "@/lib/rating-events"
+import { UTR_MIGRATION, ensureUtrMember, seedUtrFromLegacy } from "@/lib/utr-migrate"
 
 export const DEMO_PASSWORD = "reel-night"
 
@@ -115,6 +116,7 @@ export function seedDemo(): void {
           via: "seed",
         },
       })
+      ensureUtrMember(db, id)
     }
   })
   addMembers()
@@ -128,6 +130,10 @@ export function seedDemo(): void {
       index += 1
     }
   }
+
+  // Migration 4 already ran on the empty database, before these rows existed.
+  db.prepare("DELETE FROM schema_migrations WHERE version = ?").run(UTR_MIGRATION)
+  seedUtrFromLegacy(db)
 }
 
 export function seedDemoIfEmpty(): boolean {

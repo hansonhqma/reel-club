@@ -6,6 +6,7 @@ import { cn } from "cn"
 
 const LINKS = [
   { href: "/movies", label: "Movies" },
+  { href: "/utr", label: "Rate" },
   { href: "/leaderboard", label: "Board" },
   { href: "/beli", label: "Beli" },
   { href: "/how", label: "How" },
@@ -24,7 +25,7 @@ export function MainNav({
   if (variant === "bottom") {
     return (
       <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card/95 backdrop-blur md:hidden">
-        <ul className="mx-auto grid max-w-lg grid-cols-4 pb-[env(safe-area-inset-bottom)]">
+        <ul className="mx-auto grid max-w-lg grid-cols-5 pb-[env(safe-area-inset-bottom)]">
           {LINKS.map((link) => {
             const active = pathname === link.href || pathname.startsWith(`${link.href}/`)
             return (
