@@ -40,17 +40,19 @@ Spread of Elo around 1500 (standard deviation), same clubs:
 
 ## How far the board moves when a movie closes
 
-Each close rebuilds Elo from the scores the personal lists show at that moment.
-The jump is the root-mean-square change in Elo across members.
+A member's change is their Elo after the full rebuild at this close, minus their Elo after the full rebuild at the previous close.
+That change splits in two. **New movie** is the matches the movie just closed plays.
+**Older ratings** is what happens when the earlier movies are replayed with the lists as they stand now.
+For each person the two parts add up to the change. The table is the typical size of each part across the club (root-mean-square Elo points).
 
-| Club | Typical jump per movie |
-|---|---:|
-| 5 people, careful answers | 18.1 |
-| 5 people, 10% mistakes | 18.9 |
-| 6 people, 40 movies | 19.1 |
-| 5 people, 60 movies | 19.5 |
+| Club | Total | From the new movie | From older ratings being re-sorted |
+|---|---:|---:|---:|
+| 5 people, careful answers | 17.5 | 17.4 | 1.9 |
+| 5 people, 10% mistakes | 18.2 | 18.0 | 2.1 |
+| 6 people, 40 movies | 18.6 | 18.3 | 1.7 |
+| 5 people, 60 movies | 19.2 | 19.1 | 1.5 |
 
-That jump is the new match, using the lists as they stand. Personal scores and the numbers fed to Elo are the same numbers.
+The biggest re-sort for one person in the 6-person club was when M05 closed, for U1: -17.0 from the new movie, -15.2 from older ratings being re-sorted.
 
 ## Order
 
@@ -65,4 +67,5 @@ Agreement of 1 would mean the shuffle never changed who finished above whom.
 ## Reading the picture
 
 `stability.svg` is the 6-person, 40-movie club with 8% mistaken comparisons.
-A higher point means the board moved more when that movie closed.
+The dark line is the new movie's matches. The green line is older ratings being re-sorted.
+A higher point means that part moved the club more when that movie closed.

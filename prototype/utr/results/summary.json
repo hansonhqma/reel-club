@@ -11,7 +11,16 @@
       "questions_max": 4,
       "questions_zero_share": 0.11627906976744186,
       "order_tau": 1.0,
-      "step_rmse": 18.060240402304956,
+      "step_rmse": 17.45823238889479,
+      "new_rmse": 17.376666208711466,
+      "older_rmse": 1.900876248439473,
+      "example": {
+        "movie": "M06",
+        "member": "U3",
+        "older": -12.32671255483001,
+        "new": -14.493712359557776,
+        "total": -26.820424914387786
+      },
       "mappings": {
         "beli": {
           "tau_vs_strength": 0.4,
@@ -49,7 +58,16 @@
       "questions_max": 4,
       "questions_zero_share": 0.11627906976744186,
       "order_tau": 0.9012301321866539,
-      "step_rmse": 18.85497013138976,
+      "step_rmse": 18.2264711270101,
+      "new_rmse": 18.03351432027998,
+      "older_rmse": 2.1309863489107195,
+      "example": {
+        "movie": "M07",
+        "member": "U3",
+        "older": 18.782415449806194,
+        "new": -15.743723897433483,
+        "total": 3.038691552372711
+      },
       "mappings": {
         "beli": {
           "tau_vs_strength": 0.8,
@@ -87,7 +105,16 @@
       "questions_max": 5,
       "questions_zero_share": 0.08653846153846154,
       "order_tau": 0.957800342359166,
-      "step_rmse": 19.1227472623022,
+      "step_rmse": 18.644678580744646,
+      "new_rmse": 18.34850318277587,
+      "older_rmse": 1.7357239834608784,
+      "example": {
+        "movie": "M05",
+        "member": "U1",
+        "older": -15.216514024770277,
+        "new": -16.97141005173853,
+        "total": -32.18792407650881
+      },
       "mappings": {
         "beli": {
           "tau_vs_strength": 0.4666666666666667,
@@ -125,7 +152,16 @@
       "questions_max": 5,
       "questions_zero_share": 0.056179775280898875,
       "order_tau": 0.9535101836544678,
-      "step_rmse": 19.533232460111098,
+      "step_rmse": 19.207678585775913,
+      "new_rmse": 19.091161164874418,
+      "older_rmse": 1.470431212103794,
+      "example": {
+        "movie": "M09",
+        "member": "U1",
+        "older": -14.616972647940884,
+        "new": 2.667437815567382,
+        "total": -11.949534832373502
+      },
       "mappings": {
         "beli": {
           "tau_vs_strength": 1.0,

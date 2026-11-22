@@ -254,6 +254,15 @@ class CloseTests(unittest.TestCase):
         self.assertEqual(heat_week.ratings["Bea"].quality, 7.0)
         self.assertNotIn("Ada", heat_week.ratings)
         self.assertAlmostEqual(sum(group.league().elo.values()), 4500.0)
+        change = group.close_change(2)
+        for member in group.members:
+            self.assertAlmostEqual(
+                change["total"][member],
+                change["from_new_movie"][member] + change["from_older_scores"][member],
+            )
+        self.assertTrue(any(abs(change["from_older_scores"][member]) > 0.05 for member in group.members))
+        self.assertTrue(any(abs(change["from_new_movie"][member]) > 0.05 for member in group.members))
+        self.assertTrue(all(abs(group.close_change(0)["from_older_scores"][member]) < 1e-9 for member in group.members))
 
     def test_one_shared_judge_still_plays_and_zero_ratings_do_not(self):
         group = club("Ada", "Bea")

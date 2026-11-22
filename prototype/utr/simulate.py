@@ -166,12 +166,29 @@ def true_strength(users, movies, enjoyment, suggesters, watched):
     return {user: statistics.fmean(scores) if scores else 0.0 for user, scores in totals.items()}
 
 
-def step_movement(series):
-    if len(series) < 2:
-        return 0.0
-    names = list(series[0])
-    jumps = [rmse(series[i], series[i - 1], names) for i in range(1, len(series))]
-    return statistics.fmean(jumps)
+def part_rmse(change, key):
+    values = list(change[key].values())
+    return math.sqrt(sum(value * value for value in values) / len(values))
+
+
+def mean_part(changes, key):
+    return statistics.fmean(part_rmse(change, key) for change in changes)
+
+
+def example_line(changes):
+    """The member-close where older scores moved the board the most."""
+    best = None
+    for change in changes:
+        for member, older in change["from_older_scores"].items():
+            if best is None or abs(older) > abs(best["older"]):
+                best = {
+                    "movie": change["movie"],
+                    "member": member,
+                    "older": older,
+                    "new": change["from_new_movie"][member],
+                    "total": change["total"][member],
+                }
+    return best
 
 
 def run_scenario(label, users, movie_count, seed, flip, skip):
@@ -203,28 +220,9 @@ def run_scenario(label, users, movie_count, seed, flip, skip):
     revised = elo_of(group, "beli")
     current = current_elo(users, movies, enjoyment, quality, seed + 1, present, suggesters)
 
-    # How far the recomputed board moves as each movie closes.
-    revised_path = []
-    for end in range(1, len(movies) + 1):
-        partial = Club()
-        for user in users:
-            partial.apply({"type": "join", "user": user})
-        for movie in group.closed[:end]:
-            partial.apply({"type": "suggest", "user": movie.suggester, "movie": movie.title})
-            for user, (bucket, answers) in movie.ratings.items():
-                partial.apply(
-                    {
-                        "type": "rate",
-                        "user": user,
-                        "movie": movie.title,
-                        "bucket": bucket,
-                        "answers": list(answers),
-                    }
-                )
-            for user in movie.skipped:
-                if user in partial.active:
-                    partial.apply({"type": "skip", "user": user, "movie": movie.title})
-        revised_path.append(partial.league("beli").elo)
+    # Change at close t is the full rebuild at t minus the full rebuild at t-1.
+    # It splits into the new movie's matches and older scores re-sorted since t-1.
+    changes = [group.close_change(index) for index in range(len(group.closed))]
 
     return {
         "label": label,
@@ -237,12 +235,16 @@ def run_scenario(label, users, movie_count, seed, flip, skip):
         "questions_max": max(questions),
         "questions_zero_share": questions.count(0) / len(questions),
         "order_tau": statistics.fmean(tau for tau in order_tau if tau is not None),
-        "step_rmse": step_movement(revised_path),
+        "step_rmse": mean_part(changes, "total"),
+        "new_rmse": mean_part(changes, "from_new_movie"),
+        "older_rmse": mean_part(changes, "from_older_scores"),
+        "new_series": [part_rmse(change, "from_new_movie") for change in changes],
+        "older_series": [part_rmse(change, "from_older_scores") for change in changes],
+        "example": example_line(changes),
         "mappings": by_mapping,
         "current_tau": kendall(current, strength),
         "current_spread": statistics.pstdev(current.values()),
         "utr_vs_current_tau": kendall(revised, current),
-        "revised_path": revised_path,
     }
 
 
@@ -271,24 +273,27 @@ def order_effect(users, movie_count, seed, flip, skip, shuffles):
     }
 
 
-def svg_path(revised_path):
-    names = list(revised_path[0])
-    jumps = [rmse(revised_path[i], revised_path[i - 1], names) for i in range(1, len(revised_path))]
+def svg_parts(new_series, older_series):
     width, height = 720, 280
     pad = 36
-    peak = max(jumps + [1])
+    peak = max(new_series + older_series + [1])
 
-    def xy(index):
-        x = pad + index / max(1, len(jumps) - 1) * (width - 2 * pad)
-        y = height - pad - jumps[index] / peak * (height - 2 * pad)
-        return x, y
+    def points(series):
+        coords = []
+        last = max(1, len(series) - 1)
+        for index, value in enumerate(series):
+            x = pad + index / last * (width - 2 * pad)
+            y = height - pad - value / peak * (height - 2 * pad)
+            coords.append(f"{x:.1f},{y:.1f}")
+        return " ".join(coords)
 
-    points = " ".join(f"{xy(i)[0]:.1f},{xy(i)[1]:.1f}" for i in range(len(jumps)))
     return f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {width} {height}" role="img">
-  <text x="{pad}" y="22" font-family="sans-serif" font-size="14">How far the Elo board jumps after each new movie</text>
+  <text x="{pad}" y="22" font-family="sans-serif" font-size="14">Where an Elo change comes from when a movie closes</text>
   <text x="{pad}" y="{height - 8}" font-family="sans-serif" font-size="12" fill="#555">movies, in the order they closed</text>
-  <polyline fill="none" stroke="#7a2e32" stroke-width="2.5" points="{points}"/>
-  <text x="{pad}" y="44" font-family="sans-serif" font-size="12" fill="#7a2e32">recomputed from the lists as they stand</text>
+  <polyline fill="none" stroke="#7a2e32" stroke-width="2.5" points="{points(new_series)}"/>
+  <polyline fill="none" stroke="#1f6b5a" stroke-width="2.5" points="{points(older_series)}"/>
+  <text x="{pad}" y="44" font-family="sans-serif" font-size="12" fill="#7a2e32">from the new movie</text>
+  <text x="{pad + 150}" y="44" font-family="sans-serif" font-size="12" fill="#1f6b5a">from older ratings being re-sorted</text>
 </svg>
 """
 
@@ -297,6 +302,13 @@ def fmt(value, digits=2):
     if value is None:
         return "–"
     return f"{value:.{digits}f}"
+
+
+def signed(value):
+    text = f"{value:+.1f}"
+    if text == "-0.0" or text == "+0.0":
+        return "+0.0"
+    return text
 
 
 def write_report(scenarios, orders, primary):
@@ -355,17 +367,25 @@ def write_report(scenarios, orders, primary):
         "",
         "## How far the board moves when a movie closes",
         "",
-        "Each close rebuilds Elo from the scores the personal lists show at that moment.",
-        "The jump is the root-mean-square change in Elo across members.",
+        "A member's change is their Elo after the full rebuild at this close, minus their Elo after the full rebuild at the previous close.",
+        "That change splits in two. **New movie** is the matches the movie just closed plays.",
+        "**Older ratings** is what happens when the earlier movies are replayed with the lists as they stand now.",
+        "For each person the two parts add up to the change. The table is the typical size of each part across the club (root-mean-square Elo points).",
         "",
-        "| Club | Typical jump per movie |",
-        "|---|---:|",
+        "| Club | Total | From the new movie | From older ratings being re-sorted |",
+        "|---|---:|---:|---:|",
     ]
     for row in scenarios:
-        lines.append(f"| {row['label']} | {fmt(row['step_rmse'], 1)} |")
+        lines.append(
+            f"| {row['label']} | {fmt(row['step_rmse'], 1)} | {fmt(row['new_rmse'], 1)} | {fmt(row['older_rmse'], 1)} |"
+        )
+    example = primary["example"]
     lines += [
         "",
-        "That jump is the new match, using the lists as they stand. Personal scores and the numbers fed to Elo are the same numbers.",
+        (
+            f"The biggest re-sort for one person in the 6-person club was when {example['movie']} closed, for {example['member']}: "
+            f"{signed(example['new'])} from the new movie, {signed(example['older'])} from older ratings being re-sorted."
+        ),
         "",
         "## Order",
         "",
@@ -380,14 +400,18 @@ def write_report(scenarios, orders, primary):
         "## Reading the picture",
         "",
         "`stability.svg` is the 6-person, 40-movie club with 8% mistaken comparisons.",
-        "A higher point means the board moved more when that movie closed.",
+        "The dark line is the new movie's matches. The green line is older ratings being re-sorted.",
+        "A higher point means that part moved the club more when that movie closed.",
         "",
     ]
     (OUT / "RESULTS.md").write_text("\n".join(lines), encoding="utf-8")
-    (OUT / "stability.svg").write_text(svg_path(primary["revised_path"]), encoding="utf-8")
+    (OUT / "stability.svg").write_text(
+        svg_parts(primary["new_series"], primary["older_series"]),
+        encoding="utf-8",
+    )
     slim = []
     for row in scenarios:
-        item = {key: value for key, value in row.items() if key not in {"revised_path"}}
+        item = {key: value for key, value in row.items() if key not in {"new_series", "older_series"}}
         slim.append(item)
     (OUT / "summary.json").write_text(json.dumps({"scenarios": slim, "order": orders}, indent=2), encoding="utf-8")
 
@@ -410,7 +434,8 @@ def main():
         print(
             f"{label}: questions {row['questions_mean']:.2f}, taste {row['order_tau']:.2f}, "
             f"beli tau {row['mappings']['beli']['tau_vs_strength']:.2f}, "
-            f"current tau {row['current_tau']:.2f}, step {row['step_rmse']:.1f}"
+            f"current tau {row['current_tau']:.2f}, "
+            f"change {row['step_rmse']:.1f} (new {row['new_rmse']:.1f}, older {row['older_rmse']:.1f})"
         )
     users = [f"U{index}" for index in range(6)]
     orders = order_effect(users, 30, 21, 0.08, 0.15, 12)

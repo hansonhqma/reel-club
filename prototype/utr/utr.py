@@ -177,6 +177,9 @@ class ClosedMovie:
     suggester: str
     ratings: Dict[str, Tuple[str, Tuple[str, ...]]]
     skipped: Tuple[str, ...]
+    # Scores from every list at the moment this movie closed. Elo is rebuilt from these.
+    scores: Dict[str, Dict[str, float]]
+    members: Tuple[str, ...]
 
 
 @dataclass
@@ -322,18 +325,16 @@ class Club:
             _, bucket, answers = item
             self.tastes[user].place(current.title, bucket, answers)
             ratings[user] = (bucket, answers)
-        self.closed.append(ClosedMovie(current.title, current.suggester, ratings, tuple(skipped)))
+        scores = {user: dict(self.tastes[user].scores("beli")) for user in self.members}
+        self.closed.append(
+            ClosedMovie(current.title, current.suggester, ratings, tuple(skipped), scores, tuple(self.members))
+        )
         self.open = None
 
-    def elo_inputs(self, mapping: str = "beli") -> List[Week]:
-        """Weeks for movie_elo, using each list as it stands now.
-
-        A later rating can move an older movie's score. Those current scores
-        are what every closed movie is fed. The suggester's own score is left out.
-        """
-        compiled = {user: self.tastes[user].scores(mapping) for user in self.members}
+    def _weeks(self, movies: Sequence[ClosedMovie], compiled: Mapping[str, Mapping[str, float]]) -> List[Week]:
+        """One Elo week per movie. The suggester's own score is left out."""
         weeks: List[Week] = []
-        for movie in self.closed:
+        for movie in movies:
             ratings = {}
             for user in movie.ratings:
                 if user == movie.suggester:
@@ -352,10 +353,60 @@ class Club:
             )
         return weeks
 
-    def league(self, mapping: str = "beli"):
+    def elo_inputs(self, mapping: str = "beli") -> List[Week]:
+        """Weeks for movie_elo, using each list as it stands now.
+
+        A later rating can move an older movie's score. Those current scores
+        are what every closed movie is fed. The suggester's own score is left out.
+        """
+        compiled = {user: self.tastes[user].scores(mapping) for user in self.members}
+        return self._weeks(self.closed, compiled)
+
+    def _elo(self, members: Sequence[str], movies: Sequence[ClosedMovie], compiled: Mapping[str, Mapping[str, float]], mapping: str):
         scale_min = 0.0 if mapping == "beli" else 1.0
         params = Params(scale_min=scale_min, scale_max=10.0)
-        return replay(self.members, self.elo_inputs(mapping), params)
+        weeks = self._weeks(movies, compiled)
+        if not weeks:
+            return {member: params.start for member in members}
+        return replay(list(members), weeks, params).elo
+
+    def league(self, mapping: str = "beli"):
+        compiled = {user: self.tastes[user].scores(mapping) for user in self.members}
+        scale_min = 0.0 if mapping == "beli" else 1.0
+        params = Params(scale_min=scale_min, scale_max=10.0)
+        return replay(self.members, self._weeks(self.closed, compiled), params)
+
+    def close_change(self, index: int) -> Dict[str, object]:
+        """Elo change when movie ``index`` closed.
+
+        The change is each member's Elo after the full rebuild at this close,
+        minus their Elo after the full rebuild at the previous close.
+        It splits into the new movie's matches and the shift from older scores:
+        replay the earlier movies again with the lists as they stand now.
+        The two parts add up to the change for every member.
+        """
+        movie = self.closed[index]
+        previous = self.closed[:index]
+        now = self._elo(movie.members, self.closed[: index + 1], movie.scores, "beli")
+        if index == 0:
+            before = {member: 1500.0 for member in movie.members}
+        else:
+            prior = self.closed[index - 1]
+            before = self._elo(prior.members, previous, prior.scores, "beli")
+        reshuffled = self._elo(movie.members, previous, movie.scores, "beli")
+
+        def difference(later: Mapping[str, float], earlier: Mapping[str, float]) -> Dict[str, float]:
+            return {member: later[member] - earlier.get(member, 1500.0) for member in later}
+
+        from_older = difference(reshuffled, before)
+        from_new = difference(now, reshuffled)
+        total = difference(now, before)
+        return {
+            "movie": movie.title,
+            "total": total,
+            "from_new_movie": from_new,
+            "from_older_scores": from_older,
+        }
 
 
 _BELI_BUCKETS = {

@@ -66,7 +66,14 @@ A movie with no score from anyone except the suggester does not enter the league
 
 **Order, yes.** Elo was always path-dependent. Playing the same movies in a shuffled order, with the same watchers and the same suggesters, moved the final Elo by about 80 points on average (as much as 139 in one shuffle). Who finished above whom agreed with the original order only about half the time, and one shuffle almost reversed the nearby ranks (agreement 0.07). The one-movie-at-a-time rule is doing real work. It is not a cosmetic queue.
 
-**Rebuilding history is the rule.** When a movie closes, every earlier movie is scored again from the lists as they stand. The board moves about 19 points in a typical close. That movement is the new match, told with the current numbers. A stored write-up of an old match would go stale, so the site should recompute it rather than keep the old one.
+**Rebuilding history is the rule.** When movie *t* closes, Elo is rebuilt from every closed movie using the scores the lists show at that moment. A member's change at that close is their Elo after this rebuild minus their Elo after the rebuild at the previous close.
+
+That change has two parts, and they add up:
+
+- **The new movie.** Replay the earlier movies with the lists as they stand now, then see what the new movie's matches add on top.
+- **Older ratings being re-sorted.** That same replay of the earlier movies, compared with the board from the previous close. This is the part that exists only because inserting the new movie moved older scores.
+
+The site can say "−17 from the new movie, −15 from older ratings being re-sorted." That pair is the biggest re-sort for one person in the 6-person, 40-movie run, not a typical night. Across the club, the new movie is about 17 to 19 Elo points of the movement. The re-sort is about 1.5 to 2 points. A stored write-up of an old match would go stale, so show the rebuilt one.
 
 ## What the simulations say
 
