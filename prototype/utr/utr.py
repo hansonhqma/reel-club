@@ -221,6 +221,8 @@ class Club:
             self._skip(str(event["user"]), str(event["movie"]))
         elif kind == "admin_close":
             self._admin_close(str(event["movie"]))
+        elif kind == "close":
+            self._close_by(str(event["movie"]), str(event.get("by") or ""), bool(event.get("admin")))
         else:
             raise UtrError(f"unknown event {kind}")
 
@@ -271,12 +273,21 @@ class Club:
         self._maybe_close()
 
     def _admin_close(self, movie: str) -> None:
+        self._close_early(movie)
+
+    def _close_by(self, movie: str, by: str, admin: bool) -> None:
+        if self.open is None or self.open.title != movie:
+            raise UtrError(f"{movie} is not the open movie")
+        if not admin and by != self.open.suggester:
+            raise UtrError("only the suggester or an admin can close ratings")
+        self._close_early(movie)
+
+    def _close_early(self, movie: str) -> None:
+        """Close now. Anyone still silent is recorded as not having watched."""
         if self.open is None or self.open.title != movie:
             raise UtrError(f"{movie} is not the open movie")
         for user in list(self.active):
             if user not in self.open.pending:
-                if user == self.open.suggester:
-                    raise UtrError("the suggester still has to rate before an admin can close")
                 self.open.pending[user] = ("skip",)
         self._close()
 
@@ -315,7 +326,11 @@ class Club:
         self.open = None
 
     def elo_inputs(self, mapping: str = "beli") -> List[Week]:
-        """Weeks for movie_elo. The suggester's own score is left out."""
+        """Weeks for movie_elo, using each list as it stands now.
+
+        A later rating can move an older movie's score. Those current scores
+        are what every closed movie is fed. The suggester's own score is left out.
+        """
         compiled = {user: self.tastes[user].scores(mapping) for user in self.members}
         weeks: List[Week] = []
         for movie in self.closed:
@@ -342,24 +357,46 @@ class Club:
         params = Params(scale_min=scale_min, scale_max=10.0)
         return replay(self.members, self.elo_inputs(mapping), params)
 
-    def frozen_inputs(self, snapshots: Sequence[Mapping[str, Mapping[str, float]]]) -> List[Week]:
-        """Weeks that keep the score each movie had on the night it closed."""
-        weeks: List[Week] = []
-        for movie, scores in zip(self.closed, snapshots):
-            ratings = {}
-            for user in movie.ratings:
-                if user == movie.suggester:
-                    continue
-                value = scores[user][movie.title]
-                ratings[user] = (value, value)
-            if not ratings:
-                continue
-            weeks.append(
-                Week(
-                    week_id=movie.title,
-                    suggester=movie.suggester,
-                    movie=movie.title,
-                    ratings=ratings,
-                )
-            )
-        return weeks
+
+_BELI_BUCKETS = {
+    "liked": "a_lot",
+    "fine": "kinda",
+    "disliked": "not_really",
+    "a_lot": "a_lot",
+    "kinda": "kinda",
+    "not_really": "not_really",
+}
+
+
+def seed_taste(
+    beli_order: Optional[Sequence[Tuple[str, str]]] = None,
+    blended_scores: Optional[Mapping[str, float]] = None,
+) -> Taste:
+    """Start a list from today's data without inventing comparison questions.
+
+    A Beli order wins when one exists. It is ``(movie, bucket)`` pairs, best
+    first inside each bucket. Otherwise movies are sorted by the old blended
+    score and dropped into a lot / kinda / not really by the 7 and 4 cuts.
+    """
+    taste = Taste()
+    if beli_order:
+        for movie, raw_bucket in beli_order:
+            bucket = _BELI_BUCKETS.get(raw_bucket)
+            if bucket is None:
+                raise UtrError("a Beli bucket is liked, fine, or didn't like")
+            if taste.bucket_of(movie) is not None:
+                raise UtrError(f"{movie} is already on this list")
+            taste.buckets[bucket].append(movie)
+        return taste
+    if not blended_scores:
+        return taste
+    ranked = sorted(blended_scores.items(), key=lambda item: (-item[1], item[0]))
+    for movie, value in ranked:
+        if value >= 7:
+            bucket = "a_lot"
+        elif value >= 4:
+            bucket = "kinda"
+        else:
+            bucket = "not_really"
+        taste.buckets[bucket].append(movie)
+    return taste

@@ -11,9 +11,7 @@
       "questions_max": 4,
       "questions_zero_share": 0.11627906976744186,
       "order_tau": 1.0,
-      "revision_rmse": 5.569213623949232,
-      "revised_step_rmse": 18.060240402304956,
-      "frozen_step_rmse": 18.300773933602358,
+      "step_rmse": 18.060240402304956,
       "mappings": {
         "beli": {
           "tau_vs_strength": 0.4,
@@ -51,9 +49,7 @@
       "questions_max": 4,
       "questions_zero_share": 0.11627906976744186,
       "order_tau": 0.9012301321866539,
-      "revision_rmse": 4.8203140360312835,
-      "revised_step_rmse": 18.85497013138976,
-      "frozen_step_rmse": 18.917562434100372,
+      "step_rmse": 18.85497013138976,
       "mappings": {
         "beli": {
           "tau_vs_strength": 0.8,
@@ -91,9 +87,7 @@
       "questions_max": 5,
       "questions_zero_share": 0.08653846153846154,
       "order_tau": 0.957800342359166,
-      "revision_rmse": 4.16232950996618,
-      "revised_step_rmse": 19.1227472623022,
-      "frozen_step_rmse": 18.813593075577195,
+      "step_rmse": 19.1227472623022,
       "mappings": {
         "beli": {
           "tau_vs_strength": 0.4666666666666667,
@@ -131,9 +125,7 @@
       "questions_max": 5,
       "questions_zero_share": 0.056179775280898875,
       "order_tau": 0.9535101836544678,
-      "revision_rmse": 2.452569147809274,
-      "revised_step_rmse": 19.533232460111098,
-      "frozen_step_rmse": 19.471007255583014,
+      "step_rmse": 19.533232460111098,
       "mappings": {
         "beli": {
           "tau_vs_strength": 1.0,

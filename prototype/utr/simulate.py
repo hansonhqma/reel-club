@@ -105,12 +105,11 @@ def attendance(users, movies, suggesters, seed, skip):
 
 
 def play_utr(users, movies, enjoyment, seed, flip, present, suggesters):
-    """Return the club plus per-movie snapshots taken the night each movie closed."""
+    """Play every movie to close. Elo, when asked, uses the lists as they stand then."""
     group = Club()
     for user in users:
         group.apply({"type": "join", "user": user})
     questions = []
-    snapshots = []
     for movie in movies:
         suggester = suggesters[movie]
         group.apply({"type": "suggest", "user": suggester, "movie": movie})
@@ -131,21 +130,11 @@ def play_utr(users, movies, enjoyment, seed, flip, present, suggesters):
                     "answers": answers,
                 }
             )
-        snapshots.append({user: dict(group.tastes[user].scores("beli")) for user in users})
-    return group, questions, snapshots
+    return group, questions
 
 
 def elo_of(group, mapping):
     return group.league(mapping).elo
-
-
-def frozen_elo(group, snapshots, mapping):
-    # Snapshots are always the Beli-band scores from the night of the close.
-    # Other mappings are recomputed from the taste lists, so the frozen path
-    # is reported for the Beli mapping only.
-    if mapping != "beli":
-        return None
-    return replay(group.members, group.frozen_inputs(snapshots), Params(scale_min=0.0, scale_max=10.0)).elo
 
 
 def current_elo(users, movies, enjoyment, quality, seed, present, suggesters):
@@ -190,7 +179,7 @@ def run_scenario(label, users, movie_count, seed, flip, skip):
     quality, enjoyment = draw_world(users, movies, seed)
     suggesters = {movie: users[index % len(users)] for index, movie in enumerate(movies)}
     present = attendance(users, movies, suggesters, seed + 3, skip)
-    group, questions, snapshots = play_utr(users, movies, enjoyment, seed + 1, flip, present, suggesters)
+    group, questions = play_utr(users, movies, enjoyment, seed + 1, flip, present, suggesters)
     watched = {movie: set(present[movie]) for movie in movies}
     strength = true_strength(users, movies, enjoyment, suggesters, watched)
     order_tau = []
@@ -212,18 +201,14 @@ def run_scenario(label, users, movie_count, seed, flip, skip):
             "leader": max(elo, key=elo.get),
         }
     revised = elo_of(group, "beli")
-    held = frozen_elo(group, snapshots, "beli")
     current = current_elo(users, movies, enjoyment, quality, seed + 1, present, suggesters)
 
-    # How the recomputed board moves as movies arrive, versus scores locked each night.
+    # How far the recomputed board moves as each movie closes.
     revised_path = []
-    held_path = []
-    partial_snaps = []
     for end in range(1, len(movies) + 1):
         partial = Club()
         for user in users:
             partial.apply({"type": "join", "user": user})
-        # Rebuild tastes by replaying only the first `end` movies' stored ratings.
         for movie in group.closed[:end]:
             partial.apply({"type": "suggest", "user": movie.suggester, "movie": movie.title})
             for user, (bucket, answers) in movie.ratings.items():
@@ -240,14 +225,6 @@ def run_scenario(label, users, movie_count, seed, flip, skip):
                 if user in partial.active:
                     partial.apply({"type": "skip", "user": user, "movie": movie.title})
         revised_path.append(partial.league("beli").elo)
-        partial_snaps.append({user: dict(partial.tastes[user].scores("beli")) for user in users})
-        held_path.append(
-            replay(
-                users,
-                partial.frozen_inputs(partial_snaps),
-                Params(scale_min=0.0, scale_max=10.0),
-            ).elo
-        )
 
     return {
         "label": label,
@@ -260,15 +237,12 @@ def run_scenario(label, users, movie_count, seed, flip, skip):
         "questions_max": max(questions),
         "questions_zero_share": questions.count(0) / len(questions),
         "order_tau": statistics.fmean(tau for tau in order_tau if tau is not None),
-        "revision_rmse": rmse(revised, held, users),
-        "revised_step_rmse": step_movement(revised_path),
-        "frozen_step_rmse": step_movement(held_path),
+        "step_rmse": step_movement(revised_path),
         "mappings": by_mapping,
         "current_tau": kendall(current, strength),
         "current_spread": statistics.pstdev(current.values()),
         "utr_vs_current_tau": kendall(revised, current),
         "revised_path": revised_path,
-        "held_path": held_path,
     }
 
 
@@ -277,7 +251,7 @@ def order_effect(users, movie_count, seed, flip, skip, shuffles):
     _quality, enjoyment = draw_world(users, movies, seed)
     suggesters = {movie: users[index % len(users)] for index, movie in enumerate(movies)}
     present = attendance(users, movies, suggesters, seed + 3, skip)
-    base, _, _ = play_utr(users, movies, enjoyment, seed + 1, flip, present, suggesters)
+    base, _ = play_utr(users, movies, enjoyment, seed + 1, flip, present, suggesters)
     base_elo = base.league("beli").elo
     rng = random.Random(seed + 99)
     taus = []
@@ -285,7 +259,7 @@ def order_effect(users, movie_count, seed, flip, skip, shuffles):
     for _ in range(shuffles):
         order = movies[:]
         rng.shuffle(order)
-        alt, _, _ = play_utr(users, order, enjoyment, seed + 1, flip, present, suggesters)
+        alt, _ = play_utr(users, order, enjoyment, seed + 1, flip, present, suggesters)
         elo = alt.league("beli").elo
         taus.append(kendall(base_elo, elo))
         rmses.append(rmse(base_elo, elo, users))
@@ -297,26 +271,24 @@ def order_effect(users, movie_count, seed, flip, skip, shuffles):
     }
 
 
-def svg_paths(revised_path, held_path):
+def svg_path(revised_path):
     names = list(revised_path[0])
-    revised = [rmse(revised_path[i], revised_path[i - 1], names) for i in range(1, len(revised_path))]
-    held = [rmse(held_path[i], held_path[i - 1], names) for i in range(1, len(held_path))]
+    jumps = [rmse(revised_path[i], revised_path[i - 1], names) for i in range(1, len(revised_path))]
     width, height = 720, 280
     pad = 36
-    peak = max(revised + held + [1])
-    def xy(series, index):
-        x = pad + index / max(1, len(series) - 1) * (width - 2 * pad)
-        y = height - pad - series[index] / peak * (height - 2 * pad)
+    peak = max(jumps + [1])
+
+    def xy(index):
+        x = pad + index / max(1, len(jumps) - 1) * (width - 2 * pad)
+        y = height - pad - jumps[index] / peak * (height - 2 * pad)
         return x, y
-    def line(series):
-        return " ".join(f"{xy(series, i)[0]:.1f},{xy(series, i)[1]:.1f}" for i in range(len(series)))
+
+    points = " ".join(f"{xy(i)[0]:.1f},{xy(i)[1]:.1f}" for i in range(len(jumps)))
     return f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {width} {height}" role="img">
-  <text x="{pad}" y="22" font-family="sans-serif" font-size="14">How far the board jumps after each new movie</text>
+  <text x="{pad}" y="22" font-family="sans-serif" font-size="14">How far the Elo board jumps after each new movie</text>
   <text x="{pad}" y="{height - 8}" font-family="sans-serif" font-size="12" fill="#555">movies, in the order they closed</text>
-  <polyline fill="none" stroke="#7a2e32" stroke-width="2.5" points="{line(revised)}"/>
-  <polyline fill="none" stroke="#1f6b5a" stroke-width="2.5" points="{line(held)}"/>
-  <text x="{pad}" y="44" font-family="sans-serif" font-size="12" fill="#7a2e32">rewriting old scores</text>
-  <text x="{pad + 150}" y="44" font-family="sans-serif" font-size="12" fill="#1f6b5a">scores locked on the night</text>
+  <polyline fill="none" stroke="#7a2e32" stroke-width="2.5" points="{points}"/>
+  <text x="{pad}" y="44" font-family="sans-serif" font-size="12" fill="#7a2e32">recomputed from the lists as they stand</text>
 </svg>
 """
 
@@ -381,21 +353,19 @@ def write_report(scenarios, orders, primary):
         )
     lines += [
         "",
-        "## What happens to old Elo when a new rating rewrites old scores",
+        "## How far the board moves when a movie closes",
         "",
-        "Two replays use the same comparisons. **Locked** keeps the number a movie had on the night it closed.",
-        "**Rewritten** recompiles every old score from the lists as they stand at the end, which is what the spec asks for.",
+        "Each close rebuilds Elo from the scores the personal lists show at that moment.",
+        "The jump is the root-mean-square change in Elo across members.",
         "",
-        "| Club | Typical jump per movie, rewritten | Typical jump per movie, locked | End gap between the two boards |",
-        "|---|---:|---:|---:|",
+        "| Club | Typical jump per movie |",
+        "|---|---:|",
     ]
     for row in scenarios:
-        lines.append(
-            f"| {row['label']} | {fmt(row['revised_step_rmse'], 1)} | {fmt(row['frozen_step_rmse'], 1)} | {fmt(row['revision_rmse'], 1)} |"
-        )
+        lines.append(f"| {row['label']} | {fmt(row['step_rmse'], 1)} |")
     lines += [
         "",
-        "The jump is the root-mean-square change in Elo across members. The end gap is the same distance between the two final boards.",
+        "That jump is the new match, using the lists as they stand. Personal scores and the numbers fed to Elo are the same numbers.",
         "",
         "## Order",
         "",
@@ -410,18 +380,14 @@ def write_report(scenarios, orders, primary):
         "## Reading the picture",
         "",
         "`stability.svg` is the 6-person, 40-movie club with 8% mistaken comparisons.",
-        "The dark line is the rewritten history. The green line locks each night's scores.",
         "A higher point means the board moved more when that movie closed.",
         "",
     ]
     (OUT / "RESULTS.md").write_text("\n".join(lines), encoding="utf-8")
-    (OUT / "stability.svg").write_text(
-        svg_paths(primary["revised_path"], primary["held_path"]),
-        encoding="utf-8",
-    )
+    (OUT / "stability.svg").write_text(svg_path(primary["revised_path"]), encoding="utf-8")
     slim = []
     for row in scenarios:
-        item = {key: value for key, value in row.items() if key not in {"revised_path", "held_path"}}
+        item = {key: value for key, value in row.items() if key not in {"revised_path"}}
         slim.append(item)
     (OUT / "summary.json").write_text(json.dumps({"scenarios": slim, "order": orders}, indent=2), encoding="utf-8")
 
@@ -444,7 +410,7 @@ def main():
         print(
             f"{label}: questions {row['questions_mean']:.2f}, taste {row['order_tau']:.2f}, "
             f"beli tau {row['mappings']['beli']['tau_vs_strength']:.2f}, "
-            f"current tau {row['current_tau']:.2f}, revision {row['revision_rmse']:.1f}"
+            f"current tau {row['current_tau']:.2f}, step {row['step_rmse']:.1f}"
         )
     users = [f"U{index}" for index in range(6)]
     orders = order_effect(users, 30, 21, 0.08, 0.15, 12)

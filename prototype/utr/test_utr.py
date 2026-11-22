@@ -14,6 +14,7 @@ from prototype.utr.utr import (
     Taste,
     UtrError,
     question_budget,
+    seed_taste,
 )
 
 
@@ -32,6 +33,24 @@ def rate(user: str, movie: str, bucket: str, answers=()):
         "bucket": bucket,
         "answers": list(answers),
     }
+
+
+class SeedTests(unittest.TestCase):
+    def test_beli_order_wins_and_no_questions_are_invented(self):
+        taste = seed_taste(
+            beli_order=[("Lantern", "liked"), ("Night", "liked"), ("Rooftop", "fine")],
+            blended_scores={"Other": 10},
+        )
+        self.assertEqual(taste.movies(), ["Lantern", "Night", "Rooftop"])
+        self.assertEqual(taste.scores()["Lantern"], 10.0)
+        self.assertEqual(taste.scores()["Night"], 7.0)
+        self.assertEqual(taste.scores()["Rooftop"], 5.5)
+
+    def test_blended_scores_fall_into_enjoyment_groups(self):
+        taste = seed_taste(blended_scores={"Heat": 8, "Up": 9, "Bus": 5, "Slump": 2})
+        self.assertEqual(taste.buckets["a_lot"], ["Up", "Heat"])
+        self.assertEqual(taste.buckets["kinda"], ["Bus"])
+        self.assertEqual(taste.buckets["not_really"], ["Slump"])
 
 
 class InsertionTests(unittest.TestCase):
@@ -153,6 +172,24 @@ class CloseTests(unittest.TestCase):
         self.assertEqual(set(group.closed[0].skipped), {"Bea", "Cy"})
         self.assertEqual(group.elo_inputs(), [])
 
+    def test_suggester_or_admin_can_close_and_silence_counts_as_not_watching(self):
+        group = club("Ada", "Bea", "Cy")
+        group.apply({"type": "suggest", "user": "Ada", "movie": "Heat"})
+        group.apply(rate("Bea", "Heat", "kinda"))
+        with self.assertRaises(UtrError):
+            group.apply({"type": "close", "movie": "Heat", "by": "Bea"})
+        group.apply({"type": "close", "movie": "Heat", "by": "Ada"})
+        self.assertIsNone(group.open)
+        self.assertEqual(set(group.closed[0].skipped), {"Ada", "Cy"})
+        self.assertNotIn("Heat", group.tastes["Ada"].scores())
+        self.assertIn("Heat", group.tastes["Bea"].scores())
+        with self.assertRaises(UtrError):
+            group.apply(rate("Cy", "Heat", "a_lot"))
+
+        group.apply({"type": "suggest", "user": "Bea", "movie": "Up"})
+        group.apply({"type": "close", "movie": "Up", "by": "Cy", "admin": True})
+        self.assertEqual(set(group.closed[1].skipped), {"Ada", "Bea", "Cy"})
+
     def test_a_leaver_stops_blocking_and_a_joiner_must_answer(self):
         group = club("Ada", "Bea", "Cy")
         group.apply({"type": "suggest", "user": "Ada", "movie": "Heat"})
@@ -200,31 +237,23 @@ class CloseTests(unittest.TestCase):
         ]
         group = Club().replay(events)
         self.assertEqual(group.tastes["Bea"].scores()["Heat"], 8.5)
-        heat_scores = {user: dict(group.tastes[user].scores()) for user in group.members}
         group.apply({"type": "suggest", "user": "Cy", "movie": "Up"})
         group.apply(rate("Ada", "Up", "kinda"))
         group.apply(rate("Bea", "Up", "a_lot", ("new",)))
         group.apply(rate("Cy", "Up", "kinda"))
         self.assertEqual(group.tastes["Bea"].scores()["Up"], 10.0)
         self.assertEqual(group.tastes["Bea"].scores()["Heat"], 7.0)
-        up_scores = {user: dict(group.tastes[user].scores()) for user in group.members}
         group.apply({"type": "suggest", "user": "Ada", "movie": "Later"})
         group.apply(rate("Ada", "Later", "a_lot", ("new",)))
         group.apply(rate("Bea", "Later", "a_lot", ("new", "new")))
         group.apply(rate("Cy", "Later", "not_really"))
         self.assertEqual(group.tastes["Bea"].scores()["Up"], 8.5)
         self.assertEqual(group.tastes["Bea"].scores()["Heat"], 7.0)
-        later_scores = {user: dict(group.tastes[user].scores()) for user in group.members}
-        from movie_elo import Params, replay
-
-        revised = group.league().elo
-        held = replay(
-            group.members,
-            group.frozen_inputs([heat_scores, up_scores, later_scores]),
-            Params(scale_min=0.0, scale_max=10.0),
-        ).elo
-        self.assertNotEqual(round(revised["Cy"], 6), round(held["Cy"], 6))
-        self.assertAlmostEqual(sum(revised.values()), 4500.0)
+        heat_week = next(week for week in group.elo_inputs() if week.movie == "Heat")
+        self.assertEqual(heat_week.ratings["Bea"].experience, 7.0)
+        self.assertEqual(heat_week.ratings["Bea"].quality, 7.0)
+        self.assertNotIn("Ada", heat_week.ratings)
+        self.assertAlmostEqual(sum(group.league().elo.values()), 4500.0)
 
     def test_one_shared_judge_still_plays_and_zero_ratings_do_not(self):
         group = club("Ada", "Bea")

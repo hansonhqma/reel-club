@@ -38,19 +38,19 @@ Spread of Elo around 1500 (standard deviation), same clubs:
 | 6 people, 40 movies | 84.2 | 80.3 | 82.6 | 88.7 |
 | 5 people, 60 movies | 93.5 | 91.7 | 90.7 | 84.1 |
 
-## What happens to old Elo when a new rating rewrites old scores
+## How far the board moves when a movie closes
 
-Two replays use the same comparisons. **Locked** keeps the number a movie had on the night it closed.
-**Rewritten** recompiles every old score from the lists as they stand at the end, which is what the spec asks for.
+Each close rebuilds Elo from the scores the personal lists show at that moment.
+The jump is the root-mean-square change in Elo across members.
 
-| Club | Typical jump per movie, rewritten | Typical jump per movie, locked | End gap between the two boards |
-|---|---:|---:|---:|
-| 5 people, careful answers | 18.1 | 18.3 | 5.6 |
-| 5 people, 10% mistakes | 18.9 | 18.9 | 4.8 |
-| 6 people, 40 movies | 19.1 | 18.8 | 4.2 |
-| 5 people, 60 movies | 19.5 | 19.5 | 2.5 |
+| Club | Typical jump per movie |
+|---|---:|
+| 5 people, careful answers | 18.1 |
+| 5 people, 10% mistakes | 18.9 |
+| 6 people, 40 movies | 19.1 |
+| 5 people, 60 movies | 19.5 |
 
-The jump is the root-mean-square change in Elo across members. The end gap is the same distance between the two final boards.
+That jump is the new match, using the lists as they stand. Personal scores and the numbers fed to Elo are the same numbers.
 
 ## Order
 
@@ -65,5 +65,4 @@ Agreement of 1 would mean the shuffle never changed who finished above whom.
 ## Reading the picture
 
 `stability.svg` is the 6-person, 40-movie club with 8% mistaken comparisons.
-The dark line is the rewritten history. The green line locks each night's scores.
 A higher point means the board moved more when that movie closed.

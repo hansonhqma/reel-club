@@ -13,10 +13,10 @@ Only one movie is open. The next suggestion waits until this one has closed.
 3. A rating starts with "How much did you enjoy it?": **not really**, **kinda**, or **a lot**.
 4. The site then asks "which did you enjoy more?" against movies already in that same enjoyment group, until the new movie has one clear slot.
 5. That slot is inserted into the member's taste list. Their personal ranking updates at once.
-6. When every active member has answered, the movie closes. Those answers are frozen.
-7. Every taste list is turned into a number for every movie that person has rated. The whole Elo history is replayed from scratch with those numbers.
+6. The movie closes when every active member has answered. The suggester, or an admin, can also close it early. Anyone who has not rated is recorded as "I didn't watch." There is no timer.
+7. Every taste list is turned into a number for every movie that person has rated, using the list as it stands now. The whole Elo history is replayed from scratch with those numbers.
 
-Someone who has left does not have to answer, and does not block the close. Someone who joins while a movie is open does have to answer it.
+Someone who has left does not have to answer, and does not block the close. Someone who joins while a movie is open does have to answer it, unless the movie is closed early.
 
 ## The taste list
 
@@ -44,7 +44,7 @@ While the movie is still open, a member may replace their draft. The later answe
 
 ### What is not stored
 
-Elo totals are not stored. They are replayed. The event list is append-only: join, leave, suggest, rate, didn't-watch, and an admin close. Replaying the same list rebuilds the same lists and the same Elo.
+Elo totals are not stored. They are replayed. The event list is append-only: join, leave, suggest, rate, didn't-watch, and a close by the suggester or an admin. Replaying the same list rebuilds the same lists and the same Elo.
 
 ## How the numbers enter Elo
 
@@ -52,7 +52,7 @@ The league is still `movie_elo`: each member's latest closed movie plays the oth
 
 The suggester's score is kept on their personal list and is not given to Elo for that movie. They still judge other people's movies. See the edge cases below.
 
-The replay uses the lists as they stand now, not the numbers from the night each movie closed. Inserting a movie can move the scores of older movies in the same enjoyment group, so every close replays the whole history. The pool of Elo points still sums to 1500 times the number of members. Rewriting scores does not create or destroy points. It can change who is ahead.
+Every close rebuilds Elo from scratch. Each closed movie is fed the score that member's list gives it right now, not the number it had on the night it closed. A later favorite can move an older movie down the personal list, and that new number is what the old match uses too. The personal score and the league input are the same number. The pool of Elo points still sums to 1500 times the number of members.
 
 `movie_elo` normally refuses a score below 1. The bottom of "not really" is 0.0, so this replay allows 0 through 10. Clamping that 0 up to 1 changed almost nothing in the simulations.
 
@@ -64,9 +64,9 @@ A movie with no score from anyone except the suggester does not enter the league
 
 **Bias cancellation, only partly.** In today's Elo, a harsh rater and a generous rater are compared by the gap between two movies, so a personal habit of scoring low cancels. The new enjoyment question is an absolute choice. A person who says "a lot" to everything produces gaps only inside 7 to 10. A person who uses all three groups can produce a gap of 7 or more for the same pair of films. Within one group, only the order remains, and that part still cancels a level bias. Across groups, it does not.
 
-**Order, yes, and more than the score rewrite.** Elo was always path-dependent. Playing the same movies in a shuffled order, with the same watchers and the same suggesters, moved the final Elo by about 80 points on average (as much as 139 in one shuffle). Who finished above whom agreed with the original order only about half the time, and one shuffle almost reversed the nearby ranks (agreement 0.07). The one-movie-at-a-time rule is doing real work. It is not a cosmetic queue.
+**Order, yes.** Elo was always path-dependent. Playing the same movies in a shuffled order, with the same watchers and the same suggesters, moved the final Elo by about 80 points on average (as much as 139 in one shuffle). Who finished above whom agreed with the original order only about half the time, and one shuffle almost reversed the nearby ranks (agreement 0.07). The one-movie-at-a-time rule is doing real work. It is not a cosmetic queue.
 
-**Rewriting old scores, less than it looks.** Replaying history with the latest scores, instead of the scores from the night each movie closed, left the final boards 2 to 6 Elo points apart. The board's jump when a new movie closes was about 18 to 20 points either way. Almost all of that jump is the new match. The rewrite of older numbers is real on the personal list, and small on the shared board.
+**Rebuilding history is the rule.** When a movie closes, every earlier movie is scored again from the lists as they stand. The board moves about 19 points in a typical close. That movement is the new match, told with the current numbers. A stored write-up of an old match would go stale, so the site should recompute it rather than keep the old one.
 
 ## What the simulations say
 
@@ -82,7 +82,7 @@ Details, tables, and the chart are in `results/RESULTS.md`. Clubs of 5 or 6 peop
 
 **Should the suggester rate their own movie?** Yes on their personal list, no in the Elo match for that movie. They watched it, so it belongs in their taste. The judge rule still refuses to let that taste defend their own pick. The prototype does this. Elo rejects a suggester who appears in that week's ratings, so the adapter drops them rather than asking the library to change.
 
-**Someone never responds.** That blocks the whole club, because the next movie cannot open. An admin close is required. It records "I didn't watch" for anyone still silent, then closes. The suggester cannot be closed out: they have to rate. A timeout can call the same close. The prototype has the admin close and not the clock.
+**Someone never responds.** The suggester or an admin can close the movie. Everyone who has not rated, including a silent suggester, is recorded as "I didn't watch." There is no automatic timeout. A member who is not the suggester and not an admin cannot close it. Until someone does, the next movie cannot open.
 
 **Late joiners.** They start at 1500. They have no scores on closed movies, so they do not judge the past. If a movie is open when they join, they must rate it or skip it before it can close.
 
@@ -94,12 +94,12 @@ Details, tables, and the chart are in `results/RESULTS.md`. Clubs of 5 or 6 peop
 
 **Fewer than two judges.** One person who saw both movies is enough. The match is noisy, which is the same as today. If nobody except the suggester watched, the movie stays on their taste list and does not enter Elo. Their previous pick keeps defending them.
 
-**Compression and drift.** The group total stays 1500 per member. Scores can still swing: a new favorite in "a lot" pulls older favorites down from 10 toward 7. In the runs here, that rewrite moved the final Elo board by only a few points. The large swings come from match order, not from the rewrite. A last-place "not really" is 0.0, which needs the wider 0–10 scale.
+**Compression.** The group total stays 1500 per member. A new favorite in "a lot" pulls older favorites down from 10 toward 7, and the rebuilt league uses those new numbers. The large swings in the simulations come from which movie is played when, not from the total of points drifting. A last-place "not really" is 0.0, which needs the wider 0–10 scale.
 
-**Migrating today's data.** The old comparison questions, Back presses, and edited-away Elo scores are gone. PR #11's log, once merged, has the same hole for history from before the log: Beli keeps the final bucket and position, not the answers, and Elo keeps the latest pair, not the edits. A migration can seed each taste list from a Beli order when one exists, otherwise from the old blended score, highest first, and mark every past movie closed. Then replay Elo once. The new board will not match the old one. Do not invent the missing questions.
+**Migrating today's data.** Do not invent comparison questions. Seed each list from that member's Beli order when one exists: same groups, same best-to-worst order, dropped straight into the new list. Otherwise sort their old blended scores and place each movie by the 7 and 4 cuts (7 and up is "a lot", 4 up to 7 is "kinda", below 4 is "not really"). Mark those movies closed. Then replay Elo once from the seeded lists. The new board will not match the old one. Back presses, abandoned searches, and Elo edits that were overwritten are already gone.
 
 ## Recommendation
 
-Use the three enjoyment groups, binary search, no ties, and freeze ratings at close. Let the suggester rate for themselves and leave them out of Elo for that movie. Feed Elo the Beli-band scores and recompute history at each close, so the personal number and the league number stay the same. Keep one movie open at a time, and add an admin close so silence cannot stall the club.
+Use the three enjoyment groups, binary search, no ties, and freeze ratings at close. Let the suggester rate for themselves and leave them out of Elo for that movie. Feed Elo the Beli-band scores and rebuild history at each close from the lists as they stand. The suggester or an admin can close a movie early; silence counts as "I didn't watch," and there is no timer. Keep one movie open at a time.
 
 Do not expect the shared board to become a sharper ranking of pickers than today's two scores. The gain is one list per person, a short question flow, and a single story from taste to Elo.
