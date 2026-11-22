@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs"
 import { hashSessionToken } from "@/lib/config"
 import { getDb } from "@/lib/db"
 import { AuthError } from "@/lib/errors"
+import { appendRatingEvent } from "@/lib/rating-events"
 
 export type UserRow = {
   id: number
@@ -106,26 +107,39 @@ export function listUsers(): PublicUser[] {
   return rows.map(toPublic)
 }
 
-function insertUser(input: {
-  username: string
-  name: string
-  password: string
-  isAdmin: boolean
-}): UserRow {
+function insertUser(
+  input: {
+    username: string
+    name: string
+    password: string
+    isAdmin: boolean
+  },
+  meta: { via: "invite" | "admin" | "bootstrap"; actorId?: number },
+): UserRow {
   const username = validateUsername(input.username)
   const name = validateName(input.name)
   const password = validatePassword(input.password)
   const now = new Date().toISOString()
+  const db = getDb()
   try {
-    const info = getDb()
-      .prepare(
-        `INSERT INTO users (username, name, password_hash, is_admin, created_at)
-         VALUES (?, ?, ?, ?, ?)`,
-      )
-      .run(username, name, hashPassword(password), input.isAdmin ? 1 : 0, now)
-    const created = findUserById(Number(info.lastInsertRowid))
-    if (!created) throw new AuthError("Could not create that account.", "create_failed")
-    return created
+    return db.transaction(() => {
+      const info = db
+        .prepare(
+          `INSERT INTO users (username, name, password_hash, is_admin, created_at)
+           VALUES (?, ?, ?, ?, ?)`,
+        )
+        .run(username, name, hashPassword(password), input.isAdmin ? 1 : 0, now)
+      const id = Number(info.lastInsertRowid)
+      const created = findUserById(id)
+      if (!created) throw new AuthError("Could not create that account.", "create_failed")
+      appendRatingEvent(db, {
+        actorId: meta.actorId ?? id,
+        type: "member.joined",
+        occurredAt: now,
+        payload: { userId: id, username, name, isAdmin: input.isAdmin, via: meta.via },
+      })
+      return created
+    })()
   } catch (error) {
     if (isUniqueViolation(error)) {
       const message = String((error as Error).message)
@@ -166,12 +180,15 @@ export function registerMember(input: {
   const db = getDb()
   const create = db.transaction(() => {
     const count = (db.prepare("SELECT COUNT(*) AS c FROM users").get() as { c: number }).c
-    return insertUser({
-      username: input.username,
-      name: input.name,
-      password: input.password,
-      isAdmin: count === 0,
-    })
+    return insertUser(
+      {
+        username: input.username,
+        name: input.name,
+        password: input.password,
+        isAdmin: count === 0,
+      },
+      { via: "invite" },
+    )
   })
   return toPublic(create.immediate())
 }
@@ -188,16 +205,19 @@ export function ensureBootstrapAdmin(): void {
   if (findUserByUsername(username)) return
   const name = validateName(nameRaw || username)
   validatePassword(password)
-  insertUser({ username, name, password, isAdmin: true })
+  insertUser({ username, name, password, isAdmin: true }, { via: "bootstrap" })
 }
 
-export function createMember(input: {
-  username: string
-  name: string
-  password: string
-  isAdmin: boolean
-}): PublicUser {
-  return toPublic(insertUser(input))
+export function createMember(
+  input: {
+    username: string
+    name: string
+    password: string
+    isAdmin: boolean
+  },
+  actorId?: number,
+): PublicUser {
+  return toPublic(insertUser(input, { via: "admin", actorId }))
 }
 
 let dummyHash: { rounds: number; hash: string } | null = null

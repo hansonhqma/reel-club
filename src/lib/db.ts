@@ -1,6 +1,7 @@
 import fs from "node:fs"
 import path from "node:path"
 import Database from "better-sqlite3"
+import { backfillRatingEvents, RATING_EVENTS_SCHEMA } from "@/lib/rating-events"
 
 const globalForDb = globalThis as unknown as {
   __reelDb?: Database.Database
@@ -236,14 +237,16 @@ function migrateLegacyWeeks(db: Database.Database): void {
 export function migrate(db: Database.Database): void {
   db.exec(CORE_SCHEMA)
   db.exec(BELI_SCHEMA)
+  db.exec(RATING_EVENTS_SCHEMA)
   if (tableExists(db, "weeks")) {
     migrateLegacyWeeks(db)
-    return
+  } else {
+    if (!tableExists(db, "movies")) {
+      db.exec(MOVIE_SCHEMA)
+    }
+    ensureMovieShape(db)
   }
-  if (!tableExists(db, "movies")) {
-    db.exec(MOVIE_SCHEMA)
-  }
-  ensureMovieShape(db)
+  backfillRatingEvents(db)
 }
 
 export function getDb(): Database.Database {
