@@ -27,10 +27,10 @@ IRON_FLOOR = LADDER[0][1] - 3 * IRON_WIDTH  # Iron III. Iron IV is everything be
 
 # Top chairs. The minimum Elo is the Platinum and Emerald floors, so a
 # leader who is still Silver keeps that rank.
-# Ten rated picks is about 60 movies when six people take turns. Below that,
-# the earlier simulations could not reliably tell who picks well.
-CHALLENGER_MIN_PICKS = 10
-GRANDMASTER_MIN_PICKS = 10
+# Six rated picks is the sample a consistently good picker needs to reach
+# Emerald under the recommended step size. See VOLATILITY.md.
+CHALLENGER_MIN_PICKS = 6
+GRANDMASTER_MIN_PICKS = 6
 CHALLENGER_MIN_ELO = 1800
 GRANDMASTER_MIN_ELO = 1720
 

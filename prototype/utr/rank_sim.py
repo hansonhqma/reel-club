@@ -255,7 +255,8 @@ def write(main, competitive, shaw):
     lines = [
         "# Rank ladder simulation",
         "",
-        "Six members, one movie at a time. Elo is the UTR rebuild and still starts at 1500.",
+        "Six members, one movie at a time. Elo is the UTR rebuild at the original step size, K=32 and d=2, and still starts at 1500.",
+        "The faster step size, measured in a picker's own picks, is in VOLATILITY.md.",
         "The main club is one consistently good picker, four typical pickers, and one weak picker.",
         "A second club has two good pickers, so the #2 chair can actually be earned.",
         "About 12% of the others miss a movie, and 8% of comparison answers are flipped.",

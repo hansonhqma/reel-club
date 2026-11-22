@@ -1,6 +1,6 @@
 # Pick-quality ranks
 
-Elo itself does not change. Everyone still starts at 1500, the league is still zero-sum, and the club average stays near 1500. A rank is only a label on that number. The artwork comes later.
+A rank is a label on Elo. Everyone still starts at 1500, the league is still zero-sum, and the club average stays near 1500. The artwork comes later. How fast those labels move is a separate choice, written up in [VOLATILITY.md](VOLATILITY.md). The lines below did not need to move.
 
 1500 is the middle of **Silver II**. Silver runs from 1400 to 1559, so a new member is in the middle of Silver, not Platinum or Emerald.
 
@@ -44,16 +44,18 @@ You step up the moment you cross a line. You step down only after you are 10 poi
 
 ## Top chairs
 
-These two are not scores. They are seats, and they require a real sample of picks. Earlier runs of this prototype could not reliably tell who picks well before about 60 movies. Ten rated picks is about 60 movies when six people take turns.
+These two are not scores. They are seats.
 
-A rated pick is a movie they suggested that at least one other member scored.
+A rated pick is a movie they suggested that at least one other member scored. Six rated picks is the minimum: that is the sample on which a consistently good picker can reach Emerald once score gaps count a bit more. The details are in [VOLATILITY.md](VOLATILITY.md).
 
-- **Challenger** is only the current #1, and only with Elo at least 1800 (Emerald) and at least 10 rated picks.
-- **Grandmaster** is only the current #2, and only while someone is Challenger, with Elo at least 1720 (Platinum) and at least 10 rated picks.
+- **Challenger** is only the current #1, and only with Elo at least 1800 (Emerald) and at least 6 rated picks.
+- **Grandmaster** is only the current #2, and only while someone is Challenger, with Elo at least 1720 (Platinum) and at least 6 rated picks.
 - If the leader is not there yet, both chairs stay empty. Second place does not become Challenger.
 - Anyone else, however high, keeps the absolute rank. Master is that absolute rank, from 2080 up. In these seasons nobody reached it.
 
-## What the seasons did
+## What the seasons did under the original step size
+
+The tables in this section are the earlier run: K=32, d=2, and a 10-pick chair. They are not the recommendation. [VOLATILITY.md](VOLATILITY.md) is.
 
 Six members, one movie at a time, full Elo rebuild at every close. Hidden movie quality follows who suggested it. About 12% of the others miss a movie, and 8% of comparison answers are flipped. Forty seasons of 100 movies. The mix is one consistently good picker, four typical pickers, and one weak picker. A second set of seasons puts two good pickers in the same club.
 
@@ -99,7 +101,7 @@ For a typical picker the tier changes on about one close in twenty. The division
 
 Shawshank is the only closed movie, and six people are in the club. The live score sheet is not in this repo. It does not matter for the board. The first movie has no earlier pick to play, so it is zero matches and every Elo stays 1500.
 
-All six members are **Silver II**. The suggester has one rated pick, which is short of the ten required for either top chair.
+All six members are **Silver II**. The suggester has one rated pick, which is short of the six required for either top chair.
 
 ## Where the code is
 

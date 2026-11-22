@@ -113,4 +113,4 @@ Do not expect the shared board to become a sharper ranking of pickers than today
 
 ## Ranks
 
-A rank is a label on the Elo, not a change to it. 1500, the starting rating, is the middle of Silver II. The cuts, the top-chair rules, and the season results are in [RANKS.md](RANKS.md).
+A rank is a label on the Elo. 1500, the starting rating, is the middle of Silver II. The cuts and the top-chair rules are in [RANKS.md](RANKS.md). The step size that makes a good picker reach Challenger in about six of their own picks is in [VOLATILITY.md](VOLATILITY.md).

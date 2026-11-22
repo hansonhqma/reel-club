@@ -50,13 +50,13 @@ class RankTests(unittest.TestCase):
 
     def test_top_chairs_need_the_lead_and_a_track_record(self):
         elos = {"A": 1850, "B": 1760, "C": 1760}
-        picks = {"A": 10, "B": 10, "C": 10}
+        picks = {"A": 6, "B": 6, "C": 6}
         labels = assign_ranks(elos, picks)
         self.assertEqual(labels["A"], "Challenger")
         self.assertEqual(labels["B"], "Grandmaster")
         self.assertEqual(labels["C"], "Platinum II")
 
-        early = assign_ranks(elos, {"A": 9, "B": 10, "C": 10})
+        early = assign_ranks(elos, {"A": 5, "B": 6, "C": 6})
         self.assertEqual(early["A"], "Emerald III")
         self.assertEqual(early["B"], "Platinum II")
         self.assertNotIn("Challenger", early.values())
@@ -73,7 +73,7 @@ class RankTests(unittest.TestCase):
         self.assertEqual(next_absolute("Iron IV", 900), "Iron IV")
         labels = assign_ranks(
             {"A": 1850, "B": 1500},
-            {"A": 10, "B": 0},
+            {"A": 6, "B": 0},
             {"A": "Emerald III", "B": "Silver II"},
         )
         self.assertEqual(labels["A"], "Challenger")

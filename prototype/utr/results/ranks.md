@@ -1,5 +1,7 @@
 # Rank ladder simulation
 
+These seasons use the original step size, K=32 and d=2, and were scored when the top chairs required 10 rated picks. The recommended faster setting is in [../VOLATILITY.md](../VOLATILITY.md).
+
 Six members, one movie at a time. Elo is the UTR rebuild and still starts at 1500.
 The main club is one consistently good picker, four typical pickers, and one weak picker.
 A second club has two good pickers, so the #2 chair can actually be earned.
