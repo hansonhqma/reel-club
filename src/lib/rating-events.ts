@@ -17,6 +17,9 @@ import type { WeekInput } from "@/lib/ranking"
 
 export const RATING_EVENT_SCHEMA_VERSION = 1
 export const RATING_EVENTS_MIGRATION = 2
+export const UNWATCHED_CLEANUP_MIGRATION = 3
+export const UNWATCHED_CLEANUP_ACTOR_ID = 1
+export const UNWATCHED_CLEANUP_REASON = "admin cleanup before rating redesign: not actually watched"
 
 export const RATING_EVENT_TYPES = [
   "member.joined",
@@ -24,6 +27,7 @@ export const RATING_EVENT_TYPES = [
   "elo.movie.removed",
   "elo.rating.set",
   "elo.rating.changed",
+  "elo.rating.removed",
   "beli.movie.submitted",
   "beli.movie.deleted",
   "beli.bucket.chosen",
@@ -183,6 +187,7 @@ const BACKFILL_KIND_PRIORITY: Record<RatingEventType, number> = {
   "beli.list.removed": 11,
   "beli.search.abandoned": 12,
   "beli.movie.deleted": 13,
+  "elo.rating.removed": 14,
 }
 
 type BackfillDraft = RatingEventInput & {
@@ -445,6 +450,139 @@ export function backfillRatingEvents(db: Database.Database): void {
   tx()
 }
 
+const ELO_QUEUE_WITHOUT_RATINGS = [
+  { id: 2, title: "Chungking express" },
+  { id: 3, title: "Fallen Angels (1995)" },
+] as const
+const ELO_DALLAS = { id: 1, title: "Dallas buyers club" }
+const BELI_DALLAS = { id: 1, title: "Dallas buyers club" }
+
+function sameMovieTitle(stored: string, expected: string): boolean {
+  const normalize = (value: string) => value.trim().replace(/\s+/g, " ").toLowerCase()
+  return normalize(stored) === normalize(expected)
+}
+
+type EloMovieCleanupRow = {
+  id: number
+  movie: string
+  suggester_id: number
+  suggested_at: string
+  note: string | null
+}
+
+type EloRatingCleanupRow = {
+  id: number
+  user_id: number
+  experience: number
+  quality: number
+  created_at: string
+  updated_at: string
+}
+
+function logEloMovieRemoved(db: Database.Database, movie: EloMovieCleanupRow): void {
+  appendRatingEvent(db, {
+    actorId: UNWATCHED_CLEANUP_ACTOR_ID,
+    type: "elo.movie.removed",
+    movieId: movie.id,
+    payload: {
+      title: movie.movie,
+      note: movie.note,
+      suggestedAt: movie.suggested_at,
+      suggesterId: movie.suggester_id,
+      reason: UNWATCHED_CLEANUP_REASON,
+    },
+  })
+  db.prepare("DELETE FROM movies WHERE id = ?").run(movie.id)
+}
+
+// One-time prod cleanup. Exact ids only, and only when the stored title still
+// matches. Unrated queue movies are skipped if a rating appeared. Rated movies
+// other than Dallas buyers club, including Shawshank, are never selected.
+export function cleanupUnwatchedMovies(db: Database.Database): void {
+  if (!tableExists(db, "schema_migrations")) return
+  const already = db.prepare("SELECT 1 AS ok FROM schema_migrations WHERE version = ?").get(UNWATCHED_CLEANUP_MIGRATION)
+  if (already) return
+
+  const tx = db.transaction(() => {
+    if (tableExists(db, "movies")) {
+      const movieById = db.prepare(
+        "SELECT id, movie, suggester_id, suggested_at, note FROM movies WHERE id = ?",
+      )
+      const ratingCount = tableExists(db, "ratings")
+        ? db.prepare("SELECT COUNT(*) AS c FROM ratings WHERE movie_id = ?")
+        : null
+      for (const target of ELO_QUEUE_WITHOUT_RATINGS) {
+        const movie = movieById.get(target.id) as EloMovieCleanupRow | undefined
+        if (!movie || !sameMovieTitle(movie.movie, target.title)) continue
+        const count = ratingCount ? (ratingCount.get(movie.id) as { c: number }).c : 0
+        if (count !== 0) continue
+        logEloMovieRemoved(db, movie)
+      }
+
+      const dallas = movieById.get(ELO_DALLAS.id) as EloMovieCleanupRow | undefined
+      if (dallas && sameMovieTitle(dallas.movie, ELO_DALLAS.title) && tableExists(db, "ratings")) {
+        const ratings = db
+          .prepare(
+            `SELECT id, user_id, experience, quality, created_at, updated_at
+             FROM ratings WHERE movie_id = ? ORDER BY id ASC`,
+          )
+          .all(dallas.id) as EloRatingCleanupRow[]
+        const deleteRating = db.prepare("DELETE FROM ratings WHERE id = ? AND movie_id = ?")
+        for (const rating of ratings) {
+          appendRatingEvent(db, {
+            actorId: UNWATCHED_CLEANUP_ACTOR_ID,
+            type: "elo.rating.removed",
+            movieId: dallas.id,
+            payload: {
+              userId: rating.user_id,
+              experience: rating.experience,
+              quality: rating.quality,
+              at: rating.created_at,
+              updatedAt: rating.updated_at,
+              reason: UNWATCHED_CLEANUP_REASON,
+            },
+          })
+          deleteRating.run(rating.id, dallas.id)
+        }
+        logEloMovieRemoved(db, dallas)
+      }
+    }
+
+    if (tableExists(db, "beli_movies")) {
+      const beli = db
+        .prepare("SELECT id, title, submitter_id, submitted_at FROM beli_movies WHERE id = ?")
+        .get(BELI_DALLAS.id) as { id: number; title: string; submitter_id: number; submitted_at: string } | undefined
+      if (beli && sameMovieTitle(beli.title, BELI_DALLAS.title)) {
+        const hadRankings = tableExists(db, "beli_rankings")
+          ? ((db.prepare("SELECT COUNT(*) AS c FROM beli_rankings WHERE movie_id = ?").get(beli.id) as { c: number }).c > 0)
+          : false
+        if (tableExists(db, "beli_pending")) db.prepare("DELETE FROM beli_pending WHERE movie_id = ?").run(beli.id)
+        if (tableExists(db, "beli_rankings")) db.prepare("DELETE FROM beli_rankings WHERE movie_id = ?").run(beli.id)
+        db.prepare("DELETE FROM beli_movies WHERE id = ?").run(beli.id)
+        appendRatingEvent(db, {
+          actorId: UNWATCHED_CLEANUP_ACTOR_ID,
+          type: "beli.movie.deleted",
+          movieId: beli.id,
+          payload: {
+            title: beli.title,
+            submitterId: beli.submitter_id,
+            submittedAt: beli.submitted_at,
+            confirmed: true,
+            hadRankings,
+            reason: UNWATCHED_CLEANUP_REASON,
+          },
+        })
+      }
+    }
+
+    db.prepare("INSERT INTO schema_migrations (version, applied_at) VALUES (?, ?)").run(
+      UNWATCHED_CLEANUP_MIGRATION,
+      new Date().toISOString(),
+    )
+  })
+  tx()
+}
+
 type MemberRec = { id: number; username: string; name: string; isAdmin: boolean }
 type EloMovieRec = {
   id: number
@@ -633,6 +771,15 @@ export function reduceRatingEvents(events: RatingEvent[]): RebuiltClub {
         rating.experience = num(payload.experience, "experience")
         rating.quality = num(payload.quality, "quality")
         rating.updatedAt = str(payload.at, "at")
+        break
+      }
+      case "elo.rating.removed": {
+        const movieId = event.movieId
+        if (movieId == null) throw new Error("elo.rating.removed is missing movie_id")
+        const userId = num(payload.userId, "userId")
+        model.eloRatings = model.eloRatings.filter((rating) => rating.movieId !== movieId || rating.userId !== userId)
+        const movie = model.eloMovies.find((item) => item.id === movieId)
+        if (movie && !model.eloRatings.some((rating) => rating.movieId === movieId)) movie.rankedAt = null
         break
       }
       case "beli.movie.submitted": {
