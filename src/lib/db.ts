@@ -1,7 +1,7 @@
 import fs from "node:fs"
 import path from "node:path"
 import Database from "better-sqlite3"
-import { backfillRatingEvents, RATING_EVENTS_SCHEMA } from "@/lib/rating-events"
+import { backfillRatingEvents, cleanupUnwatchedMovies, RATING_EVENTS_SCHEMA } from "@/lib/rating-events"
 
 const globalForDb = globalThis as unknown as {
   __reelDb?: Database.Database
@@ -247,6 +247,7 @@ export function migrate(db: Database.Database): void {
     ensureMovieShape(db)
   }
   backfillRatingEvents(db)
+  cleanupUnwatchedMovies(db)
 }
 
 export function getDb(): Database.Database {

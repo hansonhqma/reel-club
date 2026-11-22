@@ -35,6 +35,7 @@ Password hashes, session tokens, and the invite code are not written.
 | `elo.movie.removed` | Suggester or admin removes an unscored suggestion | `title`, `note`, `suggestedAt`, `suggesterId` |
 | `elo.rating.set` | First enjoyment and quality pair for a member on a movie | `experience`, `quality`, `at` |
 | `elo.rating.changed` | A later edit of that pair | `experience`, `quality`, `at`, `previous` |
+| `elo.rating.removed` | An existing pair is dropped. `actor_id` may be an admin; `userId` is the rater | `userId`, `experience`, `quality`, `at`, `updatedAt`, `reason` |
 | `beli.movie.submitted` | A Beli title is added | `title`, `submittedAt`, `submitterId` |
 | `beli.movie.deleted` | Submitter or admin deletes a title. Ranked deletes require confirm | `title`, `submitterId`, `confirmed`, `hadRankings` |
 | `beli.bucket.chosen` | A member picks Liked, Fine, or Didn't like | `movieId`, `title`, `bucket`, `rerank` |
@@ -47,7 +48,7 @@ Password hashes, session tokens, and the invite code are not written.
 
 Each write of club state and its events share one SQLite transaction.
 
-There is no action that clears an Elo score or saves only one of the two numbers. A future clear would be a new event, not an update of `elo.rating.set`.
+The app still has no screen for clearing one score or saving only one of the two numbers. `elo.rating.removed` is a new event, not an edit of `elo.rating.set`. Migration version 3 uses it, with `elo.movie.removed` and `beli.movie.deleted`, to drop movies the club did not watch. It targets Elo ids 2 and 3 only while they have zero ratings, Elo id 1 together with its ratings, and Beli id 1, and only when the stored title still matches. The actor is user 1. Shawshank (Elo id 4) is not selected.
 
 A page view that reloads the current Beli question and does not move `lo`, `hi`, history, or the candidate list is not logged.
 
