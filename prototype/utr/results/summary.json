@@ -1,0 +1,173 @@
+{
+  "scenarios": [
+    {
+      "label": "5 people, careful answers",
+      "users": 5,
+      "movies": 30,
+      "flip": 0.0,
+      "skip": 0.15,
+      "questions_mean": 2.2093023255813953,
+      "questions_p95": 4,
+      "questions_max": 4,
+      "questions_zero_share": 0.11627906976744186,
+      "order_tau": 1.0,
+      "revision_rmse": 5.569213623949232,
+      "revised_step_rmse": 18.060240402304956,
+      "frozen_step_rmse": 18.300773933602358,
+      "mappings": {
+        "beli": {
+          "tau_vs_strength": 0.4,
+          "elo_spread": 66.03337078275287,
+          "leader": "U1"
+        },
+        "clamp": {
+          "tau_vs_strength": 0.4,
+          "elo_spread": 66.1694433850822,
+          "leader": "U1"
+        },
+        "baseline": {
+          "tau_vs_strength": 0.6,
+          "elo_spread": 56.923376344668114,
+          "leader": "U1"
+        },
+        "rank": {
+          "tau_vs_strength": 0.2,
+          "elo_spread": 65.73684996277765,
+          "leader": "U1"
+        }
+      },
+      "current_tau": 0.8,
+      "current_spread": 70.71109032842107,
+      "utr_vs_current_tau": 0.2
+    },
+    {
+      "label": "5 people, 10% mistakes",
+      "users": 5,
+      "movies": 30,
+      "flip": 0.1,
+      "skip": 0.15,
+      "questions_mean": 2.13953488372093,
+      "questions_p95": 4,
+      "questions_max": 4,
+      "questions_zero_share": 0.11627906976744186,
+      "order_tau": 0.9012301321866539,
+      "revision_rmse": 4.8203140360312835,
+      "revised_step_rmse": 18.85497013138976,
+      "frozen_step_rmse": 18.917562434100372,
+      "mappings": {
+        "beli": {
+          "tau_vs_strength": 0.8,
+          "elo_spread": 70.30084887533154,
+          "leader": "U1"
+        },
+        "clamp": {
+          "tau_vs_strength": 0.8,
+          "elo_spread": 70.29147230313677,
+          "leader": "U1"
+        },
+        "baseline": {
+          "tau_vs_strength": 0.6,
+          "elo_spread": 56.923376344668114,
+          "leader": "U1"
+        },
+        "rank": {
+          "tau_vs_strength": 0.4,
+          "elo_spread": 68.2594031731354,
+          "leader": "U1"
+        }
+      },
+      "current_tau": 0.8,
+      "current_spread": 70.71109032842107,
+      "utr_vs_current_tau": 0.6
+    },
+    {
+      "label": "6 people, 40 movies",
+      "users": 6,
+      "movies": 40,
+      "flip": 0.08,
+      "skip": 0.15,
+      "questions_mean": 2.4086538461538463,
+      "questions_p95": 4,
+      "questions_max": 5,
+      "questions_zero_share": 0.08653846153846154,
+      "order_tau": 0.957800342359166,
+      "revision_rmse": 4.16232950996618,
+      "revised_step_rmse": 19.1227472623022,
+      "frozen_step_rmse": 18.813593075577195,
+      "mappings": {
+        "beli": {
+          "tau_vs_strength": 0.4666666666666667,
+          "elo_spread": 84.20770914693745,
+          "leader": "U5"
+        },
+        "clamp": {
+          "tau_vs_strength": 0.4666666666666667,
+          "elo_spread": 84.30911340576588,
+          "leader": "U5"
+        },
+        "baseline": {
+          "tau_vs_strength": 0.4666666666666667,
+          "elo_spread": 80.27480952022766,
+          "leader": "U5"
+        },
+        "rank": {
+          "tau_vs_strength": 0.4666666666666667,
+          "elo_spread": 82.61219838666914,
+          "leader": "U5"
+        }
+      },
+      "current_tau": 0.4666666666666667,
+      "current_spread": 88.68919669393473,
+      "utr_vs_current_tau": 1.0
+    },
+    {
+      "label": "5 people, 60 movies",
+      "users": 5,
+      "movies": 60,
+      "flip": 0.08,
+      "skip": 0.15,
+      "questions_mean": 3.0224719101123596,
+      "questions_p95": 5,
+      "questions_max": 5,
+      "questions_zero_share": 0.056179775280898875,
+      "order_tau": 0.9535101836544678,
+      "revision_rmse": 2.452569147809274,
+      "revised_step_rmse": 19.533232460111098,
+      "frozen_step_rmse": 19.471007255583014,
+      "mappings": {
+        "beli": {
+          "tau_vs_strength": 1.0,
+          "elo_spread": 93.48934979781917,
+          "leader": "U0"
+        },
+        "clamp": {
+          "tau_vs_strength": 1.0,
+          "elo_spread": 93.32876785300228,
+          "leader": "U0"
+        },
+        "baseline": {
+          "tau_vs_strength": 0.8,
+          "elo_spread": 91.72353038298165,
+          "leader": "U2"
+        },
+        "rank": {
+          "tau_vs_strength": 1.0,
+          "elo_spread": 90.66422495775375,
+          "leader": "U0"
+        }
+      },
+      "current_tau": 1.0,
+      "current_spread": 84.08702078012406,
+      "utr_vs_current_tau": 1.0
+    }
+  ],
+  "order": {
+    "tau_mean": 0.4666666666666666,
+    "tau_min": 0.06666666666666667,
+    "rmse_mean": 80.80100551027472,
+    "rmse_max": 138.62152485139356,
+    "movies": 30,
+    "shuffles": 12,
+    "flip": 0.08
+  }
+}

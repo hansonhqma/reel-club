@@ -1,0 +1,462 @@
+"""Synthetic clubs for the UTR prototype.
+
+Run from the repo root:
+
+    python prototype/utr/simulate.py
+
+Writes prototype/utr/results/.
+"""
+
+from __future__ import annotations
+
+import json
+import math
+import random
+import statistics
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT))
+sys.path.insert(0, str(ROOT / "vendor"))
+
+from movie_elo import Params, Week, replay
+
+from prototype.utr.utr import Club
+
+OUT = Path(__file__).resolve().parent / "results"
+MAPPINGS = ("beli", "clamp", "baseline", "rank")
+
+
+def kendall(left, right):
+    """Correlation of two score maps. Higher means the same people or movies rank together."""
+    names = sorted(set(left) & set(right))
+    count = len(names)
+    if count < 2:
+        return None
+    agree = disagree = 0
+    for i in range(count):
+        for j in range(i + 1, count):
+            a, b = names[i], names[j]
+            sign = (left[a] - left[b]) * (right[a] - right[b])
+            if sign > 0:
+                agree += 1
+            elif sign < 0:
+                disagree += 1
+    return (agree - disagree) / (count * (count - 1) / 2)
+
+
+def rmse(left, right, names):
+    return math.sqrt(sum((left[name] - right[name]) ** 2 for name in names) / len(names))
+
+
+def bucket_for(utility):
+    if utility < -0.35:
+        return "not_really"
+    if utility < 0.75:
+        return "kinda"
+    return "a_lot"
+
+
+def to_ten(value):
+    scaled = (value + 2.5) / 5.0 * 9.0 + 1.0
+    scaled = min(10.0, max(1.0, scaled))
+    return round(scaled * 2) / 2
+
+
+def draw_world(users, movies, seed):
+    rng = random.Random(seed)
+    quality = {movie: rng.gauss(0, 1) for movie in movies}
+    enjoyment = {}
+    for user in users:
+        bias = rng.gauss(0, 0.35)
+        enjoyment[user] = {
+            movie: quality[movie] + bias + rng.gauss(0, 0.55) for movie in movies
+        }
+    return quality, enjoyment
+
+
+def answers_for(taste, movie, bucket, enjoyment, user, rng, flip):
+    search = taste.start(movie, bucket)
+    answers = []
+    while not search.done:
+        pivot = search.pivot
+        prefer_new = enjoyment[user][movie] > enjoyment[user][pivot]
+        if rng.random() < flip:
+            prefer_new = not prefer_new
+        answers.append("new" if prefer_new else "old")
+        search = search.answer(answers[-1])
+    return answers
+
+
+def attendance(users, movies, suggesters, seed, skip):
+    """Who watched, decided per person and movie so a shuffle does not change it."""
+    present = {}
+    for movie in movies:
+        here = {suggesters[movie]}
+        for user in users:
+            if user == suggesters[movie]:
+                continue
+            draw = random.Random(f"{seed}:{user}:{movie}").random()
+            if draw >= skip:
+                here.add(user)
+        present[movie] = here
+    return present
+
+
+def play_utr(users, movies, enjoyment, seed, flip, present, suggesters):
+    """Return the club plus per-movie snapshots taken the night each movie closed."""
+    group = Club()
+    for user in users:
+        group.apply({"type": "join", "user": user})
+    questions = []
+    snapshots = []
+    for movie in movies:
+        suggester = suggesters[movie]
+        group.apply({"type": "suggest", "user": suggester, "movie": movie})
+        for user in users:
+            if user not in present[movie]:
+                group.apply({"type": "skip", "user": user, "movie": movie})
+                continue
+            bucket = bucket_for(enjoyment[user][movie])
+            rng = random.Random(f"{seed}:answer:{user}:{movie}")
+            answers = answers_for(group.tastes[user], movie, bucket, enjoyment, user, rng, flip)
+            questions.append(len(answers))
+            group.apply(
+                {
+                    "type": "rate",
+                    "user": user,
+                    "movie": movie,
+                    "bucket": bucket,
+                    "answers": answers,
+                }
+            )
+        snapshots.append({user: dict(group.tastes[user].scores("beli")) for user in users})
+    return group, questions, snapshots
+
+
+def elo_of(group, mapping):
+    return group.league(mapping).elo
+
+
+def frozen_elo(group, snapshots, mapping):
+    # Snapshots are always the Beli-band scores from the night of the close.
+    # Other mappings are recomputed from the taste lists, so the frozen path
+    # is reported for the Beli mapping only.
+    if mapping != "beli":
+        return None
+    return replay(group.members, group.frozen_inputs(snapshots), Params(scale_min=0.0, scale_max=10.0)).elo
+
+
+def current_elo(users, movies, enjoyment, quality, seed, present, suggesters):
+    """Today's system: two noisy 1–10 scores, fixed once written. Suggester sits out."""
+    weeks = []
+    for movie in movies:
+        ratings = {}
+        for user in users:
+            if user == suggesters[movie] or user not in present[movie]:
+                continue
+            rng = random.Random(f"{seed}:scores:{user}:{movie}")
+            enjoy = to_ten(enjoyment[user][movie] + rng.gauss(0, 0.25))
+            film = to_ten(quality[movie] + rng.gauss(0, 0.35))
+            ratings[user] = (enjoy, film)
+        if not ratings:
+            continue
+        weeks.append(Week(movie, suggesters[movie], movie, ratings))
+    return replay(users, weeks, Params()).elo
+
+
+def true_strength(users, movies, enjoyment, suggesters, watched):
+    totals = {user: [] for user in users}
+    for movie in movies:
+        owner = suggesters[movie]
+        for user in users:
+            if user == owner or user not in watched[movie]:
+                continue
+            totals[owner].append(enjoyment[user][movie])
+    return {user: statistics.fmean(scores) if scores else 0.0 for user, scores in totals.items()}
+
+
+def step_movement(series):
+    if len(series) < 2:
+        return 0.0
+    names = list(series[0])
+    jumps = [rmse(series[i], series[i - 1], names) for i in range(1, len(series))]
+    return statistics.fmean(jumps)
+
+
+def run_scenario(label, users, movie_count, seed, flip, skip):
+    movies = [f"M{index:02d}" for index in range(movie_count)]
+    quality, enjoyment = draw_world(users, movies, seed)
+    suggesters = {movie: users[index % len(users)] for index, movie in enumerate(movies)}
+    present = attendance(users, movies, suggesters, seed + 3, skip)
+    group, questions, snapshots = play_utr(users, movies, enjoyment, seed + 1, flip, present, suggesters)
+    watched = {movie: set(present[movie]) for movie in movies}
+    strength = true_strength(users, movies, enjoyment, suggesters, watched)
+    order_tau = []
+    for user in users:
+        truth = enjoyment[user]
+        # Higher utility should match an earlier list position.
+        predicted = {
+            movie: len(group.tastes[user].movies()) - index
+            for index, movie in enumerate(group.tastes[user].movies())
+        }
+        order_tau.append(kendall(truth, predicted))
+
+    by_mapping = {}
+    for mapping in MAPPINGS:
+        elo = elo_of(group, mapping)
+        by_mapping[mapping] = {
+            "tau_vs_strength": kendall(elo, strength),
+            "elo_spread": statistics.pstdev(elo.values()),
+            "leader": max(elo, key=elo.get),
+        }
+    revised = elo_of(group, "beli")
+    held = frozen_elo(group, snapshots, "beli")
+    current = current_elo(users, movies, enjoyment, quality, seed + 1, present, suggesters)
+
+    # How the recomputed board moves as movies arrive, versus scores locked each night.
+    revised_path = []
+    held_path = []
+    partial_snaps = []
+    for end in range(1, len(movies) + 1):
+        partial = Club()
+        for user in users:
+            partial.apply({"type": "join", "user": user})
+        # Rebuild tastes by replaying only the first `end` movies' stored ratings.
+        for movie in group.closed[:end]:
+            partial.apply({"type": "suggest", "user": movie.suggester, "movie": movie.title})
+            for user, (bucket, answers) in movie.ratings.items():
+                partial.apply(
+                    {
+                        "type": "rate",
+                        "user": user,
+                        "movie": movie.title,
+                        "bucket": bucket,
+                        "answers": list(answers),
+                    }
+                )
+            for user in movie.skipped:
+                if user in partial.active:
+                    partial.apply({"type": "skip", "user": user, "movie": movie.title})
+        revised_path.append(partial.league("beli").elo)
+        partial_snaps.append({user: dict(partial.tastes[user].scores("beli")) for user in users})
+        held_path.append(
+            replay(
+                users,
+                partial.frozen_inputs(partial_snaps),
+                Params(scale_min=0.0, scale_max=10.0),
+            ).elo
+        )
+
+    return {
+        "label": label,
+        "users": len(users),
+        "movies": movie_count,
+        "flip": flip,
+        "skip": skip,
+        "questions_mean": statistics.fmean(questions),
+        "questions_p95": sorted(questions)[max(0, math.ceil(0.95 * len(questions)) - 1)],
+        "questions_max": max(questions),
+        "questions_zero_share": questions.count(0) / len(questions),
+        "order_tau": statistics.fmean(tau for tau in order_tau if tau is not None),
+        "revision_rmse": rmse(revised, held, users),
+        "revised_step_rmse": step_movement(revised_path),
+        "frozen_step_rmse": step_movement(held_path),
+        "mappings": by_mapping,
+        "current_tau": kendall(current, strength),
+        "current_spread": statistics.pstdev(current.values()),
+        "utr_vs_current_tau": kendall(revised, current),
+        "revised_path": revised_path,
+        "held_path": held_path,
+    }
+
+
+def order_effect(users, movie_count, seed, flip, skip, shuffles):
+    movies = [f"M{index:02d}" for index in range(movie_count)]
+    _quality, enjoyment = draw_world(users, movies, seed)
+    suggesters = {movie: users[index % len(users)] for index, movie in enumerate(movies)}
+    present = attendance(users, movies, suggesters, seed + 3, skip)
+    base, _, _ = play_utr(users, movies, enjoyment, seed + 1, flip, present, suggesters)
+    base_elo = base.league("beli").elo
+    rng = random.Random(seed + 99)
+    taus = []
+    rmses = []
+    for _ in range(shuffles):
+        order = movies[:]
+        rng.shuffle(order)
+        alt, _, _ = play_utr(users, order, enjoyment, seed + 1, flip, present, suggesters)
+        elo = alt.league("beli").elo
+        taus.append(kendall(base_elo, elo))
+        rmses.append(rmse(base_elo, elo, users))
+    return {
+        "tau_mean": statistics.fmean(taus),
+        "tau_min": min(taus),
+        "rmse_mean": statistics.fmean(rmses),
+        "rmse_max": max(rmses),
+    }
+
+
+def svg_paths(revised_path, held_path):
+    names = list(revised_path[0])
+    revised = [rmse(revised_path[i], revised_path[i - 1], names) for i in range(1, len(revised_path))]
+    held = [rmse(held_path[i], held_path[i - 1], names) for i in range(1, len(held_path))]
+    width, height = 720, 280
+    pad = 36
+    peak = max(revised + held + [1])
+    def xy(series, index):
+        x = pad + index / max(1, len(series) - 1) * (width - 2 * pad)
+        y = height - pad - series[index] / peak * (height - 2 * pad)
+        return x, y
+    def line(series):
+        return " ".join(f"{xy(series, i)[0]:.1f},{xy(series, i)[1]:.1f}" for i in range(len(series)))
+    return f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {width} {height}" role="img">
+  <text x="{pad}" y="22" font-family="sans-serif" font-size="14">How far the board jumps after each new movie</text>
+  <text x="{pad}" y="{height - 8}" font-family="sans-serif" font-size="12" fill="#555">movies, in the order they closed</text>
+  <polyline fill="none" stroke="#7a2e32" stroke-width="2.5" points="{line(revised)}"/>
+  <polyline fill="none" stroke="#1f6b5a" stroke-width="2.5" points="{line(held)}"/>
+  <text x="{pad}" y="44" font-family="sans-serif" font-size="12" fill="#7a2e32">rewriting old scores</text>
+  <text x="{pad + 150}" y="44" font-family="sans-serif" font-size="12" fill="#1f6b5a">scores locked on the night</text>
+</svg>
+"""
+
+
+def fmt(value, digits=2):
+    if value is None:
+        return "–"
+    return f"{value:.{digits}f}"
+
+
+def write_report(scenarios, orders, primary):
+    OUT.mkdir(parents=True, exist_ok=True)
+    lines = [
+        "# UTR simulation results",
+        "",
+        "Synthetic clubs. Each person has a hidden enjoyment for every movie.",
+        "They answer the enjoyment question from that number, then answer the",
+        "comparisons with occasional mistakes (`flip` is the chance a comparison is backwards).",
+        "About 15% of non-suggesters do not watch a given movie.",
+        "Closed ratings are never edited.",
+        "",
+        "## Questions and recovery of taste",
+        "",
+        "| Club | Movies | Mistakes | Questions, average | 95th percentile | Max | Share with no comparison | Taste agreement |",
+        "|---|---:|---:|---:|---:|---:|---:|---:|",
+    ]
+    for row in scenarios:
+        lines.append(
+            f"| {row['label']} | {row['movies']} | {row['flip']:.0%} | {fmt(row['questions_mean'])} | "
+            f"{row['questions_p95']} | {row['questions_max']} | {row['questions_zero_share']:.0%} | {fmt(row['order_tau'])} |"
+        )
+    lines += [
+        "",
+        "Taste agreement is 1 when a person's list is in the same order as their hidden enjoyment, and 0 when the list is no better than chance. With no deliberate mistakes the lists matched exactly in this draw. A bucket boundary can still swap two movies whose enjoyment is almost the same; that simply did not happen here.",
+        "",
+        "## Does the Elo board track who picks well?",
+        "",
+        "The hidden target is the average enjoyment other people had for the movies that person suggested.",
+        "Agreement is between that target and the final Elo order.",
+        "",
+        "| Club | Beli bands | Clamped at 1 | Bucket middle only | Whole-list 1–10 | Today's two scores |",
+        "|---|---:|---:|---:|---:|---:|",
+    ]
+    for row in scenarios:
+        maps = row["mappings"]
+        lines.append(
+            f"| {row['label']} | {fmt(maps['beli']['tau_vs_strength'])} | {fmt(maps['clamp']['tau_vs_strength'])} | "
+            f"{fmt(maps['baseline']['tau_vs_strength'])} | {fmt(maps['rank']['tau_vs_strength'])} | {fmt(row['current_tau'])} |"
+        )
+    lines += [
+        "",
+        "Spread of Elo around 1500 (standard deviation), same clubs:",
+        "",
+        "| Club | Beli bands | Bucket middle only | Whole-list 1–10 | Today's two scores |",
+        "|---|---:|---:|---:|---:|",
+    ]
+    for row in scenarios:
+        maps = row["mappings"]
+        lines.append(
+            f"| {row['label']} | {fmt(maps['beli']['elo_spread'], 1)} | {fmt(maps['baseline']['elo_spread'], 1)} | "
+            f"{fmt(maps['rank']['elo_spread'], 1)} | {fmt(row['current_spread'], 1)} |"
+        )
+    lines += [
+        "",
+        "## What happens to old Elo when a new rating rewrites old scores",
+        "",
+        "Two replays use the same comparisons. **Locked** keeps the number a movie had on the night it closed.",
+        "**Rewritten** recompiles every old score from the lists as they stand at the end, which is what the spec asks for.",
+        "",
+        "| Club | Typical jump per movie, rewritten | Typical jump per movie, locked | End gap between the two boards |",
+        "|---|---:|---:|---:|",
+    ]
+    for row in scenarios:
+        lines.append(
+            f"| {row['label']} | {fmt(row['revised_step_rmse'], 1)} | {fmt(row['frozen_step_rmse'], 1)} | {fmt(row['revision_rmse'], 1)} |"
+        )
+    lines += [
+        "",
+        "The jump is the root-mean-square change in Elo across members. The end gap is the same distance between the two final boards.",
+        "",
+        "## Order",
+        "",
+        "Same hidden tastes, same suggesters, movies played in a shuffled order.",
+        "",
+        "| Comparison | Agreement of final Elo with the original order | Typical Elo distance | Largest Elo distance |",
+        "|---|---:|---:|---:|",
+        f"| {orders['movies']} movies, {orders['shuffles']} shuffles, {orders['flip']:.0%} mistakes | {fmt(orders['tau_mean'])} (lowest {fmt(orders['tau_min'])}) | {fmt(orders['rmse_mean'], 1)} | {fmt(orders['rmse_max'], 1)} |",
+        "",
+        "Agreement of 1 would mean the shuffle never changed who finished above whom.",
+        "",
+        "## Reading the picture",
+        "",
+        "`stability.svg` is the 6-person, 40-movie club with 8% mistaken comparisons.",
+        "The dark line is the rewritten history. The green line locks each night's scores.",
+        "A higher point means the board moved more when that movie closed.",
+        "",
+    ]
+    (OUT / "RESULTS.md").write_text("\n".join(lines), encoding="utf-8")
+    (OUT / "stability.svg").write_text(
+        svg_paths(primary["revised_path"], primary["held_path"]),
+        encoding="utf-8",
+    )
+    slim = []
+    for row in scenarios:
+        item = {key: value for key, value in row.items() if key not in {"revised_path", "held_path"}}
+        slim.append(item)
+    (OUT / "summary.json").write_text(json.dumps({"scenarios": slim, "order": orders}, indent=2), encoding="utf-8")
+
+
+def main():
+    specs = [
+        ("5 people, careful answers", 5, 30, 11, 0.0, 0.15),
+        ("5 people, 10% mistakes", 5, 30, 11, 0.10, 0.15),
+        ("6 people, 40 movies", 6, 40, 21, 0.08, 0.15),
+        ("5 people, 60 movies", 5, 60, 31, 0.08, 0.15),
+    ]
+    scenarios = []
+    primary = None
+    for label, count, movies, seed, flip, skip in specs:
+        users = [f"U{index}" for index in range(count)]
+        row = run_scenario(label, users, movies, seed, flip, skip)
+        scenarios.append(row)
+        if label.startswith("6 people"):
+            primary = row
+        print(
+            f"{label}: questions {row['questions_mean']:.2f}, taste {row['order_tau']:.2f}, "
+            f"beli tau {row['mappings']['beli']['tau_vs_strength']:.2f}, "
+            f"current tau {row['current_tau']:.2f}, revision {row['revision_rmse']:.1f}"
+        )
+    users = [f"U{index}" for index in range(6)]
+    orders = order_effect(users, 30, 21, 0.08, 0.15, 12)
+    orders["movies"] = 30
+    orders["shuffles"] = 12
+    orders["flip"] = 0.08
+    print(
+        f"order: tau {orders['tau_mean']:.2f} (min {orders['tau_min']:.2f}), "
+        f"rmse {orders['rmse_mean']:.1f}"
+    )
+    write_report(scenarios, orders, primary)
+
+
+if __name__ == "__main__":
+    main()
