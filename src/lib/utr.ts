@@ -3,6 +3,7 @@ import { findUserById, type PublicUser } from "@/lib/auth"
 import { getDb } from "@/lib/db"
 import { appendRatingEvent, type RatingEventInput } from "@/lib/rating-events"
 import { recordUtrCloses } from "@/lib/utr-elo"
+import { rankSnapshots, type UtrRank } from "@/lib/utr-ranks"
 import {
   answerSearch,
   bandScore,
@@ -477,13 +478,24 @@ export type UtrCloseView = {
   elo: Record<string, number>
   fromNew: Record<string, number>
   fromOlder: Record<string, number>
+  ranks: Record<string, UtrRank>
+  ratedPicks: Record<string, number>
+}
+
+export type UtrBoardRow = {
+  name: string
+  elo: number
+  fromNew: number
+  fromOlder: number
+  rank: UtrRank
+  ratedPicks: number
 }
 
 export function utrCloses(): UtrCloseView[] {
   const rows = getDb()
     .prepare(
-      `SELECT utr_closes.movie_id, utr_movies.title, utr_closes.seq, utr_closes.elo_json,
-              utr_closes.from_new_json, utr_closes.from_older_json
+      `SELECT utr_closes.movie_id, utr_movies.title, utr_movies.suggester_id, utr_closes.seq,
+              utr_closes.elo_json, utr_closes.from_new_json, utr_closes.from_older_json, utr_closes.scores_json
        FROM utr_closes
        JOIN utr_movies ON utr_movies.id = utr_closes.movie_id
        ORDER BY utr_closes.seq ASC`,
@@ -491,10 +503,12 @@ export function utrCloses(): UtrCloseView[] {
     .all() as {
     movie_id: number
     title: string
+    suggester_id: number
     seq: number
     elo_json: string
     from_new_json: string
     from_older_json: string
+    scores_json: string
   }[]
   const names = new Map(
     (getDb().prepare("SELECT id, name FROM users").all() as { id: number; name: string }[]).map((row) => [row.id, row.name]),
@@ -505,14 +519,66 @@ export function utrCloses(): UtrCloseView[] {
     for (const [id, value] of Object.entries(raw)) out[names.get(Number(id)) ?? id] = value
     return out
   }
-  return rows.map((row) => ({
-    movieId: row.movie_id,
-    title: row.title,
-    seq: row.seq,
-    elo: byName(row.elo_json),
-    fromNew: byName(row.from_new_json),
-    fromOlder: byName(row.from_older_json),
+  const byId = (json: string) => {
+    const raw = JSON.parse(json) as Record<string, number>
+    const out: Record<number, number> = {}
+    for (const [id, value] of Object.entries(raw)) out[Number(id)] = value
+    return out
+  }
+  const scoresOf = (json: string) => {
+    const raw = JSON.parse(json) as Record<string, Record<string, number>>
+    const scores = new Map<number, Map<number, number>>()
+    for (const [userId, mine] of Object.entries(raw)) {
+      const inner = new Map<number, number>()
+      for (const [movieId, value] of Object.entries(mine)) inner.set(Number(movieId), value)
+      scores.set(Number(userId), inner)
+    }
+    return scores
+  }
+  const snaps = rankSnapshots(
+    rows.map((row) => ({
+      movieId: row.movie_id,
+      suggesterId: row.suggester_id,
+      elo: byId(row.elo_json),
+      scores: scoresOf(row.scores_json),
+    })),
+    names,
+  )
+  return rows.map((row, index) => {
+    const ranks: Record<string, UtrRank> = {}
+    const ratedPicks: Record<string, number> = {}
+    for (const [id, rank] of Object.entries(snaps[index].ranks)) {
+      ranks[names.get(Number(id)) ?? id] = rank
+    }
+    for (const [id, count] of Object.entries(snaps[index].ratedPicks)) {
+      ratedPicks[names.get(Number(id)) ?? id] = count
+    }
+    return {
+      movieId: row.movie_id,
+      title: row.title,
+      seq: row.seq,
+      elo: byName(row.elo_json),
+      fromNew: byName(row.from_new_json),
+      fromOlder: byName(row.from_older_json),
+      ranks,
+      ratedPicks,
+    }
+  })
+}
+
+export function utrBoard(): { movieId: number; title: string; seq: number; rows: UtrBoardRow[] } | null {
+  const latest = utrCloses().at(-1)
+  if (!latest) return null
+  const rows = Object.keys(latest.elo).map((name) => ({
+    name,
+    elo: latest.elo[name],
+    fromNew: latest.fromNew[name] ?? 0,
+    fromOlder: latest.fromOlder[name] ?? 0,
+    rank: latest.ranks[name],
+    ratedPicks: latest.ratedPicks[name] ?? 0,
   }))
+  rows.sort((a, b) => b.elo - a.elo || (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
+  return { movieId: latest.movieId, title: latest.title, seq: latest.seq, rows }
 }
 
 export function questionBudgetFor(userId: number, bucket: UtrBucket): number {

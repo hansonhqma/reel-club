@@ -2,7 +2,22 @@ import type Database from "better-sqlite3"
 import { computeLeague, type WeekInput } from "@/lib/ranking"
 import { UTR_BUCKETS, bandScore, type UtrBucket } from "@/lib/utr-score"
 
-export const UTR_ELO_PARAMS = { scale_min: 0, scale_max: 10 }
+// Spicy tuning. d = 1.25 makes a 1.25-point list gap about a 91% win.
+// K = 160 / (n - 1). n is the Elo roster: everyone who has joined, including
+// anyone who has left. Leaving does not shrink it. Six people gives K = 32.
+// A roster of one has no match to play, so K stays at the engine default.
+export const UTR_SCORE_GAP = 1.25
+export const UTR_K_NUMERATOR = 160
+
+export function utrEloParams(rosterSize: number): { k: number; d: number; scale_min: number; scale_max: number } {
+  const opponents = rosterSize - 1
+  return {
+    k: opponents >= 1 ? UTR_K_NUMERATOR / opponents : 32,
+    d: UTR_SCORE_GAP,
+    scale_min: 0,
+    scale_max: 10,
+  }
+}
 
 export type Member = { id: number; name: string }
 export type Movie = { id: number; title: string; suggesterId: number; seq: number }
@@ -78,7 +93,7 @@ export function eloForWeeks(members: Member[], weeks: WeekInput[]): EloMap {
   const league = computeLeague({
     members: members.map((member) => member.name),
     weeks,
-    params: UTR_ELO_PARAMS,
+    params: utrEloParams(members.length),
   })
   const idByName = new Map(members.map((member) => [member.name, member.id]))
   for (const row of league.standings) {

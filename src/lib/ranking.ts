@@ -96,7 +96,7 @@ export function computeLeague(input: {
   members: string[]
   weeks: WeekInput[]
   preview?: WeekInput | null
-  params?: { scale_min: number; scale_max: number }
+  params?: { k?: number; d?: number; scale_min?: number; scale_max?: number }
 }): LeagueView {
   const python = process.env.PYTHON ?? "python3"
   const script = path.join(process.cwd(), "scripts", "elo_bridge.py")

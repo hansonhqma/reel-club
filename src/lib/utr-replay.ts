@@ -1,5 +1,6 @@
 import type { RatingEvent } from "@/lib/rating-events"
 import { nextClose, type EloMap, type Member, type Movie } from "@/lib/utr-elo"
+import { rankSnapshots, type UtrRank } from "@/lib/utr-ranks"
 import {
   answerSearch,
   bandScore,
@@ -20,7 +21,16 @@ export type UtrReplay = {
   lists: Map<number, Record<UtrBucket, number[]>>
   responses: Map<string, ResponseRec>
   pending: Map<number, UtrSearch>
-  closes: { movieId: number; elo: EloMap; fromNew: EloMap; fromOlder: EloMap }[]
+  closes: {
+    movieId: number
+    suggesterId: number
+    elo: EloMap
+    fromNew: EloMap
+    fromOlder: EloMap
+    scores: Map<number, Map<number, number>>
+    ranks: Record<number, UtrRank>
+    ratedPicks: Record<number, number>
+  }[]
 }
 
 function listsFor(model: UtrReplay, userId: number): Record<UtrBucket, number[]> {
@@ -62,10 +72,25 @@ function snapshotNewCloses(model: UtrReplay): void {
       continue
     }
     const result = nextClose(members, seen, movie, scores, previous)
-    model.closes.push({ movieId: movie.id, elo: result.elo, fromNew: result.fromNew, fromOlder: result.fromOlder })
+    model.closes.push({
+      movieId: movie.id,
+      suggesterId: movie.suggesterId,
+      elo: result.elo,
+      fromNew: result.fromNew,
+      fromOlder: result.fromOlder,
+      scores,
+      ranks: {},
+      ratedPicks: {},
+    })
     previous = result.elo
     seen.push(movie)
   }
+  const names = new Map(model.members.map((member) => [member.id, member.name]))
+  const snaps = rankSnapshots(model.closes, names)
+  model.closes.forEach((close, index) => {
+    close.ranks = snaps[index]?.ranks ?? {}
+    close.ratedPicks = snaps[index]?.ratedPicks ?? {}
+  })
 }
 
 function responseKey(movieId: number, userId: number): string {

@@ -70,10 +70,13 @@ export default async function UtrPage({ searchParams }: { searchParams: Promise<
           <h2 className="font-heading text-2xl">Board after {latest.title}</h2>
           <ul className="space-y-1 text-sm">
             {Object.entries(latest.elo)
-              .sort((a, b) => b[1] - a[1])
+              .sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0))
               .map(([name, elo]) => (
-                <li key={name} className="flex justify-between">
-                  <span>{name}</span>
+                <li key={name} className="flex justify-between gap-3">
+                  <span>
+                    {name}
+                    {latest.ranks[name] ? <span className="text-muted-foreground"> · {latest.ranks[name].label}</span> : null}
+                  </span>
                   <span className="tabular-nums">
                     {elo.toFixed(1)}
                     {latest.fromNew[name] || latest.fromOlder[name]

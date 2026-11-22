@@ -7,7 +7,7 @@ import { closeDb, getDb } from "../src/lib/db"
 import { readRatingEvents } from "../src/lib/rating-events"
 import { computeLeague } from "../src/lib/ranking"
 import { replayUtr } from "../src/lib/utr-replay"
-import { UTR_ELO_PARAMS } from "../src/lib/utr-elo"
+import { utrEloParams } from "../src/lib/utr-elo"
 import { answerSearch, bandScore, startSearch } from "../src/lib/utr-score"
 import {
   UtrError,
@@ -109,7 +109,7 @@ describe("utr", { concurrency: 1 }, () => {
           },
         },
       ],
-      params: UTR_ELO_PARAMS,
+      params: utrEloParams(3),
     })
     const heatElo = Object.fromEntries(heatLeague.standings.map((row) => [row.member, row.elo]))
     near(heatClose[0].elo, heatElo)
@@ -125,7 +125,7 @@ describe("utr", { concurrency: 1 }, () => {
               ratings: { Ada: { experience: 8.5, quality: 8.5 } },
             },
           ],
-          params: UTR_ELO_PARAMS,
+          params: utrEloParams(3),
         }),
       /suggester must not rate/,
     )
@@ -202,6 +202,11 @@ describe("utr", { concurrency: 1 }, () => {
         assert.ok(Math.abs(close.elo[name] - before - total) < 1e-6, name)
       }
     }
+    assert.equal(closes[0].ranks.Ada.label, "Silver II")
+    assert.equal(closes[0].ranks.Bea.tier, "Silver")
+    assert.equal(closes[0].ratedPicks.Ada, 1)
+    assert.equal(closes[0].ratedPicks.Bea, 0)
+    assert.equal(closes[0].ratedPicks.Cy, 0)
     assert.ok(Object.values(closes[0].fromNew).every((value) => value === 0))
     assert.ok(Object.values(closes[1].fromOlder).every((value) => Math.abs(value) < 1e-6))
     assert.ok(Object.values(closes[1].fromNew).reduce((sum, value) => sum + Math.abs(value), 0) > 0)
@@ -236,6 +241,9 @@ describe("utr", { concurrency: 1 }, () => {
       const actual = replay.closes[index].elo
       for (const id of Object.keys(expected)) {
         assert.ok(Math.abs(actual[Number(id)] - expected[Number(id)]) < 1e-6, String(id))
+        const name = [...names.entries()].find(([, memberId]) => memberId === Number(id))?.[0]
+        assert.equal(replay.closes[index].ranks[Number(id)].label, closes[index].ranks[name ?? ""].label)
+        assert.equal(replay.closes[index].ratedPicks[Number(id)], closes[index].ratedPicks[name ?? ""])
       }
     }
     assert.deepEqual(
