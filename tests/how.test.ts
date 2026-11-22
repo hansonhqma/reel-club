@@ -120,49 +120,26 @@ test("two members never produce a neutral judge", () => {
   assert.ok(Math.abs(league.total_elo - 3000) < 1e-6)
 })
 
-test("the how page is public and states the example the engine produced", async () => {
+test("the how page explains the unified rating in plain language", async () => {
   const { default: HowPage } = await import("../src/app/how/page.tsx")
   const html = renderToStaticMarkup(createElement(HowPage))
-  assert.match(html, /Two honest scores/)
-  assert.match(html, /Night Bus/)
-  assert.match(html, /Rooftop/)
-  assert.match(html, /are not in your club/)
-  assert.match(html, /1508\.3/)
-  assert.match(html, /1491\.7/)
-  assert.match(html, /\+8\.3/)
-  assert.match(html, /-8\.3/)
-  assert.match(html, /Does skipping a movie hurt me\?/)
-  assert.match(html, /Can I game it\?/)
-  assert.match(html, /first score/)
-  assert.match(html, /does not move it to the end/)
-  assert.match(html, /don&#x27;t score your own suggestion|don't score your own suggestion/)
-  assert.match(html, /Sort the movies, then read the average/)
-  assert.match(html, /Which did you like more\?/)
-  assert.match(html, /Too tough to call/)
+  assert.match(html, /How much did you enjoy it/)
+  assert.match(html, /Not really/)
+  assert.match(html, /Kinda/)
+  assert.match(html, /A lot/)
+  assert.match(html, /8\.5/)
+  assert.match(html, /5\.5/)
+  assert.match(html, /2\.0/)
+  assert.match(html, /7\.0/)
+  assert.match(html, /4\.0/)
+  assert.match(html, /One movie at a time/)
+  assert.match(html, /didn&#x27;t watch|didn't watch/)
   assert.match(html, /Start over/)
-  assert.match(html, /community score/)
-  assert.match(html, /can&#x27;t rank your own pick|can't rank your own pick/)
-  assert.match(html, /Remove from my list/)
-  assert.match(html, new RegExp(LANTERN))
-  for (const score of [
-    BELI_BANDS.liked.alone,
-    BELI_BANDS.liked.top,
-    BELI_BANDS.liked.bottom,
-    BELI_BANDS.fine.alone,
-    BELI_BANDS.fine.top,
-    BELI_BANDS.fine.bottom,
-    BELI_BANDS.disliked.alone,
-    BELI_BANDS.disliked.top,
-    BELI_BANDS.disliked.bottom,
-    BELI_COMMUNITY.nightBus,
-    BELI_COMMUNITY.lantern,
-    BELI_COMMUNITY.rooftop,
-    AFTER_REMOVAL.alex,
-    AFTER_REMOVAL.bea,
-  ]) {
-    assert.match(html, new RegExp(beliTenths(score).replace(".", "\\.")))
-  }
-  assert.match(html, /7\.75/)
+  assert.match(html, /1500/)
+  assert.match(html, /From the new movie/)
+  assert.match(html, /Older ratings re-sorted/)
+  assert.match(html, /left out/)
+  assert.doesNotMatch(html, /too tough/i)
   assert.doesNotMatch(html, /voter/)
   assert.equal(html.includes("redirect"), false)
 })
@@ -331,25 +308,21 @@ test("Beli score bands match a bucket of one and a bucket of two", () => {
   }
 })
 
-test("the Beli pages link to the Beli section of how", () => {
-  const page = fs.readFileSync(new URL("../src/app/beli/page.tsx", import.meta.url), "utf8")
-  const board = fs.readFileSync(new URL("../src/app/beli/leaderboard/page.tsx", import.meta.url), "utf8")
-  assert.match(page, /href="\/how#beli"/)
-  assert.match(board, /href="\/how#beli"/)
-})
-
-test("how is linked from the member nav and the pages members already use", () => {
+test("rate and the board link to how, and the nav no longer offers the old modes", () => {
   const nav = fs.readFileSync(new URL("../src/components/main-nav.tsx", import.meta.url), "utf8")
   assert.match(nav, /href:\s*"\/how"/)
   assert.match(nav, /label:\s*"How"/)
-  for (const file of [
-    "../src/components/shell.tsx",
-    "../src/app/page.tsx",
-    "../src/app/leaderboard/page.tsx",
-    "../src/app/movies/[id]/page.tsx",
-    "../src/components/movie-board.tsx",
-  ]) {
-    const source = fs.readFileSync(new URL(file, import.meta.url), "utf8")
-    assert.match(source, /href="\/how"/)
-  }
+  assert.match(nav, /href:\s*"\/utr"/)
+  assert.doesNotMatch(nav, /href:\s*"\/beli"/)
+  assert.doesNotMatch(nav, /href:\s*"\/movies"/)
+  const rate = fs.readFileSync(new URL("../src/app/utr/page.tsx", import.meta.url), "utf8")
+  const open = fs.readFileSync(new URL("../src/app/utr/open-movie.tsx", import.meta.url), "utf8")
+  const board = fs.readFileSync(new URL("../src/app/leaderboard/page.tsx", import.meta.url), "utf8")
+  assert.match(open, /name="history"/)
+  assert.match(rate, /href="\/how"/)
+  assert.match(board, /href="\/how"/)
+  assert.match(board, /from the new movie/)
+  assert.match(board, /older ratings re-sorted/)
+  assert.match(board, /RankEmblem/)
+  assert.match(board, /rated pick/)
 })

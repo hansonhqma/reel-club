@@ -6,7 +6,7 @@ import { cn } from "cn"
 
 export default async function HomePage() {
   const user = await getCurrentUser()
-  if (user) redirect("/movies")
+  if (user) redirect("/utr")
   return <Landing />
 }
 
@@ -16,12 +16,11 @@ function Landing() {
       <section className="space-y-4">
         <p className="text-xs font-medium tracking-[0.18em] text-primary uppercase">Movie club</p>
         <h1 className="font-heading text-5xl leading-[1.05] tracking-tight sm:text-6xl">
-          One movie. Two honest scores. A board that remembers who picks well.
+          One movie at a time. A list that updates now. A board that waits until it closes.
         </h1>
         <p className="max-w-xl text-lg leading-relaxed text-foreground/80">
-          Reel Club is the private notebook for a group that watches together. Suggest a movie whenever you think of
-          one, and score it whenever you actually watch it. Those numbers feed an Elo that ranks the members, not the
-          films.
+          Say how much you enjoyed the open movie, then place it among the others you enjoyed that much. Your list
+          moves immediately. Elo moves when the movie closes.
         </p>
         <div className="flex flex-wrap items-center gap-3 pt-2">
           <Link href="/login" className={cn(buttonVariants(), "h-11 px-4 text-base")}>
@@ -37,9 +36,9 @@ function Landing() {
       </section>
       <ol className="grid gap-4 sm:grid-cols-3">
         {[
-          ["Suggest any time", "Add a movie whenever you want. Several can be waiting at once."],
-          ["Score when you watch it", "Enjoyment and quality, from 1 to 10, in any order. The suggester sits this part out."],
-          ["The pick defends", "Once a movie has scores, it joins the ranking and keeps playing against the next ones."],
+          ["One movie open", "Suggest the next title only after this one closes. Everyone is on the same film."],
+          ["Enjoyed it?", "Not really, kinda, or a lot. Then a few comparisons inside that group."],
+          ["The board waits", "Your list updates now. Elo is rebuilt from those scores when the movie closes."],
         ].map(([title, body], index) => (
           <li key={title} className="rounded-2xl bg-card p-4 ring-1 ring-foreground/10">
             <p className="font-heading text-3xl text-primary">{index + 1}</p>
