@@ -166,15 +166,55 @@ function tableExists(db: Database.Database, name: string): boolean {
   return Boolean(db.prepare("SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = ?").get(name))
 }
 
-// One-time synthetic history. Sequence ids follow the ORDER BY clauses below,
-// not a scan of sqlite rowid. Comparison steps that already finished are not
-// in the tables, so those events cannot be invented.
+// When two backfilled events share a timestamp, lower priority is written first
+// so a join precedes a movie and a movie precedes its ratings and placements.
+const BACKFILL_KIND_PRIORITY: Record<RatingEventType, number> = {
+  "member.joined": 0,
+  "elo.movie.suggested": 1,
+  "beli.movie.submitted": 2,
+  "elo.rating.set": 3,
+  "beli.ranking.placed": 4,
+  "beli.search.started": 5,
+  "elo.rating.changed": 6,
+  "elo.movie.removed": 7,
+  "beli.bucket.chosen": 8,
+  "beli.search.resumed": 9,
+  "beli.comparison.answered": 10,
+  "beli.list.removed": 11,
+  "beli.search.abandoned": 12,
+  "beli.movie.deleted": 13,
+}
+
+type BackfillDraft = RatingEventInput & {
+  sortAt: string
+  kind: number
+  sourceId: number
+}
+
+function timeValue(value: string): number {
+  const parsed = Date.parse(value)
+  return Number.isNaN(parsed) ? Number.POSITIVE_INFINITY : parsed
+}
+
+// The later of two timestamps. Equal instants keep the one already chosen so a
+// clamped event can share its dependency's stored text.
+function laterTimestamp(current: string, candidate: string | undefined): string {
+  if (!candidate) return current
+  return timeValue(current) >= timeValue(candidate) ? current : candidate
+}
+
+// One-time synthetic history. Events are interleaved by their real timestamp,
+// not grouped by table. Comparison steps that already finished are not in the
+// tables, so those events cannot be invented.
 export function backfillRatingEvents(db: Database.Database): void {
   if (!tableExists(db, "schema_migrations")) return
   const already = db.prepare("SELECT 1 AS ok FROM schema_migrations WHERE version = ?").get(RATING_EVENTS_MIGRATION)
   if (already) return
 
   const tx = db.transaction(() => {
+    const drafts: BackfillDraft[] = []
+    const joinedAt = new Map<number, string>()
+
     if (tableExists(db, "users")) {
       const users = db
         .prepare(
@@ -184,10 +224,13 @@ export function backfillRatingEvents(db: Database.Database): void {
         )
         .all() as { id: number; username: string; name: string; is_admin: number; created_at: string }[]
       for (const user of users) {
-        appendRatingEvent(db, {
+        joinedAt.set(user.id, user.created_at)
+        drafts.push({
+          sortAt: user.created_at,
+          kind: BACKFILL_KIND_PRIORITY["member.joined"],
+          sourceId: user.id,
           actorId: user.id,
           type: "member.joined",
-          occurredAt: user.created_at,
           backfilled: true,
           payload: {
             userId: user.id,
@@ -200,12 +243,13 @@ export function backfillRatingEvents(db: Database.Database): void {
       }
     }
 
+    const eloMovieAt = new Map<number, string>()
     if (tableExists(db, "movies")) {
       const movies = db
         .prepare(
           `SELECT id, movie, suggester_id, suggested_at, note, ranked_at
            FROM movies
-           ORDER BY suggested_at ASC, id ASC`,
+           ORDER BY id ASC`,
         )
         .all() as {
         id: number
@@ -216,11 +260,15 @@ export function backfillRatingEvents(db: Database.Database): void {
         ranked_at: string | null
       }[]
       for (const movie of movies) {
-        appendRatingEvent(db, {
+        const sortAt = laterTimestamp(movie.suggested_at, joinedAt.get(movie.suggester_id))
+        eloMovieAt.set(movie.id, sortAt)
+        drafts.push({
+          sortAt,
+          kind: BACKFILL_KIND_PRIORITY["elo.movie.suggested"],
+          sourceId: movie.id,
           actorId: movie.suggester_id,
           type: "elo.movie.suggested",
           movieId: movie.id,
-          occurredAt: movie.suggested_at,
           backfilled: true,
           payload: {
             title: movie.movie,
@@ -238,7 +286,7 @@ export function backfillRatingEvents(db: Database.Database): void {
         .prepare(
           `SELECT id, movie_id, user_id, experience, quality, created_at, updated_at
            FROM ratings
-           ORDER BY created_at ASC, id ASC`,
+           ORDER BY id ASC`,
         )
         .all() as {
         id: number
@@ -250,11 +298,17 @@ export function backfillRatingEvents(db: Database.Database): void {
         updated_at: string
       }[]
       for (const rating of ratings) {
-        appendRatingEvent(db, {
+        const sortAt = laterTimestamp(
+          laterTimestamp(rating.created_at, eloMovieAt.get(rating.movie_id)),
+          joinedAt.get(rating.user_id),
+        )
+        drafts.push({
+          sortAt,
+          kind: BACKFILL_KIND_PRIORITY["elo.rating.set"],
+          sourceId: rating.id,
           actorId: rating.user_id,
           type: "elo.rating.set",
           movieId: rating.movie_id,
-          occurredAt: rating.created_at,
           backfilled: true,
           payload: {
             experience: rating.experience,
@@ -267,21 +321,26 @@ export function backfillRatingEvents(db: Database.Database): void {
     }
 
     const beliTitles = new Map<number, string>()
+    const beliMovieAt = new Map<number, string>()
     if (tableExists(db, "beli_movies")) {
       const movies = db
         .prepare(
           `SELECT id, title, submitter_id, submitted_at
            FROM beli_movies
-           ORDER BY submitted_at ASC, id ASC`,
+           ORDER BY id ASC`,
         )
         .all() as { id: number; title: string; submitter_id: number; submitted_at: string }[]
       for (const movie of movies) {
         beliTitles.set(movie.id, movie.title)
-        appendRatingEvent(db, {
+        const sortAt = laterTimestamp(movie.submitted_at, joinedAt.get(movie.submitter_id))
+        beliMovieAt.set(movie.id, sortAt)
+        drafts.push({
+          sortAt,
+          kind: BACKFILL_KIND_PRIORITY["beli.movie.submitted"],
+          sourceId: movie.id,
           actorId: movie.submitter_id,
           type: "beli.movie.submitted",
           movieId: movie.id,
-          occurredAt: movie.submitted_at,
           backfilled: true,
           payload: {
             title: movie.title,
@@ -297,7 +356,7 @@ export function backfillRatingEvents(db: Database.Database): void {
         .prepare(
           `SELECT user_id, movie_id, bucket, position, ranked_at, updated_at
            FROM beli_rankings
-           ORDER BY ranked_at ASC, user_id ASC, bucket ASC, position ASC, movie_id ASC`,
+           ORDER BY movie_id ASC, user_id ASC`,
         )
         .all() as {
         user_id: number
@@ -308,11 +367,17 @@ export function backfillRatingEvents(db: Database.Database): void {
         updated_at: string
       }[]
       for (const row of rows) {
-        appendRatingEvent(db, {
+        const sortAt = laterTimestamp(
+          laterTimestamp(row.ranked_at, beliMovieAt.get(row.movie_id)),
+          joinedAt.get(row.user_id),
+        )
+        drafts.push({
+          sortAt,
+          kind: BACKFILL_KIND_PRIORITY["beli.ranking.placed"],
+          sourceId: row.movie_id,
           actorId: row.user_id,
           type: "beli.ranking.placed",
           movieId: row.movie_id,
-          occurredAt: row.ranked_at,
           backfilled: true,
           payload: {
             movieId: row.movie_id,
@@ -332,16 +397,22 @@ export function backfillRatingEvents(db: Database.Database): void {
         .prepare(
           `SELECT user_id, movie_id, state, started_at
            FROM beli_pending
-           ORDER BY started_at ASC, user_id ASC`,
+           ORDER BY user_id ASC`,
         )
         .all() as { user_id: number; movie_id: number; state: string; started_at: string }[]
       for (const row of rows) {
         const insertion = JSON.parse(row.state) as BeliInsertion
-        appendRatingEvent(db, {
+        const sortAt = laterTimestamp(
+          laterTimestamp(row.started_at, beliMovieAt.get(row.movie_id)),
+          joinedAt.get(row.user_id),
+        )
+        drafts.push({
+          sortAt,
+          kind: BACKFILL_KIND_PRIORITY["beli.search.started"],
+          sourceId: row.user_id,
           actorId: row.user_id,
           type: "beli.search.started",
           movieId: row.movie_id,
-          occurredAt: row.started_at,
           backfilled: true,
           payload: {
             movieId: row.movie_id,
@@ -353,6 +424,17 @@ export function backfillRatingEvents(db: Database.Database): void {
           },
         })
       }
+    }
+
+    drafts.sort((a, b) => {
+      const byTime = timeValue(a.sortAt) - timeValue(b.sortAt)
+      if (byTime !== 0) return byTime
+      if (a.kind !== b.kind) return a.kind - b.kind
+      if (a.sourceId !== b.sourceId) return a.sourceId - b.sourceId
+      return a.actorId - b.actorId
+    })
+    for (const draft of drafts) {
+      appendRatingEvent(db, { ...draft, occurredAt: draft.sortAt })
     }
 
     db.prepare("INSERT INTO schema_migrations (version, applied_at) VALUES (?, ?)").run(

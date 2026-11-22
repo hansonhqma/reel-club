@@ -55,14 +55,11 @@ A page view that reloads the current Beli question and does not move `lo`, `hi`,
 
 ## Backfill
 
-The first time a database is opened after this table exists, migration version `2` copies current rows into synthetic events and sets `backfilled` to 1. The copy is ordered explicitly:
+The first time a database is opened after this table exists, migration version `2` copies current rows into synthetic events and sets `backfilled` to 1. Every row is one event on a single timeline. The timestamp is the row's own time: `users.created_at`, `movies.suggested_at`, `ratings.created_at`, `beli_movies.submitted_at`, `beli_rankings.ranked_at`, or `beli_pending.started_at`.
 
-1. Members by `users.id`.
-2. Elo movies by `suggested_at`, then id. `rankedAt` is the stored lock or first-score time, including movies migrated from weekly locks.
-3. Elo ratings by `created_at`, then id. One event per current row. `at` is `created_at`. `updatedAt` is the current `updated_at`.
-4. Beli movies by `submitted_at`, then id.
-5. Beli placements by `ranked_at`, user, bucket, position, movie id. These are `beli.ranking.placed` snapshots with `position`, not comparison steps.
-6. Pending searches by `started_at`, then user id. The stored insertion JSON is copied onto `beli.search.started`.
+That time is clamped forward when it would precede something the event needs. A movie waits for its suggester or submitter to join. A rating waits for its movie and its rater. A Beli placement or pending search waits for its movie and its member. Clamping sets `occurred_at` to the later dependency time. The payload keeps the original time (`suggestedAt`, `at`, `rankedAt`, `startedAt`), and Elo replay still orders weeks by `rankedAt`.
+
+Equal timestamps break ties in this order: kind priority, then source row id, then actor id. Kind priority, lowest first, is `member.joined`, `elo.movie.suggested`, `beli.movie.submitted`, `elo.rating.set`, `beli.ranking.placed`, `beli.search.started`. Source ids are `users.id`, `movies.id`, `ratings.id`, `beli_movies.id`, `beli_rankings.movie_id`, and `beli_pending.user_id`. The same inputs always produce the same sequence.
 
 An empty database still records version 2, so later activity is not mistaken for history.
 

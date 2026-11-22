@@ -94,9 +94,27 @@ raw.prepare("INSERT INTO movies (id, movie, suggester_id, suggested_at, note, ra
   "note",
   "2026-03-01T00:00:00.000Z",
 )
+raw.prepare("INSERT INTO users (id, username, name, password_hash, is_admin, created_at) VALUES (?, ?, ?, ?, ?, ?)").run(
+  3,
+  "cyo",
+  "Cy",
+  "super-secret-password-hash",
+  0,
+  "2026-06-01T00:00:00.000Z",
+)
+// Suggested before Cy joined. The event must wait until that join.
+raw.prepare("INSERT INTO movies (id, movie, suggester_id, suggested_at, note, ranked_at) VALUES (?, ?, ?, ?, ?, ?)").run(
+  3,
+  "Too Early",
+  3,
+  "2026-01-15T00:00:00.000Z",
+  null,
+  null,
+)
+// Scored before the movie was suggested and before Bea joined. Clamped after both.
 raw.prepare(
   "INSERT INTO ratings (id, movie_id, user_id, experience, quality, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
-).run(1, 1, 2, 8, 7, "2026-01-10T00:00:00.000Z", "2026-01-11T00:00:00.000Z")
+).run(1, 1, 2, 8, 7, "2026-01-01T00:00:00.000Z", "2026-01-11T00:00:00.000Z")
 raw.prepare(
   "INSERT INTO ratings (id, movie_id, user_id, experience, quality, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
 ).run(2, 2, 1, 6, 6, "2026-03-01T00:00:00.000Z", "2026-03-02T00:00:00.000Z")
@@ -139,6 +157,44 @@ test("backfill replays to the live rankings and does not invent comparison steps
   assert.equal(events.some((event) => event.type === "beli.comparison.answered"), false)
   assert.equal(events.some((event) => event.type === "beli.ranking.placed"), true)
   assert.equal(events.some((event) => event.type === "beli.search.started"), true)
+
+  const labels = events.map((event) => {
+    const title = typeof event.payload.title === "string" ? event.payload.title : ""
+    const name = typeof event.payload.name === "string" ? event.payload.name : ""
+    return `${event.type}:${title || name || event.movieId}`
+  })
+  assert.deepEqual(labels, [
+    "member.joined:Ada",
+    "member.joined:Bea",
+    "elo.movie.suggested:Locked Late",
+    "elo.rating.set:1",
+    "elo.movie.suggested:Ranked Earlier",
+    "elo.rating.set:2",
+    "beli.movie.submitted:Beli One",
+    "beli.ranking.placed:Beli One",
+    "beli.search.started:Beli One",
+    "member.joined:Cy",
+    "elo.movie.suggested:Too Early",
+  ])
+  for (let index = 1; index < events.length; index += 1) {
+    assert.ok(Date.parse(events[index].occurredAt) >= Date.parse(events[index - 1].occurredAt))
+  }
+  const locked = events.find((event) => event.type === "elo.movie.suggested" && event.payload.title === "Locked Late")
+  const earlyRating = events.find((event) => event.type === "elo.rating.set" && event.movieId === 1)
+  const shawshank = events.find((event) => event.payload.title === "Ranked Earlier")
+  const beli = events.find((event) => event.type === "beli.movie.submitted")
+  const laterRating = events.find((event) => event.type === "elo.rating.set" && event.movieId === 2)
+  const cy = events.find((event) => event.type === "member.joined" && event.payload.name === "Cy")
+  const tooEarly = events.find((event) => event.payload.title === "Too Early")
+  assert.ok(locked && earlyRating && shawshank && beli && laterRating && cy && tooEarly)
+  assert.ok(earlyRating.id > locked.id)
+  assert.ok(earlyRating.id < shawshank.id)
+  assert.equal(earlyRating.occurredAt, locked.occurredAt)
+  assert.equal(earlyRating.payload.at, "2026-01-01T00:00:00.000Z")
+  assert.ok(beli.id > laterRating.id)
+  assert.equal(tooEarly.occurredAt, cy.occurredAt)
+  assert.equal(tooEarly.payload.suggestedAt, "2026-01-15T00:00:00.000Z")
+  assert.ok(tooEarly.id > cy.id)
 
   const model = reduceRatingEvents(events)
   const weeks = eloWeeksFromModel(model)
