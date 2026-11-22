@@ -2,6 +2,7 @@ import { hashPassword } from "@/lib/auth"
 import { findUserByUsername } from "@/lib/auth"
 import { getRatings, listMovies, submitRating, suggestMovie } from "@/lib/club"
 import { getDb } from "@/lib/db"
+import { appendRatingEvent } from "@/lib/rating-events"
 
 export const DEMO_PASSWORD = "reel-night"
 
@@ -100,7 +101,20 @@ export function seedDemo(): void {
   const createdAt = "2026-09-20T16:00:00.000Z"
   const addMembers = db.transaction(() => {
     for (const person of PEOPLE) {
-      insert.run(person.username, person.name, passwordHash, person.isAdmin ? 1 : 0, createdAt)
+      const info = insert.run(person.username, person.name, passwordHash, person.isAdmin ? 1 : 0, createdAt)
+      const id = Number(info.lastInsertRowid)
+      appendRatingEvent(db, {
+        actorId: id,
+        type: "member.joined",
+        occurredAt: createdAt,
+        payload: {
+          userId: id,
+          username: person.username,
+          name: person.name,
+          isAdmin: person.isAdmin,
+          via: "seed",
+        },
+      })
     }
   })
   addMembers()

@@ -17,6 +17,7 @@ import {
   type BeliStepResult,
 } from "@/lib/beli-bridge"
 import { getDb } from "@/lib/db"
+import { appendRatingEvent, type RatingEventInput } from "@/lib/rating-events"
 
 // Beli-style personal rankings. Own tables (beli_*), own movie list, nothing
 // shared with the Elo flow in club.ts beyond users. SQLite stores each member's
@@ -141,20 +142,29 @@ export function submitBeliMovie(userId: number, titleRaw: string, opts?: { submi
   const user = requireUser(userId)
   const title = cleanTitle(titleRaw)
   const submittedAt = opts?.submittedAt ?? new Date().toISOString()
-  let info
+  const db = getDb()
   try {
-    info = getDb()
-      .prepare("INSERT INTO beli_movies (title, submitter_id, submitted_at) VALUES (?, ?, ?)")
-      .run(title, user.id, submittedAt)
+    return db.transaction(() => {
+      const info = db
+        .prepare("INSERT INTO beli_movies (title, submitter_id, submitted_at) VALUES (?, ?, ?)")
+        .run(title, user.id, submittedAt)
+      const movieId = Number(info.lastInsertRowid)
+      appendRatingEvent(db, {
+        actorId: user.id,
+        type: "beli.movie.submitted",
+        movieId,
+        payload: { title, submittedAt, submitterId: user.id },
+      })
+      const saved = getBeliMovie(movieId)
+      if (!saved) throw new BeliError("The submission didn't save.", "submit_failed")
+      return saved
+    })()
   } catch (error) {
     if ((error as { code?: string }).code === "SQLITE_CONSTRAINT_UNIQUE") {
       throw new BeliError("That movie is already on the Beli list.", "duplicate_title")
     }
     throw error
   }
-  const saved = getBeliMovie(Number(info.lastInsertRowid))
-  if (!saved) throw new BeliError("The submission didn't save.", "submit_failed")
-  return saved
 }
 
 // Rankings.to_dict() built from the tables. Names and titles only; ids are
@@ -235,8 +245,29 @@ export function otherBeliPending(userId: number, movieId: number): OtherBeliPend
   return { movieId: movie.id, title: movie.title, bucket: pending.insertion.bucket }
 }
 
+function clearPending(
+  userId: number,
+  movieId: number | null,
+  reason: string,
+  detail?: string,
+  answer?: string,
+): void {
+  const db = getDb()
+  db.transaction(() => {
+    const info = db.prepare("DELETE FROM beli_pending WHERE user_id = ?").run(userId)
+    if (info.changes !== 1) return
+    appendRatingEvent(db, {
+      actorId: userId,
+      type: "beli.search.abandoned",
+      movieId,
+      payload: { movieId, reason, detail, answer },
+    })
+  })()
+}
+
 export function cancelBeliRanking(userId: number): void {
-  getDb().prepare("DELETE FROM beli_pending WHERE user_id = ?").run(userId)
+  const pending = getBeliPending(userId)
+  clearPending(userId, pending?.movieId ?? null, "start_over")
 }
 
 // Replaces the member's rows with the lists the engine returned. First-placed
@@ -272,22 +303,32 @@ function applyStep(
   result: BeliStepResult,
   idByTitle: Map<string, number>,
   fresh: boolean,
+  events: RatingEventInput[],
 ): BeliStepResult {
   const db = getDb()
   const apply = db.transaction(() => {
+    let startedAt: string | null = null
     if (result.done) {
       writeLists(userId, result.lists, idByTitle)
       db.prepare("DELETE FROM beli_pending WHERE user_id = ?").run(userId)
     } else if (fresh) {
+      startedAt = new Date().toISOString()
       db.prepare(
         "INSERT OR REPLACE INTO beli_pending (user_id, movie_id, state, started_at) VALUES (?, ?, ?, ?)",
-      ).run(userId, movieId, JSON.stringify(result.insertion), new Date().toISOString())
+      ).run(userId, movieId, JSON.stringify(result.insertion), startedAt)
     } else {
       db.prepare("UPDATE beli_pending SET state = ? WHERE user_id = ? AND movie_id = ?").run(
         JSON.stringify(result.insertion),
         userId,
         movieId,
       )
+    }
+    for (const event of events) {
+      const payload =
+        event.type === "beli.search.started" && startedAt != null
+          ? { ...event.payload, startedAt }
+          : event.payload
+      appendRatingEvent(db, { ...event, payload })
     }
   })
   apply()
@@ -313,12 +354,41 @@ export function startBeliRanking(
   }
   const pending = assertCurrentStep(user.id, token)
   if (pending && pending.movieId === movie.id && pending.insertion.bucket === bucket) {
-    return stepPending(user, movie, null)
+    return stepPending(user, movie, null, "resume")
   }
   const { state, idByTitle } = loadState()
   const rerank = BELI_BUCKETS.some((b) => state.lists[user.name]?.[b].includes(movie.title))
   const result = beliStart(state, user.name, movie.title, bucket, rerank)
-  return applyStep(user.id, movie.id, result, idByTitle, true)
+  const events: RatingEventInput[] = []
+  if (pending) {
+    events.push({
+      actorId: user.id,
+      type: "beli.search.abandoned",
+      movieId: pending.movieId,
+      payload: { movieId: pending.movieId, reason: "replaced" },
+    })
+  }
+  events.push({
+    actorId: user.id,
+    type: "beli.bucket.chosen",
+    movieId: movie.id,
+    payload: { movieId: movie.id, title: movie.title, bucket, rerank },
+  })
+  if (result.done) {
+    events.push({
+      actorId: user.id,
+      type: "beli.ranking.placed",
+      movieId: movie.id,
+      payload: { movieId: movie.id, title: movie.title, bucket, index: result.index },
+    })
+  }
+  events.push({
+    actorId: user.id,
+    type: "beli.search.started",
+    movieId: movie.id,
+    payload: { movieId: movie.id, title: movie.title, bucket, rerank },
+  })
+  return applyStep(user.id, movie.id, result, idByTitle, true, events)
 }
 
 function requirePending(userId: number, movieId: number): BeliPending {
@@ -329,7 +399,25 @@ function requirePending(userId: number, movieId: number): BeliPending {
   return pending
 }
 
-function stepPending(user: PublicUser, movie: BeliMovie, answer: BeliAnswer | null): BeliStepResult {
+function sameInsertion(left: BeliInsertion, right: BeliInsertion): boolean {
+  return (
+    left.member === right.member &&
+    left.movie === right.movie &&
+    left.bucket === right.bucket &&
+    left.lo === right.lo &&
+    left.hi === right.hi &&
+    left.rerank === right.rerank &&
+    left.candidates.join("\0") === right.candidates.join("\0") &&
+    JSON.stringify(left.history) === JSON.stringify(right.history)
+  )
+}
+
+function stepPending(
+  user: PublicUser,
+  movie: BeliMovie,
+  answer: BeliAnswer | null,
+  kind: "answer" | "resume" | "peek",
+): BeliStepResult {
   const pending = requirePending(user.id, movie.id)
   const { state, idByTitle } = loadState()
   let result: BeliStepResult
@@ -337,10 +425,36 @@ function stepPending(user: PublicUser, movie: BeliMovie, answer: BeliAnswer | nu
     result = beliStep(state, pending.insertion, answer)
   } catch (error) {
     // A stale or malformed search can't be continued; drop it so the member can start again.
-    if (error instanceof BeliBridgeError && error.type !== "bridge") cancelBeliRanking(user.id)
+    if (error instanceof BeliBridgeError && error.type !== "bridge") {
+      clearPending(user.id, movie.id, "engine_rejected", error.message, answer ?? undefined)
+    }
     throw error
   }
-  return applyStep(user.id, movie.id, result, idByTitle, false)
+  const events: RatingEventInput[] = []
+  if (kind === "answer" && answer) {
+    events.push({
+      actorId: user.id,
+      type: "beli.comparison.answered",
+      movieId: movie.id,
+      payload: { movieId: movie.id, title: movie.title, bucket: pending.insertion.bucket, answer },
+    })
+  } else if (kind === "resume" || (kind === "peek" && (result.done || !sameInsertion(pending.insertion, result.insertion)))) {
+    events.push({
+      actorId: user.id,
+      type: "beli.search.resumed",
+      movieId: movie.id,
+      payload: { movieId: movie.id, title: movie.title, bucket: pending.insertion.bucket },
+    })
+  }
+  if (result.done) {
+    events.push({
+      actorId: user.id,
+      type: "beli.ranking.placed",
+      movieId: movie.id,
+      payload: { movieId: movie.id, title: movie.title, bucket: pending.insertion.bucket, index: result.index },
+    })
+  }
+  return applyStep(user.id, movie.id, result, idByTitle, false, events)
 }
 
 // Answers the current "which did you like more?" question. When the search
@@ -355,7 +469,7 @@ export function answerBeliRanking(
   const movie = requireMovie(movieIdRaw)
   assertCurrentStep(user.id, token)
   const answer = parseAnswer(answerRaw)
-  return stepPending(user, movie, answer)
+  return stepPending(user, movie, answer, "answer")
 }
 
 // The current question for a resumable search, or null when none is pending
@@ -365,7 +479,7 @@ export function peekBeliRanking(userId: number, movieIdRaw: unknown): BeliStepRe
   const movie = requireMovie(movieIdRaw)
   const pending = getBeliPending(user.id)
   if (!pending || pending.movieId !== movie.id) return null
-  return stepPending(user, movie, null)
+  return stepPending(user, movie, null, "peek")
 }
 
 export function removeBeliRanking(userId: number, movieIdRaw: unknown): void {
@@ -384,6 +498,20 @@ export function removeBeliRanking(userId: number, movieIdRaw: unknown): void {
   const apply = db.transaction(() => {
     writeLists(user.id, lists, idByTitle)
     if (dropPending) db.prepare("DELETE FROM beli_pending WHERE user_id = ?").run(user.id)
+    appendRatingEvent(db, {
+      actorId: user.id,
+      type: "beli.list.removed",
+      movieId: movie.id,
+      payload: { movieId: movie.id, title: movie.title, bucket: placement.bucket, dropPending },
+    })
+    if (dropPending && pending) {
+      appendRatingEvent(db, {
+        actorId: user.id,
+        type: "beli.search.abandoned",
+        movieId: pending.movieId,
+        payload: { movieId: pending.movieId, reason: "list_removed" },
+      })
+    }
   })
   apply()
 }
@@ -411,7 +539,21 @@ export function deleteBeliMovie(userId: number, movieIdRaw: unknown, opts?: { co
   } else if (movie.submitterId !== user.id && !user.isAdmin) {
     throw new BeliError("Only the person who added this, or an admin, can remove it.", "forbidden")
   }
-  getDb().prepare("DELETE FROM beli_movies WHERE id = ?").run(movie.id)
+  const db = getDb()
+  db.transaction(() => {
+    db.prepare("DELETE FROM beli_movies WHERE id = ?").run(movie.id)
+    appendRatingEvent(db, {
+      actorId: user.id,
+      type: "beli.movie.deleted",
+      movieId: movie.id,
+      payload: {
+        title: movie.title,
+        submitterId: movie.submitterId,
+        confirmed: ranked ? opts?.confirm === true : false,
+        hadRankings: ranked,
+      },
+    })
+  })()
 }
 
 export function getBeliView(userId: number): BeliView {

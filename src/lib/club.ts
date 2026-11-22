@@ -1,6 +1,7 @@
 import { listUsers, findUserById, type PublicUser } from "@/lib/auth"
 import { getDb } from "@/lib/db"
 import { ClubError } from "@/lib/errors"
+import { appendRatingEvent } from "@/lib/rating-events"
 import { computeLeague, RankingError, type LeagueView, type RatingInput, type WeekInput } from "@/lib/ranking"
 
 export type MovieRecord = {
@@ -186,14 +187,25 @@ export function suggestMovie(
   const movie = cleanMovie(movieRaw)
   const note = cleanNote(noteRaw)
   const suggestedAt = cleanTimestamp(opts?.suggestedAt, new Date().toISOString())
-  const info = getDb()
-    .prepare(
-      `INSERT INTO movies (movie, suggester_id, suggested_at, note)
-       VALUES (?, ?, ?, ?)`,
-    )
-    .run(movie, user.id, suggestedAt, note)
-  const saved = getMovie(Number(info.lastInsertRowid))
-  if (!saved) throw new ClubError("The suggestion didn't save.", "suggest_failed")
+  const db = getDb()
+  const saved = db.transaction(() => {
+    const info = db
+      .prepare(
+        `INSERT INTO movies (movie, suggester_id, suggested_at, note)
+         VALUES (?, ?, ?, ?)`,
+      )
+      .run(movie, user.id, suggestedAt, note)
+    const movieId = Number(info.lastInsertRowid)
+    appendRatingEvent(db, {
+      actorId: user.id,
+      type: "elo.movie.suggested",
+      movieId,
+      payload: { title: movie, note, suggestedAt, suggesterId: user.id, rankedAt: null },
+    })
+    const created = getMovie(movieId)
+    if (!created) throw new ClubError("The suggestion didn't save.", "suggest_failed")
+    return created
+  })()
   return saved
 }
 
@@ -219,6 +231,9 @@ export function submitRating(
   const at = cleanTimestamp(opts?.at, new Date().toISOString())
   const db = getDb()
   const save = db.transaction(() => {
+    const prior = db
+      .prepare("SELECT experience, quality FROM ratings WHERE movie_id = ? AND user_id = ?")
+      .get(movie.id, user.id) as { experience: number; quality: number } | undefined
     db.prepare(
       `INSERT INTO ratings (movie_id, user_id, experience, quality, created_at, updated_at)
        VALUES (?, ?, ?, ?, ?, ?)
@@ -234,6 +249,14 @@ export function submitRating(
        SET ranked_at = (SELECT MIN(created_at) FROM ratings WHERE movie_id = movies.id)
        WHERE id = ? AND ranked_at IS NULL`,
     ).run(movie.id)
+    appendRatingEvent(db, {
+      actorId: user.id,
+      type: prior ? "elo.rating.changed" : "elo.rating.set",
+      movieId: movie.id,
+      payload: prior
+        ? { experience, quality, at, previous: { experience: prior.experience, quality: prior.quality } }
+        : { experience, quality, at },
+    })
   })
   save()
 }
@@ -257,6 +280,17 @@ export function removeSuggestion(userId: number, movieIdRaw: unknown): void {
     if (info.changes !== 1) {
       throw new ClubError("This movie already has scores, so it stays in the ranking.", "has_ratings")
     }
+    appendRatingEvent(db, {
+      actorId: user.id,
+      type: "elo.movie.removed",
+      movieId: movie.id,
+      payload: {
+        title: movie.movie,
+        note: movie.note,
+        suggestedAt: movie.suggestedAt,
+        suggesterId: movie.suggesterId,
+      },
+    })
   })
   remove()
 }

@@ -93,12 +93,15 @@ export async function createMemberAction(_prev: ActionState, formData: FormData)
   if (!user?.isAdmin) return { error: "Only an admin can add members." }
   let createdName = ""
   try {
-    createdName = createMember({
-      username: String(formData.get("username") ?? ""),
-      name: String(formData.get("name") ?? ""),
-      password: String(formData.get("password") ?? ""),
-      isAdmin: formData.get("isAdmin") === "on",
-    }).name
+    createdName = createMember(
+      {
+        username: String(formData.get("username") ?? ""),
+        name: String(formData.get("name") ?? ""),
+        password: String(formData.get("password") ?? ""),
+        isAdmin: formData.get("isAdmin") === "on",
+      },
+      user.id,
+    ).name
   } catch (error) {
     return { error: message(error) }
   }
