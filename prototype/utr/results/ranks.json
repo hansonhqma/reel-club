@@ -1,0 +1,649 @@
+{
+  "cutoffs": [
+    [
+      "Iron IV",
+      "below 1120"
+    ],
+    [
+      "Iron III",
+      "1120"
+    ],
+    [
+      "Iron II",
+      "1160"
+    ],
+    [
+      "Iron I",
+      "1200"
+    ],
+    [
+      "Bronze IV",
+      "1240"
+    ],
+    [
+      "Bronze III",
+      "1280"
+    ],
+    [
+      "Bronze II",
+      "1320"
+    ],
+    [
+      "Bronze I",
+      "1360"
+    ],
+    [
+      "Silver IV",
+      "1400"
+    ],
+    [
+      "Silver III",
+      "1440"
+    ],
+    [
+      "Silver II",
+      "1480"
+    ],
+    [
+      "Silver I",
+      "1520"
+    ],
+    [
+      "Gold IV",
+      "1560"
+    ],
+    [
+      "Gold III",
+      "1600"
+    ],
+    [
+      "Gold II",
+      "1640"
+    ],
+    [
+      "Gold I",
+      "1680"
+    ],
+    [
+      "Platinum IV",
+      "1720"
+    ],
+    [
+      "Platinum III",
+      "1740"
+    ],
+    [
+      "Platinum II",
+      "1760"
+    ],
+    [
+      "Platinum I",
+      "1780"
+    ],
+    [
+      "Emerald IV",
+      "1800"
+    ],
+    [
+      "Emerald III",
+      "1830"
+    ],
+    [
+      "Emerald II",
+      "1860"
+    ],
+    [
+      "Emerald I",
+      "1890"
+    ],
+    [
+      "Diamond IV",
+      "1920"
+    ],
+    [
+      "Diamond III",
+      "1960"
+    ],
+    [
+      "Diamond II",
+      "2000"
+    ],
+    [
+      "Diamond I",
+      "2040"
+    ],
+    [
+      "Master",
+      "2080"
+    ],
+    [
+      "Grandmaster",
+      "current #2, and only while #1 is Challenger; Elo at least 1720, and 10 rated picks"
+    ],
+    [
+      "Challenger",
+      "current #1, Elo at least 1800, and 10 rated picks"
+    ]
+  ],
+  "main": {
+    "careers": {
+      "good": 40,
+      "average": 160,
+      "bad": 40
+    },
+    "elo_mean": {
+      "good": {
+        "10": 1631.0567659702713,
+        "20": 1724.9944284620935,
+        "30": 1757.1411382349688,
+        "40": 1800.9497417531743,
+        "60": 1851.0709767326366,
+        "100": 1880.5643443787128
+      },
+      "average": {
+        "10": 1493.6772263910982,
+        "20": 1496.8879793708306,
+        "30": 1504.835774998171,
+        "40": 1499.4504467646816,
+        "60": 1495.9103747914269,
+        "100": 1498.2679964340577
+      },
+      "bad": {
+        "10": 1394.2343284653361,
+        "20": 1287.4536540545837,
+        "30": 1223.5157617723473,
+        "40": 1201.2484711880995,
+        "60": 1165.2875241016554,
+        "100": 1126.3636698850557
+      }
+    },
+    "elo_p10": {
+      "good": {
+        "10": 1598.0841045256775,
+        "20": 1690.1530205559732,
+        "30": 1698.6254063870292,
+        "40": 1752.9695297315154,
+        "60": 1802.1076353423098,
+        "100": 1833.9758893382768
+      },
+      "average": {
+        "10": 1432.7799882597394,
+        "20": 1419.7031867933501,
+        "30": 1416.25463735105,
+        "40": 1413.8031199729467,
+        "60": 1413.731237680302,
+        "100": 1417.9601317702734
+      },
+      "bad": {
+        "10": 1375.6456969439498,
+        "20": 1259.808300241032,
+        "30": 1187.8196618228765,
+        "40": 1158.1383040545752,
+        "60": 1109.0953339400958,
+        "100": 1073.7776707090866
+      }
+    },
+    "elo_p50": {
+      "good": {
+        "10": 1634.1080846523812,
+        "20": 1733.3255310306135,
+        "30": 1775.7987167442823,
+        "40": 1806.6057301653875,
+        "60": 1854.683029785741,
+        "100": 1888.4038562739206
+      },
+      "average": {
+        "10": 1489.5504386353907,
+        "20": 1501.065142880581,
+        "30": 1505.5504011980884,
+        "40": 1493.7592489612102,
+        "60": 1495.588566358368,
+        "100": 1495.617021187617
+      },
+      "bad": {
+        "10": 1386.342652250874,
+        "20": 1276.6632766060761,
+        "30": 1221.3513452365587,
+        "40": 1200.2784960726824,
+        "60": 1162.9036566079662,
+        "100": 1122.496828612078
+      }
+    },
+    "elo_p90": {
+      "good": {
+        "10": 1652.3322786253639,
+        "20": 1751.847851091219,
+        "30": 1801.3347605582796,
+        "40": 1850.8197840601788,
+        "60": 1894.8999728905114,
+        "100": 1928.740813423559
+      },
+      "average": {
+        "10": 1561.5353799251286,
+        "20": 1571.681097662792,
+        "30": 1592.2242689433203,
+        "40": 1588.5083938665466,
+        "60": 1584.3181074780885,
+        "100": 1582.6909328559145
+      },
+      "bad": {
+        "10": 1418.386165718948,
+        "20": 1331.135896537352,
+        "30": 1269.140403929279,
+        "40": 1251.58048614561,
+        "60": 1221.825662824889,
+        "100": 1190.5049188219211
+      }
+    },
+    "median_first_hit": {
+      "good": {
+        "Gold IV": 6.0,
+        "Platinum IV": 19.0,
+        "Emerald IV": 35.0,
+        "Diamond IV": 85,
+        "Master": null
+      },
+      "average": {
+        "Gold IV": 29,
+        "Platinum IV": 71,
+        "Emerald IV": null,
+        "Diamond IV": null,
+        "Master": null
+      },
+      "bad": {
+        "Gold IV": null,
+        "Platinum IV": null,
+        "Emerald IV": null,
+        "Diamond IV": null,
+        "Master": null
+      }
+    },
+    "hit_count": {
+      "good": {
+        "Gold IV": 40,
+        "Platinum IV": 40,
+        "Emerald IV": 40,
+        "Diamond IV": 19,
+        "Master": 0
+      },
+      "average": {
+        "Gold IV": 139,
+        "Platinum IV": 1,
+        "Emerald IV": 0,
+        "Diamond IV": 0,
+        "Master": 0
+      },
+      "bad": {
+        "Gold IV": 0,
+        "Platinum IV": 0,
+        "Emerald IV": 0,
+        "Diamond IV": 0,
+        "Master": 0
+      }
+    },
+    "fall_median": {
+      "good": {
+        "Bronze I": null,
+        "Iron I": null
+      },
+      "average": {
+        "Bronze I": 53.0,
+        "Iron I": null
+      },
+      "bad": {
+        "Bronze I": 10.0,
+        "Iron I": 27.5
+      }
+    },
+    "fall_count": {
+      "good": {
+        "Bronze I": 0,
+        "Iron I": 0
+      },
+      "average": {
+        "Bronze I": 78,
+        "Iron I": 0
+      },
+      "bad": {
+        "Bronze I": 40,
+        "Iron I": 40
+      }
+    },
+    "flip": {
+      "good": {
+        "label": 0.151,
+        "tier": 0.05550000000000001,
+        "other_night": 0.0825
+      },
+      "average": {
+        "label": 0.1915,
+        "tier": 0.045375,
+        "other_night": 0.1068125
+      },
+      "bad": {
+        "label": 0.13525,
+        "tier": 0.032,
+        "other_night": 0.0635
+      }
+    },
+    "chair_count": {
+      "good": {
+        "Challenger": 40,
+        "Grandmaster": 0
+      },
+      "average": {
+        "Challenger": 0,
+        "Grandmaster": 0
+      },
+      "bad": {
+        "Challenger": 0,
+        "Grandmaster": 0
+      }
+    },
+    "chair_median": {
+      "good": {
+        "Challenger": 55.0,
+        "Grandmaster": null
+      },
+      "average": {
+        "Challenger": null,
+        "Grandmaster": null
+      },
+      "bad": {
+        "Challenger": null,
+        "Grandmaster": null
+      }
+    }
+  },
+  "two_good": {
+    "careers": {
+      "good": 40,
+      "average": 60,
+      "bad": 20
+    },
+    "chair_count": {
+      "good": {
+        "Challenger": 30,
+        "Grandmaster": 28
+      },
+      "average": {
+        "Challenger": 0,
+        "Grandmaster": 0
+      },
+      "bad": {
+        "Challenger": 0,
+        "Grandmaster": 0
+      }
+    },
+    "chair_median": {
+      "good": {
+        "Challenger": 62.0,
+        "Grandmaster": 68.0
+      },
+      "average": {
+        "Challenger": null,
+        "Grandmaster": null
+      },
+      "bad": {
+        "Challenger": null,
+        "Grandmaster": null
+      }
+    },
+    "good_elo_mean": {
+      "10": 1608.7554438981515,
+      "20": 1679.928971023003,
+      "30": 1710.0576673085204,
+      "40": 1735.6832303845808,
+      "60": 1769.0148480290486,
+      "100": 1799.645327336534
+    }
+  },
+  "shawshank": {
+    "elo": {
+      "One": 1500.0,
+      "Two": 1500.0,
+      "Three": 1500.0,
+      "Four": 1500.0,
+      "Five": 1500.0,
+      "Six": 1500.0
+    },
+    "ranks": {
+      "Five": "Silver II",
+      "Four": "Silver II",
+      "One": "Silver II",
+      "Six": "Silver II",
+      "Three": "Silver II",
+      "Two": "Silver II"
+    },
+    "picks": {
+      "One": 1,
+      "Two": 0,
+      "Three": 0,
+      "Four": 0,
+      "Five": 0,
+      "Six": 0
+    },
+    "matches": 0
+  },
+  "rank_counts_main": {
+    "10": {
+      "Gold III": 23,
+      "Silver II": 49,
+      "Silver III": 43,
+      "Silver I": 36,
+      "Silver IV": 30,
+      "Gold IV": 19,
+      "Gold II": 15,
+      "Bronze I": 25
+    },
+    "20": {
+      "Platinum III": 16,
+      "Silver I": 39,
+      "Silver II": 38,
+      "Silver IV": 17,
+      "Bronze IV": 14,
+      "Gold I": 9,
+      "Silver III": 34,
+      "Gold IV": 17,
+      "Bronze III": 19,
+      "Platinum IV": 12,
+      "Bronze II": 7,
+      "Gold III": 7,
+      "Gold II": 4,
+      "Bronze I": 7
+    },
+    "30": {
+      "Emerald IV": 5,
+      "Gold IV": 23,
+      "Silver IV": 15,
+      "Silver III": 23,
+      "Iron II": 7,
+      "Gold I": 7,
+      "Silver I": 36,
+      "Silver II": 39,
+      "Platinum I": 15,
+      "Iron I": 19,
+      "Bronze IV": 11,
+      "Bronze I": 10,
+      "Gold III": 10,
+      "Platinum II": 4,
+      "Bronze III": 3,
+      "Gold II": 6,
+      "Platinum III": 5,
+      "Platinum IV": 1,
+      "Bronze II": 1
+    },
+    "40": {
+      "Emerald II": 2,
+      "Gold III": 11,
+      "Silver II": 32,
+      "Silver IV": 16,
+      "Silver III": 35,
+      "Iron II": 15,
+      "Platinum III": 3,
+      "Gold IV": 21,
+      "Emerald III": 11,
+      "Silver I": 30,
+      "Iron I": 16,
+      "Platinum II": 7,
+      "Gold I": 1,
+      "Gold II": 4,
+      "Emerald IV": 8,
+      "Bronze I": 9,
+      "Bronze IV": 5,
+      "Bronze II": 3,
+      "Bronze III": 2,
+      "Platinum IV": 1,
+      "Iron III": 2,
+      "Platinum I": 6
+    },
+    "60": {
+      "Challenger": 36,
+      "Gold III": 10,
+      "Silver III": 30,
+      "Silver I": 35,
+      "Bronze I": 5,
+      "Iron IV": 5,
+      "Emerald IV": 1,
+      "Gold IV": 14,
+      "Silver II": 38,
+      "Iron I": 8,
+      "Silver IV": 22,
+      "Iron II": 12,
+      "Bronze III": 1,
+      "Platinum II": 1,
+      "Iron III": 11,
+      "Bronze IV": 4,
+      "Platinum I": 2,
+      "Bronze II": 3,
+      "Gold II": 2
+    },
+    "100": {
+      "Challenger": 39,
+      "Silver I": 33,
+      "Gold IV": 25,
+      "Bronze I": 8,
+      "Iron IV": 18,
+      "Silver III": 39,
+      "Silver IV": 13,
+      "Silver II": 31,
+      "Iron II": 7,
+      "Iron III": 10,
+      "Bronze III": 1,
+      "Iron I": 5,
+      "Gold III": 7,
+      "Gold II": 2,
+      "Bronze II": 1,
+      "Gold I": 1
+    }
+  },
+  "rank_counts_two_good": {
+    "10": {
+      "Gold IV": 10,
+      "Gold II": 4,
+      "Silver III": 23,
+      "Silver I": 10,
+      "Silver IV": 21,
+      "Bronze I": 14,
+      "Gold III": 24,
+      "Silver II": 14
+    },
+    "20": {
+      "Gold II": 14,
+      "Silver IV": 16,
+      "Silver II": 13,
+      "Bronze III": 8,
+      "Gold I": 19,
+      "Silver I": 5,
+      "Silver III": 25,
+      "Bronze I": 2,
+      "Bronze IV": 10,
+      "Bronze II": 2,
+      "Gold III": 2,
+      "Platinum IV": 2,
+      "Platinum III": 2
+    },
+    "30": {
+      "Gold II": 10,
+      "Silver III": 18,
+      "Silver II": 9,
+      "Bronze IV": 6,
+      "Platinum II": 6,
+      "Gold I": 12,
+      "Silver I": 8,
+      "Bronze I": 7,
+      "Iron II": 7,
+      "Platinum III": 5,
+      "Silver IV": 15,
+      "Iron I": 7,
+      "Platinum IV": 4,
+      "Gold IV": 2,
+      "Platinum I": 2,
+      "Bronze II": 1,
+      "Gold III": 1
+    },
+    "40": {
+      "Platinum III": 10,
+      "Gold I": 9,
+      "Silver IV": 11,
+      "Silver III": 20,
+      "Silver II": 12,
+      "Iron I": 5,
+      "Emerald IV": 2,
+      "Platinum IV": 4,
+      "Bronze I": 6,
+      "Iron II": 10,
+      "Platinum I": 7,
+      "Bronze II": 3,
+      "Emerald III": 1,
+      "Silver I": 7,
+      "Iron III": 4,
+      "Gold III": 1,
+      "Gold II": 5,
+      "Gold IV": 1,
+      "Platinum II": 1,
+      "Bronze IV": 1
+    },
+    "60": {
+      "Challenger": 12,
+      "Gold II": 4,
+      "Silver II": 9,
+      "Bronze II": 8,
+      "Silver III": 22,
+      "Iron I": 3,
+      "Grandmaster": 8,
+      "Silver IV": 11,
+      "Iron II": 6,
+      "Gold I": 3,
+      "Bronze I": 5,
+      "Platinum III": 3,
+      "Platinum I": 3,
+      "Gold IV": 1,
+      "Iron IV": 7,
+      "Iron III": 4,
+      "Silver I": 4,
+      "Platinum II": 5,
+      "Platinum IV": 2
+    },
+    "100": {
+      "Platinum I": 6,
+      "Silver III": 16,
+      "Silver II": 13,
+      "Bronze I": 10,
+      "Iron IV": 17,
+      "Challenger": 14,
+      "Grandmaster": 12,
+      "Silver IV": 9,
+      "Bronze II": 4,
+      "Bronze IV": 1,
+      "Silver I": 2,
+      "Bronze III": 3,
+      "Platinum II": 4,
+      "Platinum III": 2,
+      "Gold IV": 1,
+      "Gold I": 2,
+      "Gold III": 2,
+      "Iron III": 2
+    }
+  }
+}

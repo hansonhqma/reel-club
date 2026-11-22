@@ -110,3 +110,7 @@ Details, tables, and the chart are in `results/RESULTS.md`. Clubs of 5 or 6 peop
 Use the three enjoyment groups, binary search, no ties, and freeze ratings at close. Let the suggester rate for themselves and leave them out of Elo for that movie. Feed Elo the Beli-band scores and rebuild history at each close from the lists as they stand. The suggester or an admin can close a movie early; silence counts as "I didn't watch," and there is no timer. Keep one movie open at a time.
 
 Do not expect the shared board to become a sharper ranking of pickers than today's two scores. The gain is one list per person, a short question flow, and a single story from taste to Elo.
+
+## Ranks
+
+A rank is a label on the Elo, not a change to it. 1500, the starting rating, is the middle of Silver II. The cuts, the top-chair rules, and the season results are in [RANKS.md](RANKS.md).
