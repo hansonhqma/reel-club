@@ -1,0 +1,915 @@
+{
+  "seeds": 16,
+  "specs": [
+    {
+      "name": "current",
+      "k": 32,
+      "d": 2,
+      "w": 400,
+      "baseline": "off",
+      "min_picks": 10,
+      "challenger_elo": 1800,
+      "grandmaster_elo": 1720,
+      "pick_horizon": 10,
+      "scale": false
+    },
+    {
+      "name": "mild",
+      "k": 32,
+      "d": 1.75,
+      "min_picks": 6,
+      "w": 400,
+      "baseline": "off",
+      "challenger_elo": 1800,
+      "grandmaster_elo": 1720,
+      "pick_horizon": 10,
+      "scale": true
+    },
+    {
+      "name": "medium",
+      "k": 32,
+      "d": 1.5,
+      "min_picks": 6,
+      "w": 400,
+      "baseline": "off",
+      "challenger_elo": 1800,
+      "grandmaster_elo": 1720,
+      "pick_horizon": 10,
+      "scale": true
+    },
+    {
+      "name": "spicy",
+      "k": 32,
+      "d": 1.25,
+      "min_picks": 6,
+      "w": 400,
+      "baseline": "off",
+      "challenger_elo": 1800,
+      "grandmaster_elo": 1720,
+      "pick_horizon": 10,
+      "scale": true
+    }
+  ],
+  "results": {
+    "current": {
+      "4": {
+        "good": {
+          "careers": 16,
+          "gates": {
+            "Gold": 2.0,
+            "Platinum": 6.0,
+            "Emerald": 10.0
+          },
+          "gate_n": {
+            "Gold": 16,
+            "Platinum": 16,
+            "Emerald": 2
+          },
+          "challenger": 10.0,
+          "challenger_n": 2,
+          "elo_at_6": 1698.4078851389772,
+          "flip": 0.234375,
+          "tier_flip": 0.0578125,
+          "avg_high": null,
+          "avg_low": null,
+          "bad_high": null,
+          "good_low": 0.027777777777777776,
+          "good_not_first": 0.0625
+        },
+        "average": {
+          "careers": 32,
+          "gates": {
+            "Gold": 4,
+            "Platinum": null,
+            "Emerald": null
+          },
+          "gate_n": {
+            "Gold": 11,
+            "Platinum": 0,
+            "Emerald": 0
+          },
+          "challenger": null,
+          "challenger_n": 0,
+          "elo_at_6": 1501.859259392033,
+          "flip": 0.15546875,
+          "tier_flip": 0.0203125,
+          "avg_high": 0.0,
+          "avg_low": 0.00078125,
+          "bad_high": null,
+          "good_low": null,
+          "good_not_first": null
+        },
+        "bad": {
+          "careers": 16,
+          "gates": {
+            "Gold": null,
+            "Platinum": null,
+            "Emerald": null
+          },
+          "gate_n": {
+            "Gold": 0,
+            "Platinum": 0,
+            "Emerald": 0
+          },
+          "challenger": null,
+          "challenger_n": 0,
+          "elo_at_6": 1281.2998155900502,
+          "flip": 0.1890625,
+          "tier_flip": 0.051562500000000004,
+          "avg_high": null,
+          "avg_low": null,
+          "bad_high": 0.0,
+          "good_low": null,
+          "good_not_first": null
+        }
+      },
+      "6": {
+        "good": {
+          "careers": 16,
+          "gates": {
+            "Gold": 1.0,
+            "Platinum": 4.0,
+            "Emerald": 6.5
+          },
+          "gate_n": {
+            "Gold": 16,
+            "Platinum": 16,
+            "Emerald": 16
+          },
+          "challenger": 10.0,
+          "challenger_n": 16,
+          "elo_at_6": 1769.7931744514071,
+          "flip": 0.23645833333333333,
+          "tier_flip": 0.090625,
+          "avg_high": null,
+          "avg_low": null,
+          "bad_high": null,
+          "good_low": 0.006944444444444444,
+          "good_not_first": 0.0
+        },
+        "average": {
+          "careers": 64,
+          "gates": {
+            "Gold": 4,
+            "Platinum": null,
+            "Emerald": null
+          },
+          "gate_n": {
+            "Gold": 43,
+            "Platinum": 0,
+            "Emerald": 0
+          },
+          "challenger": null,
+          "challenger_n": 0,
+          "elo_at_6": 1505.3378435483112,
+          "flip": 0.1828125,
+          "tier_flip": 0.042708333333333334,
+          "avg_high": 0.0,
+          "avg_low": 0.046614583333333334,
+          "bad_high": null,
+          "good_low": null,
+          "good_not_first": null
+        },
+        "bad": {
+          "careers": 16,
+          "gates": {
+            "Gold": null,
+            "Platinum": null,
+            "Emerald": null
+          },
+          "gate_n": {
+            "Gold": 0,
+            "Platinum": 0,
+            "Emerald": 0
+          },
+          "challenger": null,
+          "challenger_n": 0,
+          "elo_at_6": 1199.5040571274237,
+          "flip": 0.15625,
+          "tier_flip": 0.03958333333333333,
+          "avg_high": null,
+          "avg_low": null,
+          "bad_high": 0.0,
+          "good_low": null,
+          "good_not_first": null
+        }
+      },
+      "8": {
+        "good": {
+          "careers": 16,
+          "gates": {
+            "Gold": 1.0,
+            "Platinum": 3.0,
+            "Emerald": 5.0
+          },
+          "gate_n": {
+            "Gold": 16,
+            "Platinum": 16,
+            "Emerald": 16
+          },
+          "challenger": 10.0,
+          "challenger_n": 16,
+          "elo_at_6": 1819.3844389833037,
+          "flip": 0.18515625,
+          "tier_flip": 0.06171875,
+          "avg_high": null,
+          "avg_low": null,
+          "bad_high": null,
+          "good_low": 0.013888888888888888,
+          "good_not_first": 0.0
+        },
+        "average": {
+          "careers": 96,
+          "gates": {
+            "Gold": 3.0,
+            "Platinum": 3,
+            "Emerald": null
+          },
+          "gate_n": {
+            "Gold": 82,
+            "Platinum": 3,
+            "Emerald": 0
+          },
+          "challenger": null,
+          "challenger_n": 0,
+          "elo_at_6": 1503.9515885426547,
+          "flip": 0.191796875,
+          "tier_flip": 0.05377604166666666,
+          "avg_high": 0.0026041666666666665,
+          "avg_low": 0.07565104166666667,
+          "bad_high": null,
+          "good_low": null,
+          "good_not_first": null
+        },
+        "bad": {
+          "careers": 16,
+          "gates": {
+            "Gold": null,
+            "Platinum": null,
+            "Emerald": null
+          },
+          "gate_n": {
+            "Gold": 0,
+            "Platinum": 0,
+            "Emerald": 0
+          },
+          "challenger": null,
+          "challenger_n": 0,
+          "elo_at_6": 1139.9571122039902,
+          "flip": 0.1140625,
+          "tier_flip": 0.030468750000000003,
+          "avg_high": null,
+          "avg_low": null,
+          "bad_high": 0.0,
+          "good_low": null,
+          "good_not_first": null
+        }
+      }
+    },
+    "mild": {
+      "4": {
+        "good": {
+          "careers": 16,
+          "gates": {
+            "Gold": 1.0,
+            "Platinum": 4.0,
+            "Emerald": 7.5
+          },
+          "gate_n": {
+            "Gold": 16,
+            "Platinum": 16,
+            "Emerald": 16
+          },
+          "challenger": 7.5,
+          "challenger_n": 16,
+          "elo_at_6": 1757.0096251435848,
+          "flip": 0.3375,
+          "tier_flip": 0.1234375,
+          "avg_high": null,
+          "avg_low": null,
+          "bad_high": null,
+          "good_low": 0.010416666666666666,
+          "good_not_first": 0.0625
+        },
+        "average": {
+          "careers": 32,
+          "gates": {
+            "Gold": 6,
+            "Platinum": null,
+            "Emerald": null
+          },
+          "gate_n": {
+            "Gold": 21,
+            "Platinum": 0,
+            "Emerald": 0
+          },
+          "challenger": null,
+          "challenger_n": 0,
+          "elo_at_6": 1503.8415420378292,
+          "flip": 0.25234375,
+          "tier_flip": 0.046875,
+          "avg_high": 0.0,
+          "avg_low": 0.0203125,
+          "bad_high": null,
+          "good_low": null,
+          "good_not_first": null
+        },
+        "bad": {
+          "careers": 16,
+          "gates": {
+            "Gold": null,
+            "Platinum": null,
+            "Emerald": null
+          },
+          "gate_n": {
+            "Gold": 0,
+            "Platinum": 0,
+            "Emerald": 0
+          },
+          "challenger": null,
+          "challenger_n": 0,
+          "elo_at_6": 1218.0807941608243,
+          "flip": 0.2546875,
+          "tier_flip": 0.0546875,
+          "avg_high": null,
+          "avg_low": null,
+          "bad_high": 0.0,
+          "good_low": null,
+          "good_not_first": null
+        }
+      },
+      "6": {
+        "good": {
+          "careers": 16,
+          "gates": {
+            "Gold": 1.0,
+            "Platinum": 4.0,
+            "Emerald": 6.5
+          },
+          "gate_n": {
+            "Gold": 16,
+            "Platinum": 16,
+            "Emerald": 16
+          },
+          "challenger": 6.5,
+          "challenger_n": 16,
+          "elo_at_6": 1776.4286712587557,
+          "flip": 0.2125,
+          "tier_flip": 0.08020833333333334,
+          "avg_high": null,
+          "avg_low": null,
+          "bad_high": null,
+          "good_low": 0.006944444444444444,
+          "good_not_first": 0.0
+        },
+        "average": {
+          "careers": 64,
+          "gates": {
+            "Gold": 3.5,
+            "Platinum": null,
+            "Emerald": null
+          },
+          "gate_n": {
+            "Gold": 44,
+            "Platinum": 0,
+            "Emerald": 0
+          },
+          "challenger": null,
+          "challenger_n": 0,
+          "elo_at_6": 1505.5471938998637,
+          "flip": 0.18697916666666667,
+          "tier_flip": 0.045572916666666664,
+          "avg_high": 0.0,
+          "avg_low": 0.05026041666666667,
+          "bad_high": null,
+          "good_low": null,
+          "good_not_first": null
+        },
+        "bad": {
+          "careers": 16,
+          "gates": {
+            "Gold": null,
+            "Platinum": null,
+            "Emerald": null
+          },
+          "gate_n": {
+            "Gold": 0,
+            "Platinum": 0,
+            "Emerald": 0
+          },
+          "challenger": null,
+          "challenger_n": 0,
+          "elo_at_6": 1191.788051676023,
+          "flip": 0.1625,
+          "tier_flip": 0.0375,
+          "avg_high": null,
+          "avg_low": null,
+          "bad_high": 0.0,
+          "good_low": null,
+          "good_not_first": null
+        }
+      },
+      "8": {
+        "good": {
+          "careers": 16,
+          "gates": {
+            "Gold": 1.0,
+            "Platinum": 4.0,
+            "Emerald": 6.5
+          },
+          "gate_n": {
+            "Gold": 16,
+            "Platinum": 16,
+            "Emerald": 16
+          },
+          "challenger": 6.5,
+          "challenger_n": 16,
+          "elo_at_6": 1785.5964034277129,
+          "flip": 0.13828125,
+          "tier_flip": 0.05078125,
+          "avg_high": null,
+          "avg_low": null,
+          "bad_high": null,
+          "good_low": 0.017361111111111112,
+          "good_not_first": 0.0
+        },
+        "average": {
+          "careers": 96,
+          "gates": {
+            "Gold": 4,
+            "Platinum": 3,
+            "Emerald": null
+          },
+          "gate_n": {
+            "Gold": 71,
+            "Platinum": 1,
+            "Emerald": 0
+          },
+          "challenger": null,
+          "challenger_n": 0,
+          "elo_at_6": 1502.3865626523004,
+          "flip": 0.15013020833333332,
+          "tier_flip": 0.0375,
+          "avg_high": 0.00026041666666666666,
+          "avg_low": 0.04401041666666666,
+          "bad_high": null,
+          "good_low": null,
+          "good_not_first": null
+        },
+        "bad": {
+          "careers": 16,
+          "gates": {
+            "Gold": null,
+            "Platinum": null,
+            "Emerald": null
+          },
+          "gate_n": {
+            "Gold": 0,
+            "Platinum": 0,
+            "Emerald": 0
+          },
+          "challenger": null,
+          "challenger_n": 0,
+          "elo_at_6": 1178.019327297043,
+          "flip": 0.1125,
+          "tier_flip": 0.02734375,
+          "avg_high": null,
+          "avg_low": null,
+          "bad_high": 0.0,
+          "good_low": null,
+          "good_not_first": null
+        }
+      }
+    },
+    "medium": {
+      "4": {
+        "good": {
+          "careers": 16,
+          "gates": {
+            "Gold": 1.0,
+            "Platinum": 4.0,
+            "Emerald": 7.0
+          },
+          "gate_n": {
+            "Gold": 16,
+            "Platinum": 16,
+            "Emerald": 16
+          },
+          "challenger": 7.0,
+          "challenger_n": 16,
+          "elo_at_6": 1762.826020112102,
+          "flip": 0.3265625,
+          "tier_flip": 0.115625,
+          "avg_high": null,
+          "avg_low": null,
+          "bad_high": null,
+          "good_low": 0.010416666666666666,
+          "good_not_first": 0.0625
+        },
+        "average": {
+          "careers": 32,
+          "gates": {
+            "Gold": 5.5,
+            "Platinum": null,
+            "Emerald": null
+          },
+          "gate_n": {
+            "Gold": 22,
+            "Platinum": 0,
+            "Emerald": 0
+          },
+          "challenger": null,
+          "challenger_n": 0,
+          "elo_at_6": 1503.486061831065,
+          "flip": 0.2640625,
+          "tier_flip": 0.04921875,
+          "avg_high": 0.0,
+          "avg_low": 0.0203125,
+          "bad_high": null,
+          "good_low": null,
+          "good_not_first": null
+        },
+        "bad": {
+          "careers": 16,
+          "gates": {
+            "Gold": null,
+            "Platinum": null,
+            "Emerald": null
+          },
+          "gate_n": {
+            "Gold": 0,
+            "Platinum": 0,
+            "Emerald": 0
+          },
+          "challenger": null,
+          "challenger_n": 0,
+          "elo_at_6": 1212.2249649311702,
+          "flip": 0.253125,
+          "tier_flip": 0.05625,
+          "avg_high": null,
+          "avg_low": null,
+          "bad_high": 0.0,
+          "good_low": null,
+          "good_not_first": null
+        }
+      },
+      "6": {
+        "good": {
+          "careers": 16,
+          "gates": {
+            "Gold": 1.0,
+            "Platinum": 4.0,
+            "Emerald": 6.5
+          },
+          "gate_n": {
+            "Gold": 16,
+            "Platinum": 16,
+            "Emerald": 16
+          },
+          "challenger": 6.5,
+          "challenger_n": 16,
+          "elo_at_6": 1782.6653191142134,
+          "flip": 0.20208333333333334,
+          "tier_flip": 0.07083333333333333,
+          "avg_high": null,
+          "avg_low": null,
+          "bad_high": null,
+          "good_low": 0.006944444444444444,
+          "good_not_first": 0.0
+        },
+        "average": {
+          "careers": 64,
+          "gates": {
+            "Gold": 4,
+            "Platinum": null,
+            "Emerald": null
+          },
+          "gate_n": {
+            "Gold": 45,
+            "Platinum": 0,
+            "Emerald": 0
+          },
+          "challenger": null,
+          "challenger_n": 0,
+          "elo_at_6": 1505.7631021753725,
+          "flip": 0.19322916666666667,
+          "tier_flip": 0.046875,
+          "avg_high": 0.0,
+          "avg_low": 0.05364583333333333,
+          "bad_high": null,
+          "good_low": null,
+          "good_not_first": null
+        },
+        "bad": {
+          "careers": 16,
+          "gates": {
+            "Gold": null,
+            "Platinum": null,
+            "Emerald": null
+          },
+          "gate_n": {
+            "Gold": 0,
+            "Platinum": 0,
+            "Emerald": 0
+          },
+          "challenger": null,
+          "challenger_n": 0,
+          "elo_at_6": 1184.645024581682,
+          "flip": 0.17395833333333333,
+          "tier_flip": 0.03854166666666667,
+          "avg_high": null,
+          "avg_low": null,
+          "bad_high": 0.0,
+          "good_low": null,
+          "good_not_first": null
+        }
+      },
+      "8": {
+        "good": {
+          "careers": 16,
+          "gates": {
+            "Gold": 1.0,
+            "Platinum": 4.0,
+            "Emerald": 6.0
+          },
+          "gate_n": {
+            "Gold": 16,
+            "Platinum": 16,
+            "Emerald": 16
+          },
+          "challenger": 6.0,
+          "challenger_n": 16,
+          "elo_at_6": 1792.795259640119,
+          "flip": 0.1421875,
+          "tier_flip": 0.05,
+          "avg_high": null,
+          "avg_low": null,
+          "bad_high": null,
+          "good_low": 0.016493055555555556,
+          "good_not_first": 0.0
+        },
+        "average": {
+          "careers": 96,
+          "gates": {
+            "Gold": 4,
+            "Platinum": 6.5,
+            "Emerald": null
+          },
+          "gate_n": {
+            "Gold": 73,
+            "Platinum": 2,
+            "Emerald": 0
+          },
+          "challenger": null,
+          "challenger_n": 0,
+          "elo_at_6": 1502.1156724732837,
+          "flip": 0.15885416666666666,
+          "tier_flip": 0.040364583333333336,
+          "avg_high": 0.0006510416666666666,
+          "avg_low": 0.049479166666666664,
+          "bad_high": null,
+          "good_low": null,
+          "good_not_first": null
+        },
+        "bad": {
+          "careers": 16,
+          "gates": {
+            "Gold": null,
+            "Platinum": null,
+            "Emerald": null
+          },
+          "gate_n": {
+            "Gold": 0,
+            "Platinum": 0,
+            "Emerald": 0
+          },
+          "challenger": null,
+          "challenger_n": 0,
+          "elo_at_6": 1171.0936527306212,
+          "flip": 0.11328125,
+          "tier_flip": 0.025,
+          "avg_high": null,
+          "avg_low": null,
+          "bad_high": 0.0,
+          "good_low": null,
+          "good_not_first": null
+        }
+      }
+    },
+    "spicy": {
+      "4": {
+        "good": {
+          "careers": 16,
+          "gates": {
+            "Gold": 1.0,
+            "Platinum": 4.0,
+            "Emerald": 6.5
+          },
+          "gate_n": {
+            "Gold": 16,
+            "Platinum": 16,
+            "Emerald": 16
+          },
+          "challenger": 6.5,
+          "challenger_n": 16,
+          "elo_at_6": 1768.0493758625876,
+          "flip": 0.31875,
+          "tier_flip": 0.115625,
+          "avg_high": null,
+          "avg_low": null,
+          "bad_high": null,
+          "good_low": 0.012152777777777776,
+          "good_not_first": 0.0625
+        },
+        "average": {
+          "careers": 32,
+          "gates": {
+            "Gold": 5.0,
+            "Platinum": null,
+            "Emerald": null
+          },
+          "gate_n": {
+            "Gold": 22,
+            "Platinum": 0,
+            "Emerald": 0
+          },
+          "challenger": null,
+          "challenger_n": 0,
+          "elo_at_6": 1503.1920480463177,
+          "flip": 0.27734375,
+          "tier_flip": 0.05390625,
+          "avg_high": 0.0,
+          "avg_low": 0.02265625,
+          "bad_high": null,
+          "good_low": null,
+          "good_not_first": null
+        },
+        "bad": {
+          "careers": 16,
+          "gates": {
+            "Gold": null,
+            "Platinum": null,
+            "Emerald": null
+          },
+          "gate_n": {
+            "Gold": 0,
+            "Platinum": 0,
+            "Emerald": 0
+          },
+          "challenger": null,
+          "challenger_n": 0,
+          "elo_at_6": 1207.0406214773075,
+          "flip": 0.253125,
+          "tier_flip": 0.0625,
+          "avg_high": null,
+          "avg_low": null,
+          "bad_high": 0.0,
+          "good_low": null,
+          "good_not_first": null
+        }
+      },
+      "6": {
+        "good": {
+          "careers": 16,
+          "gates": {
+            "Gold": 1.0,
+            "Platinum": 3.5,
+            "Emerald": 6.5
+          },
+          "gate_n": {
+            "Gold": 16,
+            "Platinum": 16,
+            "Emerald": 16
+          },
+          "challenger": 6.5,
+          "challenger_n": 16,
+          "elo_at_6": 1788.3579119748879,
+          "flip": 0.20208333333333334,
+          "tier_flip": 0.071875,
+          "avg_high": null,
+          "avg_low": null,
+          "bad_high": null,
+          "good_low": 0.006944444444444444,
+          "good_not_first": 0.0
+        },
+        "average": {
+          "careers": 64,
+          "gates": {
+            "Gold": 3.5,
+            "Platinum": null,
+            "Emerald": null
+          },
+          "gate_n": {
+            "Gold": 48,
+            "Platinum": 0,
+            "Emerald": 0
+          },
+          "challenger": null,
+          "challenger_n": 0,
+          "elo_at_6": 1505.9937886111393,
+          "flip": 0.20677083333333332,
+          "tier_flip": 0.05078125,
+          "avg_high": 0.0,
+          "avg_low": 0.05911458333333333,
+          "bad_high": null,
+          "good_low": null,
+          "good_not_first": null
+        },
+        "bad": {
+          "careers": 16,
+          "gates": {
+            "Gold": null,
+            "Platinum": null,
+            "Emerald": null
+          },
+          "gate_n": {
+            "Gold": 0,
+            "Platinum": 0,
+            "Emerald": 0
+          },
+          "challenger": null,
+          "challenger_n": 0,
+          "elo_at_6": 1178.2588504953,
+          "flip": 0.17083333333333334,
+          "tier_flip": 0.034375,
+          "avg_high": null,
+          "avg_low": null,
+          "bad_high": 0.0,
+          "good_low": null,
+          "good_not_first": null
+        }
+      },
+      "8": {
+        "good": {
+          "careers": 16,
+          "gates": {
+            "Gold": 1.0,
+            "Platinum": 4.0,
+            "Emerald": 6.0
+          },
+          "gate_n": {
+            "Gold": 16,
+            "Platinum": 16,
+            "Emerald": 16
+          },
+          "challenger": 6.0,
+          "challenger_n": 16,
+          "elo_at_6": 1799.353129793643,
+          "flip": 0.14375000000000002,
+          "tier_flip": 0.04609375,
+          "avg_high": null,
+          "avg_low": null,
+          "bad_high": null,
+          "good_low": 0.016493055555555556,
+          "good_not_first": 0.0
+        },
+        "average": {
+          "careers": 96,
+          "gates": {
+            "Gold": 3.5,
+            "Platinum": 6.5,
+            "Emerald": null
+          },
+          "gate_n": {
+            "Gold": 76,
+            "Platinum": 2,
+            "Emerald": 0
+          },
+          "challenger": null,
+          "challenger_n": 0,
+          "elo_at_6": 1501.8443558285437,
+          "flip": 0.16432291666666668,
+          "tier_flip": 0.04153645833333334,
+          "avg_high": 0.001171875,
+          "avg_low": 0.05807291666666667,
+          "bad_high": null,
+          "good_low": null,
+          "good_not_first": null
+        },
+        "bad": {
+          "careers": 16,
+          "gates": {
+            "Gold": null,
+            "Platinum": null,
+            "Emerald": null
+          },
+          "gate_n": {
+            "Gold": 0,
+            "Platinum": 0,
+            "Emerald": 0
+          },
+          "challenger": null,
+          "challenger_n": 0,
+          "elo_at_6": 1164.9451922338003,
+          "flip": 0.1125,
+          "tier_flip": 0.025,
+          "avg_high": null,
+          "avg_low": null,
+          "bad_high": 0.0,
+          "good_low": null,
+          "good_not_first": null
+        }
+      }
+    }
+  }
+}
