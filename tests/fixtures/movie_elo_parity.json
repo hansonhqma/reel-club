@@ -1,0 +1,4038 @@
+{
+  "defaults_two_closes": [
+    {
+      "elo": {
+        "Ada": 1500.0,
+        "Bea": 1500.0,
+        "Cy": 1500.0
+      },
+      "history": [
+        {
+          "deltas": {},
+          "elo_after": {
+            "Ada": 1500.0,
+            "Bea": 1500.0,
+            "Cy": 1500.0
+          },
+          "elo_before": {
+            "Ada": 1500.0,
+            "Bea": 1500.0,
+            "Cy": 1500.0
+          },
+          "matches": [],
+          "movie": "Opening",
+          "skipped": {},
+          "suggester": "Ada",
+          "voter_credit": {},
+          "week_id": "2026-01-02"
+        }
+      ],
+      "standings": [
+        {
+          "current_movie": "Opening",
+          "elo": 1500.0,
+          "member": "Ada",
+          "pick_count": 1,
+          "rank": 1
+        },
+        {
+          "current_movie": null,
+          "elo": 1500.0,
+          "member": "Bea",
+          "pick_count": 0,
+          "rank": 2
+        },
+        {
+          "current_movie": null,
+          "elo": 1500.0,
+          "member": "Cy",
+          "pick_count": 0,
+          "rank": 3
+        }
+      ],
+      "total_elo": 4500.0
+    },
+    {
+      "elo": {
+        "Ada": 1514.2963131135352,
+        "Bea": 1485.7036868864648,
+        "Cy": 1500.0
+      },
+      "history": [
+        {
+          "deltas": {},
+          "elo_after": {
+            "Ada": 1500.0,
+            "Bea": 1500.0,
+            "Cy": 1500.0
+          },
+          "elo_before": {
+            "Ada": 1500.0,
+            "Bea": 1500.0,
+            "Cy": 1500.0
+          },
+          "matches": [],
+          "movie": "Opening",
+          "skipped": {},
+          "suggester": "Ada",
+          "voter_credit": {},
+          "week_id": "2026-01-02"
+        },
+        {
+          "deltas": {
+            "Ada": 14.296313113535282,
+            "Bea": -14.296313113535282
+          },
+          "elo_after": {
+            "Ada": 1514.2963131135352,
+            "Bea": 1485.7036868864648,
+            "Cy": 1500.0
+          },
+          "elo_before": {
+            "Ada": 1500.0,
+            "Bea": 1500.0,
+            "Cy": 1500.0
+          },
+          "matches": [
+            {
+              "actual": 0.05324021520202244,
+              "delta": -14.296313113535282,
+              "expected": 0.5,
+              "gap": -2.5,
+              "judges": [
+                {
+                  "judge": "Cy",
+                  "new_score": 4.5,
+                  "old_score": 7.0,
+                  "weight": 1.0
+                }
+              ],
+              "k": 32.0,
+              "opponent": "Ada",
+              "opponent_movie": "Opening"
+            }
+          ],
+          "movie": "Follow-up",
+          "skipped": {},
+          "suggester": "Bea",
+          "voter_credit": {},
+          "week_id": "2026-01-09"
+        }
+      ],
+      "standings": [
+        {
+          "current_movie": "Opening",
+          "elo": 1514.2963131135352,
+          "member": "Ada",
+          "pick_count": 1,
+          "rank": 1
+        },
+        {
+          "current_movie": null,
+          "elo": 1500.0,
+          "member": "Cy",
+          "pick_count": 0,
+          "rank": 2
+        },
+        {
+          "current_movie": "Follow-up",
+          "elo": 1485.7036868864648,
+          "member": "Bea",
+          "pick_count": 1,
+          "rank": 3
+        }
+      ],
+      "total_elo": 4500.0
+    }
+  ],
+  "utr_eight_roster": [
+    {
+      "elo": {
+        "A": 1500.0,
+        "B": 1500.0,
+        "C": 1500.0,
+        "D": 1500.0,
+        "E": 1500.0,
+        "F": 1500.0,
+        "G": 1500.0,
+        "H": 1500.0
+      },
+      "history": [
+        {
+          "deltas": {},
+          "elo_after": {
+            "A": 1500.0,
+            "B": 1500.0,
+            "C": 1500.0,
+            "D": 1500.0,
+            "E": 1500.0,
+            "F": 1500.0,
+            "G": 1500.0,
+            "H": 1500.0
+          },
+          "elo_before": {
+            "A": 1500.0,
+            "B": 1500.0,
+            "C": 1500.0,
+            "D": 1500.0,
+            "E": 1500.0,
+            "F": 1500.0,
+            "G": 1500.0,
+            "H": 1500.0
+          },
+          "matches": [],
+          "movie": "One",
+          "skipped": {},
+          "suggester": "A",
+          "voter_credit": {},
+          "week_id": "1"
+        }
+      ],
+      "standings": [
+        {
+          "current_movie": "One",
+          "elo": 1500.0,
+          "member": "A",
+          "pick_count": 1,
+          "rank": 1
+        },
+        {
+          "current_movie": null,
+          "elo": 1500.0,
+          "member": "B",
+          "pick_count": 0,
+          "rank": 2
+        },
+        {
+          "current_movie": null,
+          "elo": 1500.0,
+          "member": "C",
+          "pick_count": 0,
+          "rank": 3
+        },
+        {
+          "current_movie": null,
+          "elo": 1500.0,
+          "member": "D",
+          "pick_count": 0,
+          "rank": 4
+        },
+        {
+          "current_movie": null,
+          "elo": 1500.0,
+          "member": "E",
+          "pick_count": 0,
+          "rank": 5
+        },
+        {
+          "current_movie": null,
+          "elo": 1500.0,
+          "member": "F",
+          "pick_count": 0,
+          "rank": 6
+        },
+        {
+          "current_movie": null,
+          "elo": 1500.0,
+          "member": "G",
+          "pick_count": 0,
+          "rank": 7
+        },
+        {
+          "current_movie": null,
+          "elo": 1500.0,
+          "member": "H",
+          "pick_count": 0,
+          "rank": 8
+        }
+      ],
+      "total_elo": 12000.0
+    },
+    {
+      "elo": {
+        "A": 1506.4926556317214,
+        "B": 1493.5073443682786,
+        "C": 1500.0,
+        "D": 1500.0,
+        "E": 1500.0,
+        "F": 1500.0,
+        "G": 1500.0,
+        "H": 1500.0
+      },
+      "history": [
+        {
+          "deltas": {},
+          "elo_after": {
+            "A": 1500.0,
+            "B": 1500.0,
+            "C": 1500.0,
+            "D": 1500.0,
+            "E": 1500.0,
+            "F": 1500.0,
+            "G": 1500.0,
+            "H": 1500.0
+          },
+          "elo_before": {
+            "A": 1500.0,
+            "B": 1500.0,
+            "C": 1500.0,
+            "D": 1500.0,
+            "E": 1500.0,
+            "F": 1500.0,
+            "G": 1500.0,
+            "H": 1500.0
+          },
+          "matches": [],
+          "movie": "One",
+          "skipped": {},
+          "suggester": "A",
+          "voter_credit": {},
+          "week_id": "1"
+        },
+        {
+          "deltas": {
+            "A": 6.492655631721489,
+            "B": -6.492655631721489
+          },
+          "elo_after": {
+            "A": 1506.4926556317214,
+            "B": 1493.5073443682786,
+            "C": 1500.0,
+            "D": 1500.0,
+            "E": 1500.0,
+            "F": 1500.0,
+            "G": 1500.0,
+            "H": 1500.0
+          },
+          "elo_before": {
+            "A": 1500.0,
+            "B": 1500.0,
+            "C": 1500.0,
+            "D": 1500.0,
+            "E": 1500.0,
+            "F": 1500.0,
+            "G": 1500.0,
+            "H": 1500.0
+          },
+          "matches": [
+            {
+              "actual": 0.21594631611218484,
+              "delta": -6.492655631721489,
+              "expected": 0.5,
+              "gap": -0.7000000000000003,
+              "judges": [
+                {
+                  "judge": "C",
+                  "new_score": 5.5,
+                  "old_score": 7.5,
+                  "weight": 0.16666666666666666
+                },
+                {
+                  "judge": "D",
+                  "new_score": 6.1,
+                  "old_score": 9.0,
+                  "weight": 0.16666666666666666
+                },
+                {
+                  "judge": "E",
+                  "new_score": 8.4,
+                  "old_score": 6.5,
+                  "weight": 0.16666666666666666
+                },
+                {
+                  "judge": "F",
+                  "new_score": 3.3,
+                  "old_score": 8.8,
+                  "weight": 0.16666666666666666
+                },
+                {
+                  "judge": "G",
+                  "new_score": 7.7,
+                  "old_score": 7.2,
+                  "weight": 0.16666666666666666
+                },
+                {
+                  "judge": "H",
+                  "new_score": 9.2,
+                  "old_score": 5.4,
+                  "weight": 0.16666666666666666
+                }
+              ],
+              "k": 22.857142857142858,
+              "opponent": "A",
+              "opponent_movie": "One"
+            }
+          ],
+          "movie": "Two",
+          "skipped": {},
+          "suggester": "B",
+          "voter_credit": {},
+          "week_id": "2"
+        }
+      ],
+      "standings": [
+        {
+          "current_movie": "One",
+          "elo": 1506.4926556317214,
+          "member": "A",
+          "pick_count": 1,
+          "rank": 1
+        },
+        {
+          "current_movie": null,
+          "elo": 1500.0,
+          "member": "C",
+          "pick_count": 0,
+          "rank": 2
+        },
+        {
+          "current_movie": null,
+          "elo": 1500.0,
+          "member": "D",
+          "pick_count": 0,
+          "rank": 3
+        },
+        {
+          "current_movie": null,
+          "elo": 1500.0,
+          "member": "E",
+          "pick_count": 0,
+          "rank": 4
+        },
+        {
+          "current_movie": null,
+          "elo": 1500.0,
+          "member": "F",
+          "pick_count": 0,
+          "rank": 5
+        },
+        {
+          "current_movie": null,
+          "elo": 1500.0,
+          "member": "G",
+          "pick_count": 0,
+          "rank": 6
+        },
+        {
+          "current_movie": null,
+          "elo": 1500.0,
+          "member": "H",
+          "pick_count": 0,
+          "rank": 7
+        },
+        {
+          "current_movie": "Two",
+          "elo": 1493.5073443682786,
+          "member": "B",
+          "pick_count": 1,
+          "rank": 8
+        }
+      ],
+      "total_elo": 12000.0
+    },
+    {
+      "elo": {
+        "A": 1516.6996814694824,
+        "B": 1488.1695585737127,
+        "C": 1500.0,
+        "D": 1500.0,
+        "E": 1500.0,
+        "F": 1500.0,
+        "G": 1500.0,
+        "H": 1495.130759956805
+      },
+      "history": [
+        {
+          "deltas": {},
+          "elo_after": {
+            "A": 1500.0,
+            "B": 1500.0,
+            "C": 1500.0,
+            "D": 1500.0,
+            "E": 1500.0,
+            "F": 1500.0,
+            "G": 1500.0,
+            "H": 1500.0
+          },
+          "elo_before": {
+            "A": 1500.0,
+            "B": 1500.0,
+            "C": 1500.0,
+            "D": 1500.0,
+            "E": 1500.0,
+            "F": 1500.0,
+            "G": 1500.0,
+            "H": 1500.0
+          },
+          "matches": [],
+          "movie": "One",
+          "skipped": {},
+          "suggester": "A",
+          "voter_credit": {},
+          "week_id": "1"
+        },
+        {
+          "deltas": {
+            "A": 6.492655631721489,
+            "B": -6.492655631721489
+          },
+          "elo_after": {
+            "A": 1506.4926556317214,
+            "B": 1493.5073443682786,
+            "C": 1500.0,
+            "D": 1500.0,
+            "E": 1500.0,
+            "F": 1500.0,
+            "G": 1500.0,
+            "H": 1500.0
+          },
+          "elo_before": {
+            "A": 1500.0,
+            "B": 1500.0,
+            "C": 1500.0,
+            "D": 1500.0,
+            "E": 1500.0,
+            "F": 1500.0,
+            "G": 1500.0,
+            "H": 1500.0
+          },
+          "matches": [
+            {
+              "actual": 0.21594631611218484,
+              "delta": -6.492655631721489,
+              "expected": 0.5,
+              "gap": -0.7000000000000003,
+              "judges": [
+                {
+                  "judge": "C",
+                  "new_score": 5.5,
+                  "old_score": 7.5,
+                  "weight": 0.16666666666666666
+                },
+                {
+                  "judge": "D",
+                  "new_score": 6.1,
+                  "old_score": 9.0,
+                  "weight": 0.16666666666666666
+                },
+                {
+                  "judge": "E",
+                  "new_score": 8.4,
+                  "old_score": 6.5,
+                  "weight": 0.16666666666666666
+                },
+                {
+                  "judge": "F",
+                  "new_score": 3.3,
+                  "old_score": 8.8,
+                  "weight": 0.16666666666666666
+                },
+                {
+                  "judge": "G",
+                  "new_score": 7.7,
+                  "old_score": 7.2,
+                  "weight": 0.16666666666666666
+                },
+                {
+                  "judge": "H",
+                  "new_score": 9.2,
+                  "old_score": 5.4,
+                  "weight": 0.16666666666666666
+                }
+              ],
+              "k": 22.857142857142858,
+              "opponent": "A",
+              "opponent_movie": "One"
+            }
+          ],
+          "movie": "Two",
+          "skipped": {},
+          "suggester": "B",
+          "voter_credit": {},
+          "week_id": "2"
+        },
+        {
+          "deltas": {
+            "A": 10.207025837760918,
+            "B": -5.337785794565892,
+            "H": -4.869240043195026
+          },
+          "elo_after": {
+            "A": 1516.6996814694824,
+            "B": 1488.1695585737127,
+            "C": 1500.0,
+            "D": 1500.0,
+            "E": 1500.0,
+            "F": 1500.0,
+            "G": 1500.0,
+            "H": 1495.130759956805
+          },
+          "elo_before": {
+            "A": 1506.4926556317214,
+            "B": 1493.5073443682786,
+            "C": 1500.0,
+            "D": 1500.0,
+            "E": 1500.0,
+            "F": 1500.0,
+            "G": 1500.0,
+            "H": 1500.0
+          },
+          "matches": [
+            {
+              "actual": 0.04410002456084147,
+              "delta": -10.207025837760918,
+              "expected": 0.4906574049628816,
+              "gap": -1.6699670238831326,
+              "judges": [
+                {
+                  "judge": "B",
+                  "new_score": 8.1,
+                  "old_score": 8.0,
+                  "weight": 0.1651098943947488
+                },
+                {
+                  "judge": "C",
+                  "new_score": 2.0,
+                  "old_score": 7.5,
+                  "weight": 0.16697802112105023
+                },
+                {
+                  "judge": "D",
+                  "new_score": 7.0,
+                  "old_score": 9.0,
+                  "weight": 0.16697802112105023
+                },
+                {
+                  "judge": "E",
+                  "new_score": 6.6,
+                  "old_score": 6.5,
+                  "weight": 0.16697802112105023
+                },
+                {
+                  "judge": "F",
+                  "new_score": 8.9,
+                  "old_score": 8.8,
+                  "weight": 0.16697802112105023
+                },
+                {
+                  "judge": "G",
+                  "new_score": 4.4,
+                  "old_score": 7.2,
+                  "weight": 0.16697802112105023
+                }
+              ],
+              "k": 22.857142857142858,
+              "opponent": "A",
+              "opponent_movie": "One"
+            },
+            {
+              "actual": 0.7428707235493762,
+              "delta": 5.337785794565892,
+              "expected": 0.5093425950371184,
+              "gap": 0.5759521443122452,
+              "judges": [
+                {
+                  "judge": "A",
+                  "new_score": 9.5,
+                  "old_score": 4.0,
+                  "weight": 0.16823515951220355
+                },
+                {
+                  "judge": "C",
+                  "new_score": 2.0,
+                  "old_score": 5.5,
+                  "weight": 0.16635296809755928
+                },
+                {
+                  "judge": "D",
+                  "new_score": 7.0,
+                  "old_score": 6.1,
+                  "weight": 0.16635296809755928
+                },
+                {
+                  "judge": "E",
+                  "new_score": 6.6,
+                  "old_score": 8.4,
+                  "weight": 0.16635296809755928
+                },
+                {
+                  "judge": "F",
+                  "new_score": 8.9,
+                  "old_score": 3.3,
+                  "weight": 0.16635296809755928
+                },
+                {
+                  "judge": "G",
+                  "new_score": 4.4,
+                  "old_score": 7.7,
+                  "weight": 0.16635296809755928
+                }
+              ],
+              "k": 22.857142857142858,
+              "opponent": "B",
+              "opponent_movie": "Two"
+            }
+          ],
+          "movie": "Three",
+          "skipped": {},
+          "suggester": "H",
+          "voter_credit": {},
+          "week_id": "3"
+        }
+      ],
+      "standings": [
+        {
+          "current_movie": "One",
+          "elo": 1516.6996814694824,
+          "member": "A",
+          "pick_count": 1,
+          "rank": 1
+        },
+        {
+          "current_movie": null,
+          "elo": 1500.0,
+          "member": "C",
+          "pick_count": 0,
+          "rank": 2
+        },
+        {
+          "current_movie": null,
+          "elo": 1500.0,
+          "member": "D",
+          "pick_count": 0,
+          "rank": 3
+        },
+        {
+          "current_movie": null,
+          "elo": 1500.0,
+          "member": "E",
+          "pick_count": 0,
+          "rank": 4
+        },
+        {
+          "current_movie": null,
+          "elo": 1500.0,
+          "member": "F",
+          "pick_count": 0,
+          "rank": 5
+        },
+        {
+          "current_movie": null,
+          "elo": 1500.0,
+          "member": "G",
+          "pick_count": 0,
+          "rank": 6
+        },
+        {
+          "current_movie": "Three",
+          "elo": 1495.130759956805,
+          "member": "H",
+          "pick_count": 1,
+          "rank": 7
+        },
+        {
+          "current_movie": "Two",
+          "elo": 1488.1695585737127,
+          "member": "B",
+          "pick_count": 1,
+          "rank": 8
+        }
+      ],
+      "total_elo": 12000.0
+    },
+    {
+      "elo": {
+        "A": 1518.7028719550256,
+        "B": 1483.2619016514752,
+        "C": 1500.0,
+        "D": 1506.3417597222292,
+        "E": 1500.0,
+        "F": 1500.0,
+        "G": 1500.0,
+        "H": 1491.6934666712702
+      },
+      "history": [
+        {
+          "deltas": {},
+          "elo_after": {
+            "A": 1500.0,
+            "B": 1500.0,
+            "C": 1500.0,
+            "D": 1500.0,
+            "E": 1500.0,
+            "F": 1500.0,
+            "G": 1500.0,
+            "H": 1500.0
+          },
+          "elo_before": {
+            "A": 1500.0,
+            "B": 1500.0,
+            "C": 1500.0,
+            "D": 1500.0,
+            "E": 1500.0,
+            "F": 1500.0,
+            "G": 1500.0,
+            "H": 1500.0
+          },
+          "matches": [],
+          "movie": "One",
+          "skipped": {},
+          "suggester": "A",
+          "voter_credit": {},
+          "week_id": "1"
+        },
+        {
+          "deltas": {
+            "A": 6.492655631721489,
+            "B": -6.492655631721489
+          },
+          "elo_after": {
+            "A": 1506.4926556317214,
+            "B": 1493.5073443682786,
+            "C": 1500.0,
+            "D": 1500.0,
+            "E": 1500.0,
+            "F": 1500.0,
+            "G": 1500.0,
+            "H": 1500.0
+          },
+          "elo_before": {
+            "A": 1500.0,
+            "B": 1500.0,
+            "C": 1500.0,
+            "D": 1500.0,
+            "E": 1500.0,
+            "F": 1500.0,
+            "G": 1500.0,
+            "H": 1500.0
+          },
+          "matches": [
+            {
+              "actual": 0.21594631611218484,
+              "delta": -6.492655631721489,
+              "expected": 0.5,
+              "gap": -0.7000000000000003,
+              "judges": [
+                {
+                  "judge": "C",
+                  "new_score": 5.5,
+                  "old_score": 7.5,
+                  "weight": 0.16666666666666666
+                },
+                {
+                  "judge": "D",
+                  "new_score": 6.1,
+                  "old_score": 9.0,
+                  "weight": 0.16666666666666666
+                },
+                {
+                  "judge": "E",
+                  "new_score": 8.4,
+                  "old_score": 6.5,
+                  "weight": 0.16666666666666666
+                },
+                {
+                  "judge": "F",
+                  "new_score": 3.3,
+                  "old_score": 8.8,
+                  "weight": 0.16666666666666666
+                },
+                {
+                  "judge": "G",
+                  "new_score": 7.7,
+                  "old_score": 7.2,
+                  "weight": 0.16666666666666666
+                },
+                {
+                  "judge": "H",
+                  "new_score": 9.2,
+                  "old_score": 5.4,
+                  "weight": 0.16666666666666666
+                }
+              ],
+              "k": 22.857142857142858,
+              "opponent": "A",
+              "opponent_movie": "One"
+            }
+          ],
+          "movie": "Two",
+          "skipped": {},
+          "suggester": "B",
+          "voter_credit": {},
+          "week_id": "2"
+        },
+        {
+          "deltas": {
+            "A": 10.207025837760918,
+            "B": -5.337785794565892,
+            "H": -4.869240043195026
+          },
+          "elo_after": {
+            "A": 1516.6996814694824,
+            "B": 1488.1695585737127,
+            "C": 1500.0,
+            "D": 1500.0,
+            "E": 1500.0,
+            "F": 1500.0,
+            "G": 1500.0,
+            "H": 1495.130759956805
+          },
+          "elo_before": {
+            "A": 1506.4926556317214,
+            "B": 1493.5073443682786,
+            "C": 1500.0,
+            "D": 1500.0,
+            "E": 1500.0,
+            "F": 1500.0,
+            "G": 1500.0,
+            "H": 1500.0
+          },
+          "matches": [
+            {
+              "actual": 0.04410002456084147,
+              "delta": -10.207025837760918,
+              "expected": 0.4906574049628816,
+              "gap": -1.6699670238831326,
+              "judges": [
+                {
+                  "judge": "B",
+                  "new_score": 8.1,
+                  "old_score": 8.0,
+                  "weight": 0.1651098943947488
+                },
+                {
+                  "judge": "C",
+                  "new_score": 2.0,
+                  "old_score": 7.5,
+                  "weight": 0.16697802112105023
+                },
+                {
+                  "judge": "D",
+                  "new_score": 7.0,
+                  "old_score": 9.0,
+                  "weight": 0.16697802112105023
+                },
+                {
+                  "judge": "E",
+                  "new_score": 6.6,
+                  "old_score": 6.5,
+                  "weight": 0.16697802112105023
+                },
+                {
+                  "judge": "F",
+                  "new_score": 8.9,
+                  "old_score": 8.8,
+                  "weight": 0.16697802112105023
+                },
+                {
+                  "judge": "G",
+                  "new_score": 4.4,
+                  "old_score": 7.2,
+                  "weight": 0.16697802112105023
+                }
+              ],
+              "k": 22.857142857142858,
+              "opponent": "A",
+              "opponent_movie": "One"
+            },
+            {
+              "actual": 0.7428707235493762,
+              "delta": 5.337785794565892,
+              "expected": 0.5093425950371184,
+              "gap": 0.5759521443122452,
+              "judges": [
+                {
+                  "judge": "A",
+                  "new_score": 9.5,
+                  "old_score": 4.0,
+                  "weight": 0.16823515951220355
+                },
+                {
+                  "judge": "C",
+                  "new_score": 2.0,
+                  "old_score": 5.5,
+                  "weight": 0.16635296809755928
+                },
+                {
+                  "judge": "D",
+                  "new_score": 7.0,
+                  "old_score": 6.1,
+                  "weight": 0.16635296809755928
+                },
+                {
+                  "judge": "E",
+                  "new_score": 6.6,
+                  "old_score": 8.4,
+                  "weight": 0.16635296809755928
+                },
+                {
+                  "judge": "F",
+                  "new_score": 8.9,
+                  "old_score": 3.3,
+                  "weight": 0.16635296809755928
+                },
+                {
+                  "judge": "G",
+                  "new_score": 4.4,
+                  "old_score": 7.7,
+                  "weight": 0.16635296809755928
+                }
+              ],
+              "k": 22.857142857142858,
+              "opponent": "B",
+              "opponent_movie": "Two"
+            }
+          ],
+          "movie": "Three",
+          "skipped": {},
+          "suggester": "H",
+          "voter_credit": {},
+          "week_id": "3"
+        },
+        {
+          "deltas": {
+            "A": 2.0031904855431244,
+            "B": -4.907656922237528,
+            "D": 6.341759722229185,
+            "H": -3.43729328553478
+          },
+          "elo_after": {
+            "A": 1518.7028719550256,
+            "B": 1483.2619016514752,
+            "C": 1500.0,
+            "D": 1506.3417597222292,
+            "E": 1500.0,
+            "F": 1500.0,
+            "G": 1500.0,
+            "H": 1491.6934666712702
+          },
+          "elo_before": {
+            "A": 1516.6996814694824,
+            "B": 1488.1695585737127,
+            "C": 1500.0,
+            "D": 1500.0,
+            "E": 1500.0,
+            "F": 1500.0,
+            "G": 1500.0,
+            "H": 1495.130759956805
+          },
+          "matches": [
+            {
+              "actual": 0.3883461332776914,
+              "delta": -2.0031904855431244,
+              "expected": 0.4759857170202031,
+              "gap": -0.24660842536593186,
+              "judges": [
+                {
+                  "judge": "B",
+                  "new_score": 6.4,
+                  "old_score": 8.0,
+                  "weight": 0.1640693238775305
+                },
+                {
+                  "judge": "C",
+                  "new_score": 8.2,
+                  "old_score": 7.5,
+                  "weight": 0.1674675561501257
+                },
+                {
+                  "judge": "E",
+                  "new_score": 7.1,
+                  "old_score": 6.5,
+                  "weight": 0.1674675561501257
+                },
+                {
+                  "judge": "F",
+                  "new_score": 4.9,
+                  "old_score": 8.8,
+                  "weight": 0.1674675561501257
+                },
+                {
+                  "judge": "G",
+                  "new_score": 9.3,
+                  "old_score": 7.2,
+                  "weight": 0.1674675561501257
+                },
+                {
+                  "judge": "H",
+                  "new_score": 6.0,
+                  "old_score": 5.4,
+                  "weight": 0.16606045152196663
+                }
+              ],
+              "k": 22.857142857142858,
+              "opponent": "A",
+              "opponent_movie": "One"
+            },
+            {
+              "actual": 0.7317287871504035,
+              "delta": 4.907656922237528,
+              "expected": 0.5170187968025116,
+              "gap": 0.5447200854599766,
+              "judges": [
+                {
+                  "judge": "A",
+                  "new_score": 5.8,
+                  "old_score": 4.0,
+                  "weight": 0.1709629889095101
+                },
+                {
+                  "judge": "C",
+                  "new_score": 8.2,
+                  "old_score": 5.5,
+                  "weight": 0.16608650235128886
+                },
+                {
+                  "judge": "E",
+                  "new_score": 7.1,
+                  "old_score": 8.4,
+                  "weight": 0.16608650235128886
+                },
+                {
+                  "judge": "F",
+                  "new_score": 4.9,
+                  "old_score": 3.3,
+                  "weight": 0.16608650235128886
+                },
+                {
+                  "judge": "G",
+                  "new_score": 9.3,
+                  "old_score": 7.7,
+                  "weight": 0.16608650235128886
+                },
+                {
+                  "judge": "H",
+                  "new_score": 6.0,
+                  "old_score": 9.2,
+                  "weight": 0.1646910016853345
+                }
+              ],
+              "k": 22.857142857142858,
+              "opponent": "B",
+              "opponent_movie": "Two"
+            },
+            {
+              "actual": 0.6573885222040224,
+              "delta": 3.43729328553478,
+              "expected": 0.5070069409618758,
+              "gap": 0.3537752612926731,
+              "judges": [
+                {
+                  "judge": "A",
+                  "new_score": 5.8,
+                  "old_score": 9.5,
+                  "weight": 0.17130125877674282
+                },
+                {
+                  "judge": "B",
+                  "new_score": 6.4,
+                  "old_score": 8.1,
+                  "weight": 0.16303824709932419
+                },
+                {
+                  "judge": "C",
+                  "new_score": 8.2,
+                  "old_score": 2.0,
+                  "weight": 0.16641512353098326
+                },
+                {
+                  "judge": "E",
+                  "new_score": 7.1,
+                  "old_score": 6.6,
+                  "weight": 0.16641512353098326
+                },
+                {
+                  "judge": "F",
+                  "new_score": 4.9,
+                  "old_score": 8.9,
+                  "weight": 0.16641512353098326
+                },
+                {
+                  "judge": "G",
+                  "new_score": 9.3,
+                  "old_score": 4.4,
+                  "weight": 0.16641512353098326
+                }
+              ],
+              "k": 22.857142857142858,
+              "opponent": "H",
+              "opponent_movie": "Three"
+            }
+          ],
+          "movie": "Four",
+          "skipped": {},
+          "suggester": "D",
+          "voter_credit": {},
+          "week_id": "4"
+        }
+      ],
+      "standings": [
+        {
+          "current_movie": "One",
+          "elo": 1518.7028719550256,
+          "member": "A",
+          "pick_count": 1,
+          "rank": 1
+        },
+        {
+          "current_movie": "Four",
+          "elo": 1506.3417597222292,
+          "member": "D",
+          "pick_count": 1,
+          "rank": 2
+        },
+        {
+          "current_movie": null,
+          "elo": 1500.0,
+          "member": "C",
+          "pick_count": 0,
+          "rank": 3
+        },
+        {
+          "current_movie": null,
+          "elo": 1500.0,
+          "member": "E",
+          "pick_count": 0,
+          "rank": 4
+        },
+        {
+          "current_movie": null,
+          "elo": 1500.0,
+          "member": "F",
+          "pick_count": 0,
+          "rank": 5
+        },
+        {
+          "current_movie": null,
+          "elo": 1500.0,
+          "member": "G",
+          "pick_count": 0,
+          "rank": 6
+        },
+        {
+          "current_movie": "Three",
+          "elo": 1491.6934666712702,
+          "member": "H",
+          "pick_count": 1,
+          "rank": 7
+        },
+        {
+          "current_movie": "Two",
+          "elo": 1483.2619016514752,
+          "member": "B",
+          "pick_count": 1,
+          "rank": 8
+        }
+      ],
+      "total_elo": 12000.0
+    }
+  ],
+  "utr_four_roster": [
+    {
+      "elo": {
+        "Ada": 1500.0,
+        "Bea": 1500.0,
+        "Cy": 1500.0,
+        "Dee": 1500.0
+      },
+      "history": [
+        {
+          "deltas": {},
+          "elo_after": {
+            "Ada": 1500.0,
+            "Bea": 1500.0,
+            "Cy": 1500.0,
+            "Dee": 1500.0
+          },
+          "elo_before": {
+            "Ada": 1500.0,
+            "Bea": 1500.0,
+            "Cy": 1500.0,
+            "Dee": 1500.0
+          },
+          "matches": [],
+          "movie": "Opening",
+          "skipped": {},
+          "suggester": "Ada",
+          "voter_credit": {},
+          "week_id": "1"
+        }
+      ],
+      "standings": [
+        {
+          "current_movie": "Opening",
+          "elo": 1500.0,
+          "member": "Ada",
+          "pick_count": 1,
+          "rank": 1
+        },
+        {
+          "current_movie": null,
+          "elo": 1500.0,
+          "member": "Bea",
+          "pick_count": 0,
+          "rank": 2
+        },
+        {
+          "current_movie": null,
+          "elo": 1500.0,
+          "member": "Cy",
+          "pick_count": 0,
+          "rank": 3
+        },
+        {
+          "current_movie": null,
+          "elo": 1500.0,
+          "member": "Dee",
+          "pick_count": 0,
+          "rank": 4
+        }
+      ],
+      "total_elo": 6000.0
+    },
+    {
+      "elo": {
+        "Ada": 1525.3598203973154,
+        "Bea": 1474.6401796026846,
+        "Cy": 1500.0,
+        "Dee": 1500.0
+      },
+      "history": [
+        {
+          "deltas": {},
+          "elo_after": {
+            "Ada": 1500.0,
+            "Bea": 1500.0,
+            "Cy": 1500.0,
+            "Dee": 1500.0
+          },
+          "elo_before": {
+            "Ada": 1500.0,
+            "Bea": 1500.0,
+            "Cy": 1500.0,
+            "Dee": 1500.0
+          },
+          "matches": [],
+          "movie": "Opening",
+          "skipped": {},
+          "suggester": "Ada",
+          "voter_credit": {},
+          "week_id": "1"
+        },
+        {
+          "deltas": {
+            "Ada": 25.359820397315413,
+            "Bea": -25.359820397315413
+          },
+          "elo_after": {
+            "Ada": 1525.3598203973154,
+            "Bea": 1474.6401796026846,
+            "Cy": 1500.0,
+            "Dee": 1500.0
+          },
+          "elo_before": {
+            "Ada": 1500.0,
+            "Bea": 1500.0,
+            "Cy": 1500.0,
+            "Dee": 1500.0
+          },
+          "matches": [
+            {
+              "actual": 0.024503367550335983,
+              "delta": -25.359820397315413,
+              "expected": 0.5,
+              "gap": -2.0,
+              "judges": [
+                {
+                  "judge": "Cy",
+                  "new_score": 6.6,
+                  "old_score": 7.0,
+                  "weight": 0.5
+                },
+                {
+                  "judge": "Dee",
+                  "new_score": 5.5,
+                  "old_score": 9.1,
+                  "weight": 0.5
+                }
+              ],
+              "k": 53.333333333333336,
+              "opponent": "Ada",
+              "opponent_movie": "Opening"
+            }
+          ],
+          "movie": "Second",
+          "skipped": {},
+          "suggester": "Bea",
+          "voter_credit": {},
+          "week_id": "2"
+        }
+      ],
+      "standings": [
+        {
+          "current_movie": "Opening",
+          "elo": 1525.3598203973154,
+          "member": "Ada",
+          "pick_count": 1,
+          "rank": 1
+        },
+        {
+          "current_movie": null,
+          "elo": 1500.0,
+          "member": "Cy",
+          "pick_count": 0,
+          "rank": 2
+        },
+        {
+          "current_movie": null,
+          "elo": 1500.0,
+          "member": "Dee",
+          "pick_count": 0,
+          "rank": 3
+        },
+        {
+          "current_movie": "Second",
+          "elo": 1474.6401796026846,
+          "member": "Bea",
+          "pick_count": 1,
+          "rank": 4
+        }
+      ],
+      "total_elo": 6000.0
+    },
+    {
+      "elo": {
+        "Ada": 1549.893828432988,
+        "Bea": 1453.5142639922506,
+        "Cy": 1496.5919075747613,
+        "Dee": 1500.0
+      },
+      "history": [
+        {
+          "deltas": {},
+          "elo_after": {
+            "Ada": 1500.0,
+            "Bea": 1500.0,
+            "Cy": 1500.0,
+            "Dee": 1500.0
+          },
+          "elo_before": {
+            "Ada": 1500.0,
+            "Bea": 1500.0,
+            "Cy": 1500.0,
+            "Dee": 1500.0
+          },
+          "matches": [],
+          "movie": "Opening",
+          "skipped": {},
+          "suggester": "Ada",
+          "voter_credit": {},
+          "week_id": "1"
+        },
+        {
+          "deltas": {
+            "Ada": 25.359820397315413,
+            "Bea": -25.359820397315413
+          },
+          "elo_after": {
+            "Ada": 1525.3598203973154,
+            "Bea": 1474.6401796026846,
+            "Cy": 1500.0,
+            "Dee": 1500.0
+          },
+          "elo_before": {
+            "Ada": 1500.0,
+            "Bea": 1500.0,
+            "Cy": 1500.0,
+            "Dee": 1500.0
+          },
+          "matches": [
+            {
+              "actual": 0.024503367550335983,
+              "delta": -25.359820397315413,
+              "expected": 0.5,
+              "gap": -2.0,
+              "judges": [
+                {
+                  "judge": "Cy",
+                  "new_score": 6.6,
+                  "old_score": 7.0,
+                  "weight": 0.5
+                },
+                {
+                  "judge": "Dee",
+                  "new_score": 5.5,
+                  "old_score": 9.1,
+                  "weight": 0.5
+                }
+              ],
+              "k": 53.333333333333336,
+              "opponent": "Ada",
+              "opponent_movie": "Opening"
+            }
+          ],
+          "movie": "Second",
+          "skipped": {},
+          "suggester": "Bea",
+          "voter_credit": {},
+          "week_id": "2"
+        },
+        {
+          "deltas": {
+            "Ada": 24.534008035672535,
+            "Bea": -21.12591561043395,
+            "Cy": -3.4080924252385856
+          },
+          "elo_after": {
+            "Ada": 1549.893828432988,
+            "Bea": 1453.5142639922506,
+            "Cy": 1496.5919075747613,
+            "Dee": 1500.0
+          },
+          "elo_before": {
+            "Ada": 1525.3598203973154,
+            "Bea": 1474.6401796026846,
+            "Cy": 1500.0,
+            "Dee": 1500.0
+          },
+          "matches": [
+            {
+              "actual": 0.0035563095857103263,
+              "delta": -24.534008035672535,
+              "expected": 0.4635689602545704,
+              "gap": -3.0593165014188037,
+              "judges": [
+                {
+                  "judge": "Bea",
+                  "new_score": 8.2,
+                  "old_score": 8.5,
+                  "weight": 0.48901546270022156
+                },
+                {
+                  "judge": "Dee",
+                  "new_score": 3.4,
+                  "old_score": 9.1,
+                  "weight": 0.5109845372997784
+                }
+              ],
+              "k": 53.333333333333336,
+              "opponent": "Ada",
+              "opponent_movie": "Opening"
+            },
+            {
+              "actual": 0.9325419574410662,
+              "delta": 21.12591561043395,
+              "expected": 0.5364310397454296,
+              "gap": 1.4257933073684712,
+              "judges": [
+                {
+                  "judge": "Ada",
+                  "new_score": 9.0,
+                  "old_score": 4.2,
+                  "weight": 0.5109845372997784
+                },
+                {
+                  "judge": "Dee",
+                  "new_score": 3.4,
+                  "old_score": 5.5,
+                  "weight": 0.48901546270022156
+                }
+              ],
+              "k": 53.333333333333336,
+              "opponent": "Bea",
+              "opponent_movie": "Second"
+            }
+          ],
+          "movie": "Third",
+          "skipped": {},
+          "suggester": "Cy",
+          "voter_credit": {},
+          "week_id": "3"
+        }
+      ],
+      "standings": [
+        {
+          "current_movie": "Opening",
+          "elo": 1549.893828432988,
+          "member": "Ada",
+          "pick_count": 1,
+          "rank": 1
+        },
+        {
+          "current_movie": null,
+          "elo": 1500.0,
+          "member": "Dee",
+          "pick_count": 0,
+          "rank": 2
+        },
+        {
+          "current_movie": "Third",
+          "elo": 1496.5919075747613,
+          "member": "Cy",
+          "pick_count": 1,
+          "rank": 3
+        },
+        {
+          "current_movie": "Second",
+          "elo": 1453.5142639922506,
+          "member": "Bea",
+          "pick_count": 1,
+          "rank": 4
+        }
+      ],
+      "total_elo": 6000.0
+    },
+    {
+      "elo": {
+        "Ada": 1535.5839532685109,
+        "Bea": 1431.6037845071164,
+        "Cy": 1521.9331918237485,
+        "Dee": 1510.8790704006242
+      },
+      "history": [
+        {
+          "deltas": {},
+          "elo_after": {
+            "Ada": 1500.0,
+            "Bea": 1500.0,
+            "Cy": 1500.0,
+            "Dee": 1500.0
+          },
+          "elo_before": {
+            "Ada": 1500.0,
+            "Bea": 1500.0,
+            "Cy": 1500.0,
+            "Dee": 1500.0
+          },
+          "matches": [],
+          "movie": "Opening",
+          "skipped": {},
+          "suggester": "Ada",
+          "voter_credit": {},
+          "week_id": "1"
+        },
+        {
+          "deltas": {
+            "Ada": 25.359820397315413,
+            "Bea": -25.359820397315413
+          },
+          "elo_after": {
+            "Ada": 1525.3598203973154,
+            "Bea": 1474.6401796026846,
+            "Cy": 1500.0,
+            "Dee": 1500.0
+          },
+          "elo_before": {
+            "Ada": 1500.0,
+            "Bea": 1500.0,
+            "Cy": 1500.0,
+            "Dee": 1500.0
+          },
+          "matches": [
+            {
+              "actual": 0.024503367550335983,
+              "delta": -25.359820397315413,
+              "expected": 0.5,
+              "gap": -2.0,
+              "judges": [
+                {
+                  "judge": "Cy",
+                  "new_score": 6.6,
+                  "old_score": 7.0,
+                  "weight": 0.5
+                },
+                {
+                  "judge": "Dee",
+                  "new_score": 5.5,
+                  "old_score": 9.1,
+                  "weight": 0.5
+                }
+              ],
+              "k": 53.333333333333336,
+              "opponent": "Ada",
+              "opponent_movie": "Opening"
+            }
+          ],
+          "movie": "Second",
+          "skipped": {},
+          "suggester": "Bea",
+          "voter_credit": {},
+          "week_id": "2"
+        },
+        {
+          "deltas": {
+            "Ada": 24.534008035672535,
+            "Bea": -21.12591561043395,
+            "Cy": -3.4080924252385856
+          },
+          "elo_after": {
+            "Ada": 1549.893828432988,
+            "Bea": 1453.5142639922506,
+            "Cy": 1496.5919075747613,
+            "Dee": 1500.0
+          },
+          "elo_before": {
+            "Ada": 1525.3598203973154,
+            "Bea": 1474.6401796026846,
+            "Cy": 1500.0,
+            "Dee": 1500.0
+          },
+          "matches": [
+            {
+              "actual": 0.0035563095857103263,
+              "delta": -24.534008035672535,
+              "expected": 0.4635689602545704,
+              "gap": -3.0593165014188037,
+              "judges": [
+                {
+                  "judge": "Bea",
+                  "new_score": 8.2,
+                  "old_score": 8.5,
+                  "weight": 0.48901546270022156
+                },
+                {
+                  "judge": "Dee",
+                  "new_score": 3.4,
+                  "old_score": 9.1,
+                  "weight": 0.5109845372997784
+                }
+              ],
+              "k": 53.333333333333336,
+              "opponent": "Ada",
+              "opponent_movie": "Opening"
+            },
+            {
+              "actual": 0.9325419574410662,
+              "delta": 21.12591561043395,
+              "expected": 0.5364310397454296,
+              "gap": 1.4257933073684712,
+              "judges": [
+                {
+                  "judge": "Ada",
+                  "new_score": 9.0,
+                  "old_score": 4.2,
+                  "weight": 0.5109845372997784
+                },
+                {
+                  "judge": "Dee",
+                  "new_score": 3.4,
+                  "old_score": 5.5,
+                  "weight": 0.48901546270022156
+                }
+              ],
+              "k": 53.333333333333336,
+              "opponent": "Bea",
+              "opponent_movie": "Second"
+            }
+          ],
+          "movie": "Third",
+          "skipped": {},
+          "suggester": "Cy",
+          "voter_credit": {},
+          "week_id": "3"
+        },
+        {
+          "deltas": {
+            "Ada": -14.309875164476997,
+            "Bea": -21.910479485134253,
+            "Cy": 25.34128424898716,
+            "Dee": 10.87907040062409
+          },
+          "elo_after": {
+            "Ada": 1535.5839532685109,
+            "Bea": 1431.6037845071164,
+            "Cy": 1521.9331918237485,
+            "Dee": 1510.8790704006242
+          },
+          "elo_before": {
+            "Ada": 1549.893828432988,
+            "Bea": 1453.5142639922506,
+            "Cy": 1496.5919075747613,
+            "Dee": 1500.0
+          },
+          "matches": [
+            {
+              "actual": 0.6969967203806396,
+              "delta": 14.309875164476997,
+              "expected": 0.42868656104669595,
+              "gap": 0.45222925673343545,
+              "judges": [
+                {
+                  "judge": "Bea",
+                  "new_score": 7.5,
+                  "old_score": 8.5,
+                  "weight": 0.4813466940237732
+                },
+                {
+                  "judge": "Cy",
+                  "new_score": 8.8,
+                  "old_score": 7.0,
+                  "weight": 0.5186533059762268
+                }
+              ],
+              "k": 53.333333333333336,
+              "opponent": "Ada",
+              "opponent_movie": "Opening"
+            },
+            {
+              "actual": 0.9773234850930195,
+              "delta": 21.910479485134253,
+              "expected": 0.5665019947467522,
+              "gap": 2.043077531507786,
+              "judges": [
+                {
+                  "judge": "Ada",
+                  "new_score": 6.1,
+                  "old_score": 4.2,
+                  "weight": 0.5230748949740478
+                },
+                {
+                  "judge": "Cy",
+                  "new_score": 8.8,
+                  "old_score": 6.6,
+                  "weight": 0.4769251050259522
+                }
+              ],
+              "k": 53.333333333333336,
+              "opponent": "Bea",
+              "opponent_movie": "Second"
+            },
+            {
+              "actual": 0.029755402284923342,
+              "delta": -25.34128424898716,
+              "expected": 0.5049044819534326,
+              "gap": -1.891644258875275,
+              "judges": [
+                {
+                  "judge": "Ada",
+                  "new_score": 6.1,
+                  "old_score": 9.0,
+                  "weight": 0.5416564813069433
+                },
+                {
+                  "judge": "Bea",
+                  "new_score": 7.5,
+                  "old_score": 8.2,
+                  "weight": 0.4583435186930566
+                }
+              ],
+              "k": 53.333333333333336,
+              "opponent": "Cy",
+              "opponent_movie": "Third"
+            }
+          ],
+          "movie": "Fourth",
+          "skipped": {},
+          "suggester": "Dee",
+          "voter_credit": {},
+          "week_id": "4"
+        }
+      ],
+      "standings": [
+        {
+          "current_movie": "Opening",
+          "elo": 1535.5839532685109,
+          "member": "Ada",
+          "pick_count": 1,
+          "rank": 1
+        },
+        {
+          "current_movie": "Third",
+          "elo": 1521.9331918237485,
+          "member": "Cy",
+          "pick_count": 1,
+          "rank": 2
+        },
+        {
+          "current_movie": "Fourth",
+          "elo": 1510.8790704006242,
+          "member": "Dee",
+          "pick_count": 1,
+          "rank": 3
+        },
+        {
+          "current_movie": "Second",
+          "elo": 1431.6037845071164,
+          "member": "Bea",
+          "pick_count": 1,
+          "rank": 4
+        }
+      ],
+      "total_elo": 6000.0
+    }
+  ],
+  "utr_six_rebuild": [
+    {
+      "elo": {
+        "Avery": 1500.0,
+        "Blair": 1500.0,
+        "Casey": 1500.0,
+        "Drew": 1500.0,
+        "Ellis": 1500.0,
+        "Frankie": 1500.0
+      },
+      "history": [
+        {
+          "deltas": {},
+          "elo_after": {
+            "Avery": 1500.0,
+            "Blair": 1500.0,
+            "Casey": 1500.0,
+            "Drew": 1500.0,
+            "Ellis": 1500.0,
+            "Frankie": 1500.0
+          },
+          "elo_before": {
+            "Avery": 1500.0,
+            "Blair": 1500.0,
+            "Casey": 1500.0,
+            "Drew": 1500.0,
+            "Ellis": 1500.0,
+            "Frankie": 1500.0
+          },
+          "matches": [],
+          "movie": "Shawshank",
+          "skipped": {},
+          "suggester": "Avery",
+          "voter_credit": {},
+          "week_id": "1"
+        }
+      ],
+      "standings": [
+        {
+          "current_movie": "Shawshank",
+          "elo": 1500.0,
+          "member": "Avery",
+          "pick_count": 1,
+          "rank": 1
+        },
+        {
+          "current_movie": null,
+          "elo": 1500.0,
+          "member": "Blair",
+          "pick_count": 0,
+          "rank": 2
+        },
+        {
+          "current_movie": null,
+          "elo": 1500.0,
+          "member": "Casey",
+          "pick_count": 0,
+          "rank": 3
+        },
+        {
+          "current_movie": null,
+          "elo": 1500.0,
+          "member": "Drew",
+          "pick_count": 0,
+          "rank": 4
+        },
+        {
+          "current_movie": null,
+          "elo": 1500.0,
+          "member": "Ellis",
+          "pick_count": 0,
+          "rank": 5
+        },
+        {
+          "current_movie": null,
+          "elo": 1500.0,
+          "member": "Frankie",
+          "pick_count": 0,
+          "rank": 6
+        }
+      ],
+      "total_elo": 9000.0
+    },
+    {
+      "elo": {
+        "Avery": 1515.7478181167894,
+        "Blair": 1484.2521818832106,
+        "Casey": 1500.0,
+        "Drew": 1500.0,
+        "Ellis": 1500.0,
+        "Frankie": 1500.0
+      },
+      "history": [
+        {
+          "deltas": {},
+          "elo_after": {
+            "Avery": 1500.0,
+            "Blair": 1500.0,
+            "Casey": 1500.0,
+            "Drew": 1500.0,
+            "Ellis": 1500.0,
+            "Frankie": 1500.0
+          },
+          "elo_before": {
+            "Avery": 1500.0,
+            "Blair": 1500.0,
+            "Casey": 1500.0,
+            "Drew": 1500.0,
+            "Ellis": 1500.0,
+            "Frankie": 1500.0
+          },
+          "matches": [],
+          "movie": "Shawshank",
+          "skipped": {},
+          "suggester": "Avery",
+          "voter_credit": {},
+          "week_id": "1"
+        },
+        {
+          "deltas": {
+            "Avery": 15.74781811678943,
+            "Blair": -15.74781811678943
+          },
+          "elo_after": {
+            "Avery": 1515.7478181167894,
+            "Blair": 1484.2521818832106,
+            "Casey": 1500.0,
+            "Drew": 1500.0,
+            "Ellis": 1500.0,
+            "Frankie": 1500.0
+          },
+          "elo_before": {
+            "Avery": 1500.0,
+            "Blair": 1500.0,
+            "Casey": 1500.0,
+            "Drew": 1500.0,
+            "Ellis": 1500.0,
+            "Frankie": 1500.0
+          },
+          "matches": [
+            {
+              "actual": 0.007880683850330283,
+              "delta": -15.74781811678943,
+              "expected": 0.5,
+              "gap": -2.625,
+              "judges": [
+                {
+                  "judge": "Casey",
+                  "new_score": 5.5,
+                  "old_score": 8.5,
+                  "weight": 0.25
+                },
+                {
+                  "judge": "Drew",
+                  "new_score": 7.1,
+                  "old_score": 8.8,
+                  "weight": 0.25
+                },
+                {
+                  "judge": "Ellis",
+                  "new_score": 4.8,
+                  "old_score": 7.6,
+                  "weight": 0.25
+                },
+                {
+                  "judge": "Frankie",
+                  "new_score": 6.0,
+                  "old_score": 9.0,
+                  "weight": 0.25
+                }
+              ],
+              "k": 32.0,
+              "opponent": "Avery",
+              "opponent_movie": "Shawshank"
+            }
+          ],
+          "movie": "Heat",
+          "skipped": {},
+          "suggester": "Blair",
+          "voter_credit": {},
+          "week_id": "2"
+        }
+      ],
+      "standings": [
+        {
+          "current_movie": "Shawshank",
+          "elo": 1515.7478181167894,
+          "member": "Avery",
+          "pick_count": 1,
+          "rank": 1
+        },
+        {
+          "current_movie": null,
+          "elo": 1500.0,
+          "member": "Casey",
+          "pick_count": 0,
+          "rank": 2
+        },
+        {
+          "current_movie": null,
+          "elo": 1500.0,
+          "member": "Drew",
+          "pick_count": 0,
+          "rank": 3
+        },
+        {
+          "current_movie": null,
+          "elo": 1500.0,
+          "member": "Ellis",
+          "pick_count": 0,
+          "rank": 4
+        },
+        {
+          "current_movie": null,
+          "elo": 1500.0,
+          "member": "Frankie",
+          "pick_count": 0,
+          "rank": 5
+        },
+        {
+          "current_movie": "Heat",
+          "elo": 1484.2521818832106,
+          "member": "Blair",
+          "pick_count": 1,
+          "rank": 6
+        }
+      ],
+      "total_elo": 9000.0
+    },
+    {
+      "elo": {
+        "Avery": 1529.0485986548038,
+        "Blair": 1470.9198746292188,
+        "Casey": 1500.0315267159774,
+        "Drew": 1500.0,
+        "Ellis": 1500.0,
+        "Frankie": 1500.0
+      },
+      "history": [
+        {
+          "deltas": {},
+          "elo_after": {
+            "Avery": 1500.0,
+            "Blair": 1500.0,
+            "Casey": 1500.0,
+            "Drew": 1500.0,
+            "Ellis": 1500.0,
+            "Frankie": 1500.0
+          },
+          "elo_before": {
+            "Avery": 1500.0,
+            "Blair": 1500.0,
+            "Casey": 1500.0,
+            "Drew": 1500.0,
+            "Ellis": 1500.0,
+            "Frankie": 1500.0
+          },
+          "matches": [],
+          "movie": "Shawshank",
+          "skipped": {},
+          "suggester": "Avery",
+          "voter_credit": {},
+          "week_id": "1"
+        },
+        {
+          "deltas": {
+            "Avery": 15.74781811678943,
+            "Blair": -15.74781811678943
+          },
+          "elo_after": {
+            "Avery": 1515.7478181167894,
+            "Blair": 1484.2521818832106,
+            "Casey": 1500.0,
+            "Drew": 1500.0,
+            "Ellis": 1500.0,
+            "Frankie": 1500.0
+          },
+          "elo_before": {
+            "Avery": 1500.0,
+            "Blair": 1500.0,
+            "Casey": 1500.0,
+            "Drew": 1500.0,
+            "Ellis": 1500.0,
+            "Frankie": 1500.0
+          },
+          "matches": [
+            {
+              "actual": 0.007880683850330283,
+              "delta": -15.74781811678943,
+              "expected": 0.5,
+              "gap": -2.625,
+              "judges": [
+                {
+                  "judge": "Casey",
+                  "new_score": 5.5,
+                  "old_score": 8.5,
+                  "weight": 0.25
+                },
+                {
+                  "judge": "Drew",
+                  "new_score": 7.1,
+                  "old_score": 8.8,
+                  "weight": 0.25
+                },
+                {
+                  "judge": "Ellis",
+                  "new_score": 4.8,
+                  "old_score": 7.6,
+                  "weight": 0.25
+                },
+                {
+                  "judge": "Frankie",
+                  "new_score": 6.0,
+                  "old_score": 9.0,
+                  "weight": 0.25
+                }
+              ],
+              "k": 32.0,
+              "opponent": "Avery",
+              "opponent_movie": "Shawshank"
+            }
+          ],
+          "movie": "Heat",
+          "skipped": {},
+          "suggester": "Blair",
+          "voter_credit": {},
+          "week_id": "2"
+        },
+        {
+          "deltas": {
+            "Avery": 13.300780538014344,
+            "Blair": -13.332307253991765,
+            "Casey": 0.03152671597742085
+          },
+          "elo_after": {
+            "Avery": 1529.0485986548038,
+            "Blair": 1470.9198746292188,
+            "Casey": 1500.0315267159774,
+            "Drew": 1500.0,
+            "Ellis": 1500.0,
+            "Frankie": 1500.0
+          },
+          "elo_before": {
+            "Avery": 1515.7478181167894,
+            "Blair": 1484.2521818832106,
+            "Casey": 1500.0,
+            "Drew": 1500.0,
+            "Ellis": 1500.0,
+            "Frankie": 1500.0
+          },
+          "matches": [
+            {
+              "actual": 0.06170318324938479,
+              "delta": -13.300780538014344,
+              "expected": 0.47735257506233303,
+              "gap": -1.47754084151302,
+              "judges": [
+                {
+                  "judge": "Blair",
+                  "new_score": 8.1,
+                  "old_score": 9.2,
+                  "weight": 0.2449183169739591
+                },
+                {
+                  "judge": "Drew",
+                  "new_score": 9.0,
+                  "old_score": 8.8,
+                  "weight": 0.2516938943420136
+                },
+                {
+                  "judge": "Ellis",
+                  "new_score": 8.4,
+                  "old_score": 7.6,
+                  "weight": 0.2516938943420136
+                },
+                {
+                  "judge": "Frankie",
+                  "new_score": 3.2,
+                  "old_score": 9.0,
+                  "weight": 0.2516938943420136
+                }
+              ],
+              "k": 32.0,
+              "opponent": "Avery",
+              "opponent_movie": "Shawshank"
+            },
+            {
+              "actual": 0.9392820266249098,
+              "delta": 13.332307253991765,
+              "expected": 0.5226474249376671,
+              "gap": 1.486848430880131,
+              "judges": [
+                {
+                  "judge": "Avery",
+                  "new_score": 9.6,
+                  "old_score": 6.4,
+                  "weight": 0.2551514916870134
+                },
+                {
+                  "judge": "Drew",
+                  "new_score": 9.0,
+                  "old_score": 7.1,
+                  "weight": 0.24828283610432889
+                },
+                {
+                  "judge": "Ellis",
+                  "new_score": 8.4,
+                  "old_score": 4.8,
+                  "weight": 0.24828283610432889
+                },
+                {
+                  "judge": "Frankie",
+                  "new_score": 3.2,
+                  "old_score": 6.0,
+                  "weight": 0.24828283610432889
+                }
+              ],
+              "k": 32.0,
+              "opponent": "Blair",
+              "opponent_movie": "Heat"
+            }
+          ],
+          "movie": "Parasite",
+          "skipped": {},
+          "suggester": "Casey",
+          "voter_credit": {},
+          "week_id": "3"
+        }
+      ],
+      "standings": [
+        {
+          "current_movie": "Shawshank",
+          "elo": 1529.0485986548038,
+          "member": "Avery",
+          "pick_count": 1,
+          "rank": 1
+        },
+        {
+          "current_movie": "Parasite",
+          "elo": 1500.0315267159774,
+          "member": "Casey",
+          "pick_count": 1,
+          "rank": 2
+        },
+        {
+          "current_movie": null,
+          "elo": 1500.0,
+          "member": "Drew",
+          "pick_count": 0,
+          "rank": 3
+        },
+        {
+          "current_movie": null,
+          "elo": 1500.0,
+          "member": "Ellis",
+          "pick_count": 0,
+          "rank": 4
+        },
+        {
+          "current_movie": null,
+          "elo": 1500.0,
+          "member": "Frankie",
+          "pick_count": 0,
+          "rank": 5
+        },
+        {
+          "current_movie": "Heat",
+          "elo": 1470.9198746292188,
+          "member": "Blair",
+          "pick_count": 1,
+          "rank": 6
+        }
+      ],
+      "total_elo": 9000.0
+    },
+    {
+      "elo": {
+        "Avery": 1539.8693248058555,
+        "Blair": 1457.7908168038855,
+        "Casey": 1503.709360263478,
+        "Drew": 1498.630498126781,
+        "Ellis": 1500.0,
+        "Frankie": 1500.0
+      },
+      "history": [
+        {
+          "deltas": {},
+          "elo_after": {
+            "Avery": 1500.0,
+            "Blair": 1500.0,
+            "Casey": 1500.0,
+            "Drew": 1500.0,
+            "Ellis": 1500.0,
+            "Frankie": 1500.0
+          },
+          "elo_before": {
+            "Avery": 1500.0,
+            "Blair": 1500.0,
+            "Casey": 1500.0,
+            "Drew": 1500.0,
+            "Ellis": 1500.0,
+            "Frankie": 1500.0
+          },
+          "matches": [],
+          "movie": "Shawshank",
+          "skipped": {},
+          "suggester": "Avery",
+          "voter_credit": {},
+          "week_id": "1"
+        },
+        {
+          "deltas": {
+            "Avery": 15.74781811678943,
+            "Blair": -15.74781811678943
+          },
+          "elo_after": {
+            "Avery": 1515.7478181167894,
+            "Blair": 1484.2521818832106,
+            "Casey": 1500.0,
+            "Drew": 1500.0,
+            "Ellis": 1500.0,
+            "Frankie": 1500.0
+          },
+          "elo_before": {
+            "Avery": 1500.0,
+            "Blair": 1500.0,
+            "Casey": 1500.0,
+            "Drew": 1500.0,
+            "Ellis": 1500.0,
+            "Frankie": 1500.0
+          },
+          "matches": [
+            {
+              "actual": 0.007880683850330283,
+              "delta": -15.74781811678943,
+              "expected": 0.5,
+              "gap": -2.625,
+              "judges": [
+                {
+                  "judge": "Casey",
+                  "new_score": 5.5,
+                  "old_score": 8.5,
+                  "weight": 0.25
+                },
+                {
+                  "judge": "Drew",
+                  "new_score": 7.1,
+                  "old_score": 8.8,
+                  "weight": 0.25
+                },
+                {
+                  "judge": "Ellis",
+                  "new_score": 4.8,
+                  "old_score": 7.6,
+                  "weight": 0.25
+                },
+                {
+                  "judge": "Frankie",
+                  "new_score": 6.0,
+                  "old_score": 9.0,
+                  "weight": 0.25
+                }
+              ],
+              "k": 32.0,
+              "opponent": "Avery",
+              "opponent_movie": "Shawshank"
+            }
+          ],
+          "movie": "Heat",
+          "skipped": {},
+          "suggester": "Blair",
+          "voter_credit": {},
+          "week_id": "2"
+        },
+        {
+          "deltas": {
+            "Avery": 13.300780538014344,
+            "Blair": -13.332307253991765,
+            "Casey": 0.03152671597742085
+          },
+          "elo_after": {
+            "Avery": 1529.0485986548038,
+            "Blair": 1470.9198746292188,
+            "Casey": 1500.0315267159774,
+            "Drew": 1500.0,
+            "Ellis": 1500.0,
+            "Frankie": 1500.0
+          },
+          "elo_before": {
+            "Avery": 1515.7478181167894,
+            "Blair": 1484.2521818832106,
+            "Casey": 1500.0,
+            "Drew": 1500.0,
+            "Ellis": 1500.0,
+            "Frankie": 1500.0
+          },
+          "matches": [
+            {
+              "actual": 0.06170318324938479,
+              "delta": -13.300780538014344,
+              "expected": 0.47735257506233303,
+              "gap": -1.47754084151302,
+              "judges": [
+                {
+                  "judge": "Blair",
+                  "new_score": 8.1,
+                  "old_score": 9.2,
+                  "weight": 0.2449183169739591
+                },
+                {
+                  "judge": "Drew",
+                  "new_score": 9.0,
+                  "old_score": 8.8,
+                  "weight": 0.2516938943420136
+                },
+                {
+                  "judge": "Ellis",
+                  "new_score": 8.4,
+                  "old_score": 7.6,
+                  "weight": 0.2516938943420136
+                },
+                {
+                  "judge": "Frankie",
+                  "new_score": 3.2,
+                  "old_score": 9.0,
+                  "weight": 0.2516938943420136
+                }
+              ],
+              "k": 32.0,
+              "opponent": "Avery",
+              "opponent_movie": "Shawshank"
+            },
+            {
+              "actual": 0.9392820266249098,
+              "delta": 13.332307253991765,
+              "expected": 0.5226474249376671,
+              "gap": 1.486848430880131,
+              "judges": [
+                {
+                  "judge": "Avery",
+                  "new_score": 9.6,
+                  "old_score": 6.4,
+                  "weight": 0.2551514916870134
+                },
+                {
+                  "judge": "Drew",
+                  "new_score": 9.0,
+                  "old_score": 7.1,
+                  "weight": 0.24828283610432889
+                },
+                {
+                  "judge": "Ellis",
+                  "new_score": 8.4,
+                  "old_score": 4.8,
+                  "weight": 0.24828283610432889
+                },
+                {
+                  "judge": "Frankie",
+                  "new_score": 3.2,
+                  "old_score": 6.0,
+                  "weight": 0.24828283610432889
+                }
+              ],
+              "k": 32.0,
+              "opponent": "Blair",
+              "opponent_movie": "Heat"
+            }
+          ],
+          "movie": "Parasite",
+          "skipped": {},
+          "suggester": "Casey",
+          "voter_credit": {},
+          "week_id": "3"
+        },
+        {
+          "deltas": {
+            "Avery": 10.820726151051744,
+            "Blair": -13.129057825333401,
+            "Casey": 3.67783354750053,
+            "Drew": -1.3695018732188728
+          },
+          "elo_after": {
+            "Avery": 1539.8693248058555,
+            "Blair": 1457.7908168038855,
+            "Casey": 1503.709360263478,
+            "Drew": 1498.630498126781,
+            "Ellis": 1500.0,
+            "Frankie": 1500.0
+          },
+          "elo_before": {
+            "Avery": 1529.0485986548038,
+            "Blair": 1470.9198746292188,
+            "Casey": 1500.0315267159774,
+            "Drew": 1500.0,
+            "Ellis": 1500.0,
+            "Frankie": 1500.0
+          },
+          "matches": [
+            {
+              "actual": 0.12014515180113275,
+              "delta": -10.820726151051744,
+              "expected": 0.4582928440214997,
+              "gap": -1.0808809762051101,
+              "judges": [
+                {
+                  "judge": "Blair",
+                  "new_score": 8.6,
+                  "old_score": 9.2,
+                  "weight": 0.24066766963265154
+                },
+                {
+                  "judge": "Casey",
+                  "new_score": 9.4,
+                  "old_score": 8.5,
+                  "weight": 0.25311999544355684
+                },
+                {
+                  "judge": "Ellis",
+                  "new_score": 6.9,
+                  "old_score": 7.6,
+                  "weight": 0.2531061674618958
+                },
+                {
+                  "judge": "Frankie",
+                  "new_score": 5.1,
+                  "old_score": 9.0,
+                  "weight": 0.2531061674618958
+                }
+              ],
+              "k": 32.0,
+              "opponent": "Avery",
+              "opponent_movie": "Shawshank"
+            },
+            {
+              "actual": 0.9520352675842325,
+              "delta": 13.129057825333401,
+              "expected": 0.5417522105425637,
+              "gap": 1.6221637636019306,
+              "judges": [
+                {
+                  "judge": "Avery",
+                  "new_score": 7.8,
+                  "old_score": 6.4,
+                  "weight": 0.2595530044796548
+                },
+                {
+                  "judge": "Casey",
+                  "new_score": 9.4,
+                  "old_score": 5.5,
+                  "weight": 0.24682465455097174
+                },
+                {
+                  "judge": "Ellis",
+                  "new_score": 6.9,
+                  "old_score": 4.8,
+                  "weight": 0.24681117048468676
+                },
+                {
+                  "judge": "Frankie",
+                  "new_score": 5.1,
+                  "old_score": 6.0,
+                  "weight": 0.24681117048468676
+                }
+              ],
+              "k": 32.0,
+              "opponent": "Blair",
+              "opponent_movie": "Heat"
+            },
+            {
+              "actual": 0.38502233104933253,
+              "delta": -3.67783354750053,
+              "expected": 0.4999546294087241,
+              "gap": -0.254216783666076,
+              "judges": [
+                {
+                  "judge": "Avery",
+                  "new_score": 7.8,
+                  "old_score": 9.6,
+                  "weight": 0.2627433988689168
+                },
+                {
+                  "judge": "Blair",
+                  "new_score": 8.6,
+                  "old_score": 8.1,
+                  "weight": 0.23756671357252548
+                },
+                {
+                  "judge": "Ellis",
+                  "new_score": 6.9,
+                  "old_score": 8.4,
+                  "weight": 0.24984494377927885
+                },
+                {
+                  "judge": "Frankie",
+                  "new_score": 5.1,
+                  "old_score": 3.2,
+                  "weight": 0.24984494377927885
+                }
+              ],
+              "k": 32.0,
+              "opponent": "Casey",
+              "opponent_movie": "Parasite"
+            }
+          ],
+          "movie": "Spirited Away",
+          "skipped": {},
+          "suggester": "Drew",
+          "voter_credit": {},
+          "week_id": "4"
+        }
+      ],
+      "standings": [
+        {
+          "current_movie": "Shawshank",
+          "elo": 1539.8693248058555,
+          "member": "Avery",
+          "pick_count": 1,
+          "rank": 1
+        },
+        {
+          "current_movie": "Parasite",
+          "elo": 1503.709360263478,
+          "member": "Casey",
+          "pick_count": 1,
+          "rank": 2
+        },
+        {
+          "current_movie": null,
+          "elo": 1500.0,
+          "member": "Ellis",
+          "pick_count": 0,
+          "rank": 3
+        },
+        {
+          "current_movie": null,
+          "elo": 1500.0,
+          "member": "Frankie",
+          "pick_count": 0,
+          "rank": 4
+        },
+        {
+          "current_movie": "Spirited Away",
+          "elo": 1498.630498126781,
+          "member": "Drew",
+          "pick_count": 1,
+          "rank": 5
+        },
+        {
+          "current_movie": "Heat",
+          "elo": 1457.7908168038855,
+          "member": "Blair",
+          "pick_count": 1,
+          "rank": 6
+        }
+      ],
+      "total_elo": 9000.0
+    },
+    {
+      "elo": {
+        "Avery": 1553.5829703249365,
+        "Blair": 1461.0803767845855,
+        "Casey": 1517.657935648483,
+        "Drew": 1513.6941122568826,
+        "Ellis": 1453.9846049851124,
+        "Frankie": 1500.0
+      },
+      "history": [
+        {
+          "deltas": {},
+          "elo_after": {
+            "Avery": 1500.0,
+            "Blair": 1500.0,
+            "Casey": 1500.0,
+            "Drew": 1500.0,
+            "Ellis": 1500.0,
+            "Frankie": 1500.0
+          },
+          "elo_before": {
+            "Avery": 1500.0,
+            "Blair": 1500.0,
+            "Casey": 1500.0,
+            "Drew": 1500.0,
+            "Ellis": 1500.0,
+            "Frankie": 1500.0
+          },
+          "matches": [],
+          "movie": "Shawshank",
+          "skipped": {},
+          "suggester": "Avery",
+          "voter_credit": {},
+          "week_id": "1"
+        },
+        {
+          "deltas": {
+            "Avery": 15.74781811678943,
+            "Blair": -15.74781811678943
+          },
+          "elo_after": {
+            "Avery": 1515.7478181167894,
+            "Blair": 1484.2521818832106,
+            "Casey": 1500.0,
+            "Drew": 1500.0,
+            "Ellis": 1500.0,
+            "Frankie": 1500.0
+          },
+          "elo_before": {
+            "Avery": 1500.0,
+            "Blair": 1500.0,
+            "Casey": 1500.0,
+            "Drew": 1500.0,
+            "Ellis": 1500.0,
+            "Frankie": 1500.0
+          },
+          "matches": [
+            {
+              "actual": 0.007880683850330283,
+              "delta": -15.74781811678943,
+              "expected": 0.5,
+              "gap": -2.625,
+              "judges": [
+                {
+                  "judge": "Casey",
+                  "new_score": 5.5,
+                  "old_score": 8.5,
+                  "weight": 0.25
+                },
+                {
+                  "judge": "Drew",
+                  "new_score": 7.1,
+                  "old_score": 8.8,
+                  "weight": 0.25
+                },
+                {
+                  "judge": "Ellis",
+                  "new_score": 4.8,
+                  "old_score": 7.6,
+                  "weight": 0.25
+                },
+                {
+                  "judge": "Frankie",
+                  "new_score": 6.0,
+                  "old_score": 9.0,
+                  "weight": 0.25
+                }
+              ],
+              "k": 32.0,
+              "opponent": "Avery",
+              "opponent_movie": "Shawshank"
+            }
+          ],
+          "movie": "Heat",
+          "skipped": {},
+          "suggester": "Blair",
+          "voter_credit": {},
+          "week_id": "2"
+        },
+        {
+          "deltas": {
+            "Avery": 13.300780538014344,
+            "Blair": -13.332307253991765,
+            "Casey": 0.03152671597742085
+          },
+          "elo_after": {
+            "Avery": 1529.0485986548038,
+            "Blair": 1470.9198746292188,
+            "Casey": 1500.0315267159774,
+            "Drew": 1500.0,
+            "Ellis": 1500.0,
+            "Frankie": 1500.0
+          },
+          "elo_before": {
+            "Avery": 1515.7478181167894,
+            "Blair": 1484.2521818832106,
+            "Casey": 1500.0,
+            "Drew": 1500.0,
+            "Ellis": 1500.0,
+            "Frankie": 1500.0
+          },
+          "matches": [
+            {
+              "actual": 0.06170318324938479,
+              "delta": -13.300780538014344,
+              "expected": 0.47735257506233303,
+              "gap": -1.47754084151302,
+              "judges": [
+                {
+                  "judge": "Blair",
+                  "new_score": 8.1,
+                  "old_score": 9.2,
+                  "weight": 0.2449183169739591
+                },
+                {
+                  "judge": "Drew",
+                  "new_score": 9.0,
+                  "old_score": 8.8,
+                  "weight": 0.2516938943420136
+                },
+                {
+                  "judge": "Ellis",
+                  "new_score": 8.4,
+                  "old_score": 7.6,
+                  "weight": 0.2516938943420136
+                },
+                {
+                  "judge": "Frankie",
+                  "new_score": 3.2,
+                  "old_score": 9.0,
+                  "weight": 0.2516938943420136
+                }
+              ],
+              "k": 32.0,
+              "opponent": "Avery",
+              "opponent_movie": "Shawshank"
+            },
+            {
+              "actual": 0.9392820266249098,
+              "delta": 13.332307253991765,
+              "expected": 0.5226474249376671,
+              "gap": 1.486848430880131,
+              "judges": [
+                {
+                  "judge": "Avery",
+                  "new_score": 9.6,
+                  "old_score": 6.4,
+                  "weight": 0.2551514916870134
+                },
+                {
+                  "judge": "Drew",
+                  "new_score": 9.0,
+                  "old_score": 7.1,
+                  "weight": 0.24828283610432889
+                },
+                {
+                  "judge": "Ellis",
+                  "new_score": 8.4,
+                  "old_score": 4.8,
+                  "weight": 0.24828283610432889
+                },
+                {
+                  "judge": "Frankie",
+                  "new_score": 3.2,
+                  "old_score": 6.0,
+                  "weight": 0.24828283610432889
+                }
+              ],
+              "k": 32.0,
+              "opponent": "Blair",
+              "opponent_movie": "Heat"
+            }
+          ],
+          "movie": "Parasite",
+          "skipped": {},
+          "suggester": "Casey",
+          "voter_credit": {},
+          "week_id": "3"
+        },
+        {
+          "deltas": {
+            "Avery": 10.820726151051744,
+            "Blair": -13.129057825333401,
+            "Casey": 3.67783354750053,
+            "Drew": -1.3695018732188728
+          },
+          "elo_after": {
+            "Avery": 1539.8693248058555,
+            "Blair": 1457.7908168038855,
+            "Casey": 1503.709360263478,
+            "Drew": 1498.630498126781,
+            "Ellis": 1500.0,
+            "Frankie": 1500.0
+          },
+          "elo_before": {
+            "Avery": 1529.0485986548038,
+            "Blair": 1470.9198746292188,
+            "Casey": 1500.0315267159774,
+            "Drew": 1500.0,
+            "Ellis": 1500.0,
+            "Frankie": 1500.0
+          },
+          "matches": [
+            {
+              "actual": 0.12014515180113275,
+              "delta": -10.820726151051744,
+              "expected": 0.4582928440214997,
+              "gap": -1.0808809762051101,
+              "judges": [
+                {
+                  "judge": "Blair",
+                  "new_score": 8.6,
+                  "old_score": 9.2,
+                  "weight": 0.24066766963265154
+                },
+                {
+                  "judge": "Casey",
+                  "new_score": 9.4,
+                  "old_score": 8.5,
+                  "weight": 0.25311999544355684
+                },
+                {
+                  "judge": "Ellis",
+                  "new_score": 6.9,
+                  "old_score": 7.6,
+                  "weight": 0.2531061674618958
+                },
+                {
+                  "judge": "Frankie",
+                  "new_score": 5.1,
+                  "old_score": 9.0,
+                  "weight": 0.2531061674618958
+                }
+              ],
+              "k": 32.0,
+              "opponent": "Avery",
+              "opponent_movie": "Shawshank"
+            },
+            {
+              "actual": 0.9520352675842325,
+              "delta": 13.129057825333401,
+              "expected": 0.5417522105425637,
+              "gap": 1.6221637636019306,
+              "judges": [
+                {
+                  "judge": "Avery",
+                  "new_score": 7.8,
+                  "old_score": 6.4,
+                  "weight": 0.2595530044796548
+                },
+                {
+                  "judge": "Casey",
+                  "new_score": 9.4,
+                  "old_score": 5.5,
+                  "weight": 0.24682465455097174
+                },
+                {
+                  "judge": "Ellis",
+                  "new_score": 6.9,
+                  "old_score": 4.8,
+                  "weight": 0.24681117048468676
+                },
+                {
+                  "judge": "Frankie",
+                  "new_score": 5.1,
+                  "old_score": 6.0,
+                  "weight": 0.24681117048468676
+                }
+              ],
+              "k": 32.0,
+              "opponent": "Blair",
+              "opponent_movie": "Heat"
+            },
+            {
+              "actual": 0.38502233104933253,
+              "delta": -3.67783354750053,
+              "expected": 0.4999546294087241,
+              "gap": -0.254216783666076,
+              "judges": [
+                {
+                  "judge": "Avery",
+                  "new_score": 7.8,
+                  "old_score": 9.6,
+                  "weight": 0.2627433988689168
+                },
+                {
+                  "judge": "Blair",
+                  "new_score": 8.6,
+                  "old_score": 8.1,
+                  "weight": 0.23756671357252548
+                },
+                {
+                  "judge": "Ellis",
+                  "new_score": 6.9,
+                  "old_score": 8.4,
+                  "weight": 0.24984494377927885
+                },
+                {
+                  "judge": "Frankie",
+                  "new_score": 5.1,
+                  "old_score": 3.2,
+                  "weight": 0.24984494377927885
+                }
+              ],
+              "k": 32.0,
+              "opponent": "Casey",
+              "opponent_movie": "Parasite"
+            }
+          ],
+          "movie": "Spirited Away",
+          "skipped": {},
+          "suggester": "Drew",
+          "voter_credit": {},
+          "week_id": "4"
+        },
+        {
+          "deltas": {
+            "Avery": 13.71364551908092,
+            "Blair": 3.2895599807000213,
+            "Casey": 13.948575385005135,
+            "Drew": 15.063614130101636,
+            "Ellis": -46.01539501488771
+          },
+          "elo_after": {
+            "Avery": 1553.5829703249365,
+            "Blair": 1461.0803767845855,
+            "Casey": 1517.657935648483,
+            "Drew": 1513.6941122568826,
+            "Ellis": 1453.9846049851124,
+            "Frankie": 1500.0
+          },
+          "elo_before": {
+            "Avery": 1539.8693248058555,
+            "Blair": 1457.7908168038855,
+            "Casey": 1503.709360263478,
+            "Drew": 1498.630498126781,
+            "Ellis": 1500.0,
+            "Frankie": 1500.0
+          },
+          "matches": [
+            {
+              "actual": 0.014322537698168214,
+              "delta": -13.71364551908092,
+              "expected": 0.44287396016944697,
+              "gap": -2.2971435655249115,
+              "judges": [
+                {
+                  "judge": "Blair",
+                  "new_score": 6.8,
+                  "old_score": 9.2,
+                  "weight": 0.23629262951033086
+                },
+                {
+                  "judge": "Casey",
+                  "new_score": 7.4,
+                  "old_score": 8.5,
+                  "weight": 0.25586290272643203
+                },
+                {
+                  "judge": "Drew",
+                  "new_score": 8.0,
+                  "old_score": 8.8,
+                  "weight": 0.2536209342289804
+                },
+                {
+                  "judge": "Frankie",
+                  "new_score": 4.1,
+                  "old_score": 9.0,
+                  "weight": 0.2542235335342567
+                }
+              ],
+              "k": 32.0,
+              "opponent": "Avery",
+              "opponent_movie": "Shawshank"
+            },
+            {
+              "actual": 0.45764805644828416,
+              "delta": -3.2895599807000213,
+              "expected": 0.5604468058451598,
+              "gap": -0.09218697310984014,
+              "judges": [
+                {
+                  "judge": "Avery",
+                  "new_score": 5.2,
+                  "old_score": 6.4,
+                  "weight": 0.2629130519338326
+                },
+                {
+                  "judge": "Casey",
+                  "new_score": 7.4,
+                  "old_score": 5.5,
+                  "weight": 0.24694433153506876
+                },
+                {
+                  "judge": "Drew",
+                  "new_score": 8.0,
+                  "old_score": 7.1,
+                  "weight": 0.24478051096543418
+                },
+                {
+                  "judge": "Frankie",
+                  "new_score": 4.1,
+                  "old_score": 6.0,
+                  "weight": 0.24536210556566448
+                }
+              ],
+              "k": 32.0,
+              "opponent": "Blair",
+              "opponent_movie": "Heat"
+            },
+            {
+              "actual": 0.05876902350548566,
+              "delta": -13.948575385005135,
+              "expected": 0.4946620042868961,
+              "gap": -1.5056846712710088,
+              "judges": [
+                {
+                  "judge": "Avery",
+                  "new_score": 5.2,
+                  "old_score": 9.6,
+                  "weight": 0.26797458685891495
+                },
+                {
+                  "judge": "Blair",
+                  "new_score": 6.8,
+                  "old_score": 8.1,
+                  "weight": 0.23244669614408878
+                },
+                {
+                  "judge": "Drew",
+                  "new_score": 8.0,
+                  "old_score": 9.0,
+                  "weight": 0.24949296284303385
+                },
+                {
+                  "judge": "Frankie",
+                  "new_score": 4.1,
+                  "old_score": 3.2,
+                  "weight": 0.25008575415396245
+                }
+              ],
+              "k": 32.0,
+              "opponent": "Casey",
+              "opponent_movie": "Parasite"
+            },
+            {
+              "actual": 0.031232919850833363,
+              "delta": -15.063614130101636,
+              "expected": 0.5019708614165095,
+              "gap": -1.8645084822792626,
+              "judges": [
+                {
+                  "judge": "Avery",
+                  "new_score": 5.2,
+                  "old_score": 7.8,
+                  "weight": 0.2673848754278836
+                },
+                {
+                  "judge": "Blair",
+                  "new_score": 6.8,
+                  "old_score": 8.6,
+                  "weight": 0.23193516825844712
+                },
+                {
+                  "judge": "Casey",
+                  "new_score": 7.4,
+                  "old_score": 9.4,
+                  "weight": 0.25114454698789135
+                },
+                {
+                  "judge": "Frankie",
+                  "new_score": 4.1,
+                  "old_score": 5.1,
+                  "weight": 0.24953540932577792
+                }
+              ],
+              "k": 32.0,
+              "opponent": "Drew",
+              "opponent_movie": "Spirited Away"
+            }
+          ],
+          "movie": "The Third Man",
+          "skipped": {},
+          "suggester": "Ellis",
+          "voter_credit": {},
+          "week_id": "5"
+        }
+      ],
+      "standings": [
+        {
+          "current_movie": "Shawshank",
+          "elo": 1553.5829703249365,
+          "member": "Avery",
+          "pick_count": 1,
+          "rank": 1
+        },
+        {
+          "current_movie": "Parasite",
+          "elo": 1517.657935648483,
+          "member": "Casey",
+          "pick_count": 1,
+          "rank": 2
+        },
+        {
+          "current_movie": "Spirited Away",
+          "elo": 1513.6941122568826,
+          "member": "Drew",
+          "pick_count": 1,
+          "rank": 3
+        },
+        {
+          "current_movie": null,
+          "elo": 1500.0,
+          "member": "Frankie",
+          "pick_count": 0,
+          "rank": 4
+        },
+        {
+          "current_movie": "Heat",
+          "elo": 1461.0803767845855,
+          "member": "Blair",
+          "pick_count": 1,
+          "rank": 5
+        },
+        {
+          "current_movie": "The Third Man",
+          "elo": 1453.9846049851124,
+          "member": "Ellis",
+          "pick_count": 1,
+          "rank": 6
+        }
+      ],
+      "total_elo": 9000.0
+    },
+    {
+      "elo": {
+        "Avery": 1566.025465668619,
+        "Blair": 1447.959730293862,
+        "Casey": 1531.00189605272,
+        "Drew": 1526.3094003441447,
+        "Ellis": 1459.1321364383973,
+        "Frankie": 1469.5713712022568
+      },
+      "history": [
+        {
+          "deltas": {},
+          "elo_after": {
+            "Avery": 1500.0,
+            "Blair": 1500.0,
+            "Casey": 1500.0,
+            "Drew": 1500.0,
+            "Ellis": 1500.0,
+            "Frankie": 1500.0
+          },
+          "elo_before": {
+            "Avery": 1500.0,
+            "Blair": 1500.0,
+            "Casey": 1500.0,
+            "Drew": 1500.0,
+            "Ellis": 1500.0,
+            "Frankie": 1500.0
+          },
+          "matches": [],
+          "movie": "Shawshank",
+          "skipped": {},
+          "suggester": "Avery",
+          "voter_credit": {},
+          "week_id": "1"
+        },
+        {
+          "deltas": {
+            "Avery": 15.74781811678943,
+            "Blair": -15.74781811678943
+          },
+          "elo_after": {
+            "Avery": 1515.7478181167894,
+            "Blair": 1484.2521818832106,
+            "Casey": 1500.0,
+            "Drew": 1500.0,
+            "Ellis": 1500.0,
+            "Frankie": 1500.0
+          },
+          "elo_before": {
+            "Avery": 1500.0,
+            "Blair": 1500.0,
+            "Casey": 1500.0,
+            "Drew": 1500.0,
+            "Ellis": 1500.0,
+            "Frankie": 1500.0
+          },
+          "matches": [
+            {
+              "actual": 0.007880683850330283,
+              "delta": -15.74781811678943,
+              "expected": 0.5,
+              "gap": -2.625,
+              "judges": [
+                {
+                  "judge": "Casey",
+                  "new_score": 5.5,
+                  "old_score": 8.5,
+                  "weight": 0.25
+                },
+                {
+                  "judge": "Drew",
+                  "new_score": 7.1,
+                  "old_score": 8.8,
+                  "weight": 0.25
+                },
+                {
+                  "judge": "Ellis",
+                  "new_score": 4.8,
+                  "old_score": 7.6,
+                  "weight": 0.25
+                },
+                {
+                  "judge": "Frankie",
+                  "new_score": 6.0,
+                  "old_score": 9.0,
+                  "weight": 0.25
+                }
+              ],
+              "k": 32.0,
+              "opponent": "Avery",
+              "opponent_movie": "Shawshank"
+            }
+          ],
+          "movie": "Heat",
+          "skipped": {},
+          "suggester": "Blair",
+          "voter_credit": {},
+          "week_id": "2"
+        },
+        {
+          "deltas": {
+            "Avery": 13.300780538014344,
+            "Blair": -13.332307253991765,
+            "Casey": 0.03152671597742085
+          },
+          "elo_after": {
+            "Avery": 1529.0485986548038,
+            "Blair": 1470.9198746292188,
+            "Casey": 1500.0315267159774,
+            "Drew": 1500.0,
+            "Ellis": 1500.0,
+            "Frankie": 1500.0
+          },
+          "elo_before": {
+            "Avery": 1515.7478181167894,
+            "Blair": 1484.2521818832106,
+            "Casey": 1500.0,
+            "Drew": 1500.0,
+            "Ellis": 1500.0,
+            "Frankie": 1500.0
+          },
+          "matches": [
+            {
+              "actual": 0.06170318324938479,
+              "delta": -13.300780538014344,
+              "expected": 0.47735257506233303,
+              "gap": -1.47754084151302,
+              "judges": [
+                {
+                  "judge": "Blair",
+                  "new_score": 8.1,
+                  "old_score": 9.2,
+                  "weight": 0.2449183169739591
+                },
+                {
+                  "judge": "Drew",
+                  "new_score": 9.0,
+                  "old_score": 8.8,
+                  "weight": 0.2516938943420136
+                },
+                {
+                  "judge": "Ellis",
+                  "new_score": 8.4,
+                  "old_score": 7.6,
+                  "weight": 0.2516938943420136
+                },
+                {
+                  "judge": "Frankie",
+                  "new_score": 3.2,
+                  "old_score": 9.0,
+                  "weight": 0.2516938943420136
+                }
+              ],
+              "k": 32.0,
+              "opponent": "Avery",
+              "opponent_movie": "Shawshank"
+            },
+            {
+              "actual": 0.9392820266249098,
+              "delta": 13.332307253991765,
+              "expected": 0.5226474249376671,
+              "gap": 1.486848430880131,
+              "judges": [
+                {
+                  "judge": "Avery",
+                  "new_score": 9.6,
+                  "old_score": 6.4,
+                  "weight": 0.2551514916870134
+                },
+                {
+                  "judge": "Drew",
+                  "new_score": 9.0,
+                  "old_score": 7.1,
+                  "weight": 0.24828283610432889
+                },
+                {
+                  "judge": "Ellis",
+                  "new_score": 8.4,
+                  "old_score": 4.8,
+                  "weight": 0.24828283610432889
+                },
+                {
+                  "judge": "Frankie",
+                  "new_score": 3.2,
+                  "old_score": 6.0,
+                  "weight": 0.24828283610432889
+                }
+              ],
+              "k": 32.0,
+              "opponent": "Blair",
+              "opponent_movie": "Heat"
+            }
+          ],
+          "movie": "Parasite",
+          "skipped": {},
+          "suggester": "Casey",
+          "voter_credit": {},
+          "week_id": "3"
+        },
+        {
+          "deltas": {
+            "Avery": 10.820726151051744,
+            "Blair": -13.129057825333401,
+            "Casey": 3.67783354750053,
+            "Drew": -1.3695018732188728
+          },
+          "elo_after": {
+            "Avery": 1539.8693248058555,
+            "Blair": 1457.7908168038855,
+            "Casey": 1503.709360263478,
+            "Drew": 1498.630498126781,
+            "Ellis": 1500.0,
+            "Frankie": 1500.0
+          },
+          "elo_before": {
+            "Avery": 1529.0485986548038,
+            "Blair": 1470.9198746292188,
+            "Casey": 1500.0315267159774,
+            "Drew": 1500.0,
+            "Ellis": 1500.0,
+            "Frankie": 1500.0
+          },
+          "matches": [
+            {
+              "actual": 0.12014515180113275,
+              "delta": -10.820726151051744,
+              "expected": 0.4582928440214997,
+              "gap": -1.0808809762051101,
+              "judges": [
+                {
+                  "judge": "Blair",
+                  "new_score": 8.6,
+                  "old_score": 9.2,
+                  "weight": 0.24066766963265154
+                },
+                {
+                  "judge": "Casey",
+                  "new_score": 9.4,
+                  "old_score": 8.5,
+                  "weight": 0.25311999544355684
+                },
+                {
+                  "judge": "Ellis",
+                  "new_score": 6.9,
+                  "old_score": 7.6,
+                  "weight": 0.2531061674618958
+                },
+                {
+                  "judge": "Frankie",
+                  "new_score": 5.1,
+                  "old_score": 9.0,
+                  "weight": 0.2531061674618958
+                }
+              ],
+              "k": 32.0,
+              "opponent": "Avery",
+              "opponent_movie": "Shawshank"
+            },
+            {
+              "actual": 0.9520352675842325,
+              "delta": 13.129057825333401,
+              "expected": 0.5417522105425637,
+              "gap": 1.6221637636019306,
+              "judges": [
+                {
+                  "judge": "Avery",
+                  "new_score": 7.8,
+                  "old_score": 6.4,
+                  "weight": 0.2595530044796548
+                },
+                {
+                  "judge": "Casey",
+                  "new_score": 9.4,
+                  "old_score": 5.5,
+                  "weight": 0.24682465455097174
+                },
+                {
+                  "judge": "Ellis",
+                  "new_score": 6.9,
+                  "old_score": 4.8,
+                  "weight": 0.24681117048468676
+                },
+                {
+                  "judge": "Frankie",
+                  "new_score": 5.1,
+                  "old_score": 6.0,
+                  "weight": 0.24681117048468676
+                }
+              ],
+              "k": 32.0,
+              "opponent": "Blair",
+              "opponent_movie": "Heat"
+            },
+            {
+              "actual": 0.38502233104933253,
+              "delta": -3.67783354750053,
+              "expected": 0.4999546294087241,
+              "gap": -0.254216783666076,
+              "judges": [
+                {
+                  "judge": "Avery",
+                  "new_score": 7.8,
+                  "old_score": 9.6,
+                  "weight": 0.2627433988689168
+                },
+                {
+                  "judge": "Blair",
+                  "new_score": 8.6,
+                  "old_score": 8.1,
+                  "weight": 0.23756671357252548
+                },
+                {
+                  "judge": "Ellis",
+                  "new_score": 6.9,
+                  "old_score": 8.4,
+                  "weight": 0.24984494377927885
+                },
+                {
+                  "judge": "Frankie",
+                  "new_score": 5.1,
+                  "old_score": 3.2,
+                  "weight": 0.24984494377927885
+                }
+              ],
+              "k": 32.0,
+              "opponent": "Casey",
+              "opponent_movie": "Parasite"
+            }
+          ],
+          "movie": "Spirited Away",
+          "skipped": {},
+          "suggester": "Drew",
+          "voter_credit": {},
+          "week_id": "4"
+        },
+        {
+          "deltas": {
+            "Avery": 13.71364551908092,
+            "Blair": 3.2895599807000213,
+            "Casey": 13.948575385005135,
+            "Drew": 15.063614130101636,
+            "Ellis": -46.01539501488771
+          },
+          "elo_after": {
+            "Avery": 1553.5829703249365,
+            "Blair": 1461.0803767845855,
+            "Casey": 1517.657935648483,
+            "Drew": 1513.6941122568826,
+            "Ellis": 1453.9846049851124,
+            "Frankie": 1500.0
+          },
+          "elo_before": {
+            "Avery": 1539.8693248058555,
+            "Blair": 1457.7908168038855,
+            "Casey": 1503.709360263478,
+            "Drew": 1498.630498126781,
+            "Ellis": 1500.0,
+            "Frankie": 1500.0
+          },
+          "matches": [
+            {
+              "actual": 0.014322537698168214,
+              "delta": -13.71364551908092,
+              "expected": 0.44287396016944697,
+              "gap": -2.2971435655249115,
+              "judges": [
+                {
+                  "judge": "Blair",
+                  "new_score": 6.8,
+                  "old_score": 9.2,
+                  "weight": 0.23629262951033086
+                },
+                {
+                  "judge": "Casey",
+                  "new_score": 7.4,
+                  "old_score": 8.5,
+                  "weight": 0.25586290272643203
+                },
+                {
+                  "judge": "Drew",
+                  "new_score": 8.0,
+                  "old_score": 8.8,
+                  "weight": 0.2536209342289804
+                },
+                {
+                  "judge": "Frankie",
+                  "new_score": 4.1,
+                  "old_score": 9.0,
+                  "weight": 0.2542235335342567
+                }
+              ],
+              "k": 32.0,
+              "opponent": "Avery",
+              "opponent_movie": "Shawshank"
+            },
+            {
+              "actual": 0.45764805644828416,
+              "delta": -3.2895599807000213,
+              "expected": 0.5604468058451598,
+              "gap": -0.09218697310984014,
+              "judges": [
+                {
+                  "judge": "Avery",
+                  "new_score": 5.2,
+                  "old_score": 6.4,
+                  "weight": 0.2629130519338326
+                },
+                {
+                  "judge": "Casey",
+                  "new_score": 7.4,
+                  "old_score": 5.5,
+                  "weight": 0.24694433153506876
+                },
+                {
+                  "judge": "Drew",
+                  "new_score": 8.0,
+                  "old_score": 7.1,
+                  "weight": 0.24478051096543418
+                },
+                {
+                  "judge": "Frankie",
+                  "new_score": 4.1,
+                  "old_score": 6.0,
+                  "weight": 0.24536210556566448
+                }
+              ],
+              "k": 32.0,
+              "opponent": "Blair",
+              "opponent_movie": "Heat"
+            },
+            {
+              "actual": 0.05876902350548566,
+              "delta": -13.948575385005135,
+              "expected": 0.4946620042868961,
+              "gap": -1.5056846712710088,
+              "judges": [
+                {
+                  "judge": "Avery",
+                  "new_score": 5.2,
+                  "old_score": 9.6,
+                  "weight": 0.26797458685891495
+                },
+                {
+                  "judge": "Blair",
+                  "new_score": 6.8,
+                  "old_score": 8.1,
+                  "weight": 0.23244669614408878
+                },
+                {
+                  "judge": "Drew",
+                  "new_score": 8.0,
+                  "old_score": 9.0,
+                  "weight": 0.24949296284303385
+                },
+                {
+                  "judge": "Frankie",
+                  "new_score": 4.1,
+                  "old_score": 3.2,
+                  "weight": 0.25008575415396245
+                }
+              ],
+              "k": 32.0,
+              "opponent": "Casey",
+              "opponent_movie": "Parasite"
+            },
+            {
+              "actual": 0.031232919850833363,
+              "delta": -15.063614130101636,
+              "expected": 0.5019708614165095,
+              "gap": -1.8645084822792626,
+              "judges": [
+                {
+                  "judge": "Avery",
+                  "new_score": 5.2,
+                  "old_score": 7.8,
+                  "weight": 0.2673848754278836
+                },
+                {
+                  "judge": "Blair",
+                  "new_score": 6.8,
+                  "old_score": 8.6,
+                  "weight": 0.23193516825844712
+                },
+                {
+                  "judge": "Casey",
+                  "new_score": 7.4,
+                  "old_score": 9.4,
+                  "weight": 0.25114454698789135
+                },
+                {
+                  "judge": "Frankie",
+                  "new_score": 4.1,
+                  "old_score": 5.1,
+                  "weight": 0.24953540932577792
+                }
+              ],
+              "k": 32.0,
+              "opponent": "Drew",
+              "opponent_movie": "Spirited Away"
+            }
+          ],
+          "movie": "The Third Man",
+          "skipped": {},
+          "suggester": "Ellis",
+          "voter_credit": {},
+          "week_id": "5"
+        },
+        {
+          "deltas": {
+            "Avery": 12.442495343682582,
+            "Blair": -13.12064649072336,
+            "Casey": 13.343960404236903,
+            "Drew": 12.61528808726207,
+            "Ellis": 5.147531453284939,
+            "Frankie": -30.428628797743137
+          },
+          "elo_after": {
+            "Avery": 1566.025465668619,
+            "Blair": 1447.959730293862,
+            "Casey": 1531.00189605272,
+            "Drew": 1526.3094003441447,
+            "Ellis": 1459.1321364383973,
+            "Frankie": 1469.5713712022568
+          },
+          "elo_before": {
+            "Avery": 1553.5829703249365,
+            "Blair": 1461.0803767845855,
+            "Casey": 1517.657935648483,
+            "Drew": 1513.6941122568826,
+            "Ellis": 1453.9846049851124,
+            "Frankie": 1500.0
+          },
+          "matches": [
+            {
+              "actual": 0.03466553933922634,
+              "delta": -12.442495343682582,
+              "expected": 0.423493518829307,
+              "gap": -1.8059748105980555,
+              "judges": [
+                {
+                  "judge": "Blair",
+                  "new_score": 3.9,
+                  "old_score": 9.2,
+                  "weight": 0.23887751250290587
+                },
+                {
+                  "judge": "Casey",
+                  "new_score": 6.2,
+                  "old_score": 8.5,
+                  "weight": 0.26348392464863246
+                },
+                {
+                  "judge": "Drew",
+                  "new_score": 7.7,
+                  "old_score": 8.8,
+                  "weight": 0.2616803122744201
+                },
+                {
+                  "judge": "Ellis",
+                  "new_score": 9.1,
+                  "old_score": 7.6,
+                  "weight": 0.23595825057404152
+                }
+              ],
+              "k": 32.0,
+              "opponent": "Avery",
+              "opponent_movie": "Shawshank"
+            },
+            {
+              "actual": 0.9657969348469818,
+              "delta": 13.12064649072336,
+              "expected": 0.5557767320118768,
+              "gap": 1.8135259938360495,
+              "judges": [
+                {
+                  "judge": "Avery",
+                  "new_score": 8.3,
+                  "old_score": 6.4,
+                  "weight": 0.2692268795030527
+                },
+                {
+                  "judge": "Casey",
+                  "new_score": 6.2,
+                  "old_score": 5.5,
+                  "weight": 0.2529776389204356
+                },
+                {
+                  "judge": "Drew",
+                  "new_score": 7.7,
+                  "old_score": 7.1,
+                  "weight": 0.2512459446602853
+                },
+                {
+                  "judge": "Ellis",
+                  "new_score": 9.1,
+                  "old_score": 4.8,
+                  "weight": 0.22654953691622629
+                }
+              ],
+              "k": 32.0,
+              "opponent": "Blair",
+              "opponent_movie": "Heat"
+            },
+            {
+              "actual": 0.05761128257692619,
+              "delta": -13.343960404236903,
+              "expected": 0.47461004520932937,
+              "gap": -1.5171531676304308,
+              "judges": [
+                {
+                  "judge": "Avery",
+                  "new_score": 8.3,
+                  "old_score": 9.6,
+                  "weight": 0.27574133588292277
+                },
+                {
+                  "judge": "Blair",
+                  "new_score": 3.9,
+                  "old_score": 8.1,
+                  "weight": 0.23490201216643927
+                },
+                {
+                  "judge": "Drew",
+                  "new_score": 7.7,
+                  "old_score": 9.0,
+                  "weight": 0.2573253181245167
+                },
+                {
+                  "judge": "Ellis",
+                  "new_score": 9.1,
+                  "old_score": 8.4,
+                  "weight": 0.23203133382612134
+                }
+              ],
+              "k": 32.0,
+              "opponent": "Casey",
+              "opponent_movie": "Parasite"
+            },
+            {
+              "actual": 0.08607503456067463,
+              "delta": -12.61528808726207,
+              "expected": 0.4803027872876143,
+              "gap": -1.2825416690487081,
+              "judges": [
+                {
+                  "judge": "Avery",
+                  "new_score": 8.3,
+                  "old_score": 7.8,
+                  "weight": 0.2752531480291608
+                },
+                {
+                  "judge": "Blair",
+                  "new_score": 3.9,
+                  "old_score": 8.6,
+                  "weight": 0.23448612853115944
+                },
+                {
+                  "judge": "Casey",
+                  "new_score": 6.2,
+                  "old_score": 9.4,
+                  "weight": 0.2586401908396546
+                },
+                {
+                  "judge": "Ellis",
+                  "new_score": 9.1,
+                  "old_score": 6.9,
+                  "weight": 0.23162053260002516
+                }
+              ],
+              "k": 32.0,
+              "opponent": "Drew",
+              "opponent_movie": "Spirited Away"
+            },
+            {
+              "actual": 0.4049766163608342,
+              "delta": -5.147531453284939,
+              "expected": 0.5658369742759886,
+              "gap": -0.20888010725368797,
+              "judges": [
+                {
+                  "judge": "Avery",
+                  "new_score": 8.3,
+                  "old_score": 5.2,
+                  "weight": 0.26847438396476075
+                },
+                {
+                  "judge": "Blair",
+                  "new_score": 3.9,
+                  "old_score": 6.8,
+                  "weight": 0.2287113493757947
+                },
+                {
+                  "judge": "Casey",
+                  "new_score": 6.2,
+                  "old_score": 7.4,
+                  "weight": 0.25227056039645374
+                },
+                {
+                  "judge": "Drew",
+                  "new_score": 7.7,
+                  "old_score": 8.0,
+                  "weight": 0.25054370626299083
+                }
+              ],
+              "k": 32.0,
+              "opponent": "Ellis",
+              "opponent_movie": "The Third Man"
+            }
+          ],
+          "movie": "In the Mood for Love",
+          "skipped": {},
+          "suggester": "Frankie",
+          "voter_credit": {},
+          "week_id": "6"
+        }
+      ],
+      "standings": [
+        {
+          "current_movie": "Shawshank",
+          "elo": 1566.025465668619,
+          "member": "Avery",
+          "pick_count": 1,
+          "rank": 1
+        },
+        {
+          "current_movie": "Parasite",
+          "elo": 1531.00189605272,
+          "member": "Casey",
+          "pick_count": 1,
+          "rank": 2
+        },
+        {
+          "current_movie": "Spirited Away",
+          "elo": 1526.3094003441447,
+          "member": "Drew",
+          "pick_count": 1,
+          "rank": 3
+        },
+        {
+          "current_movie": "In the Mood for Love",
+          "elo": 1469.5713712022568,
+          "member": "Frankie",
+          "pick_count": 1,
+          "rank": 4
+        },
+        {
+          "current_movie": "The Third Man",
+          "elo": 1459.1321364383973,
+          "member": "Ellis",
+          "pick_count": 1,
+          "rank": 5
+        },
+        {
+          "current_movie": "Heat",
+          "elo": 1447.959730293862,
+          "member": "Blair",
+          "pick_count": 1,
+          "rank": 6
+        }
+      ],
+      "total_elo": 9000.0
+    }
+  ]
+}
