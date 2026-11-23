@@ -126,12 +126,14 @@ export function OpenMovie({
             I didn&apos;t watch
           </button>
         </PendingForm>
-        <PendingForm action={restartUtrAction} pendingLabel="Clearing…">
-          <input type="hidden" name="movieId" value={movie.id} className="hidden" />
-          <button type="submit" className={cn(buttonVariants({ variant: "ghost" }), "h-11 px-4 text-base")}>
-            Start over
-          </button>
-        </PendingForm>
+        {pending || response ? (
+          <PendingForm action={restartUtrAction} pendingLabel="Clearing…">
+            <input type="hidden" name="movieId" value={movie.id} className="hidden" />
+            <button type="submit" className={cn(buttonVariants({ variant: "ghost" }), "h-11 px-4 text-base")}>
+              {response ? "Change my rating" : "Start over"}
+            </button>
+          </PendingForm>
+        ) : null}
         {canClose ? (
           <ConfirmSubmit
             action={closeUtrAction}
@@ -139,8 +141,13 @@ export function OpenMovie({
             label="Close ratings"
             confirmLabel="Close it"
             pendingLabel="Closing…"
-            warning="Close ratings? Anyone who hasn't answered counts as didn't watch. This can't be undone."
+            warning="Anyone still out counts as didn't watch."
           />
+        ) : null}
+        {waiting.length === 0 ? (
+          <p className="text-sm text-muted-foreground">
+            {canClose ? "Everyone\u2019s in" : `Waiting for ${movie.suggesterName} to close`}
+          </p>
         ) : null}
       </div>
 
@@ -189,7 +196,7 @@ function Roster({
                   {row.userId === youId ? " · you" : ""}
                 </span>
               </span>
-              <span className="shrink-0 text-muted-foreground">{statusLabel(row)}</span>
+              <span className="shrink-0 text-muted-foreground">{statusLabel(row, youId)}</span>
             </li>
           ))}
         </ul>
@@ -198,7 +205,8 @@ function Roster({
   )
 }
 
-function statusLabel(row: UtrRosterEntry): string {
+function statusLabel(row: UtrRosterEntry, youId: number): string {
+  if (row.userId !== youId) return row.kind ? "Answered" : "Hasn't answered"
   if (row.kind === "skip") return "Didn't watch"
   if (row.kind === "rate" && row.bucket) return UTR_BUCKET_LABELS[row.bucket]
   if (row.kind === "rate") return "Rated"

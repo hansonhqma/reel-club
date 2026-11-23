@@ -22,7 +22,7 @@ function asBucket(value: string | null): UtrBucket | null {
 
 // Active members and whether they have answered the open movie.
 // The rating module records responses but does not list them.
-export function utrOpenRoster(movieId: number): UtrRosterEntry[] {
+export function utrOpenRoster(movieId: number, viewerId: number): UtrRosterEntry[] {
   const rows = getDb()
     .prepare(
       `SELECT users.id AS user_id, users.name AS name, utr_responses.kind AS kind, utr_responses.bucket AS bucket
@@ -34,12 +34,16 @@ export function utrOpenRoster(movieId: number): UtrRosterEntry[] {
        ORDER BY users.name COLLATE NOCASE`,
     )
     .all(movieId) as RosterRow[]
-  return rows.map((row) => ({
-    userId: row.user_id,
-    name: row.name,
-    kind: row.kind === "rate" || row.kind === "skip" ? row.kind : null,
-    bucket: asBucket(row.bucket),
-  }))
+  return rows.map((row) => {
+    const kind = row.kind === "rate" || row.kind === "skip" ? row.kind : null
+    const own = row.user_id === viewerId
+    return {
+      userId: row.user_id,
+      name: row.name,
+      kind: own ? kind : kind ? "rate" : null,
+      bucket: own ? asBucket(row.bucket) : null,
+    }
+  })
 }
 
 export function utrActiveNames(): string[] {

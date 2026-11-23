@@ -38,6 +38,7 @@ export const RATING_EVENT_TYPES = [
   "utr.rating.committed",
   "utr.skipped",
   "utr.movie.closed",
+  "utr.movie.reopened",
   "utr.member.left",
   "beli.movie.submitted",
   "beli.movie.deleted",
@@ -209,7 +210,8 @@ const BACKFILL_KIND_PRIORITY: Record<RatingEventType, number> = {
   "utr.rating.committed": 22,
   "utr.skipped": 23,
   "utr.movie.closed": 24,
-  "utr.member.left": 25,
+  "utr.movie.reopened": 25,
+  "utr.member.left": 26,
 }
 
 type BackfillDraft = RatingEventInput & {
@@ -899,6 +901,7 @@ export function reduceRatingEvents(events: RatingEvent[]): RebuiltClub {
       case "utr.rating.committed":
       case "utr.skipped":
       case "utr.movie.closed":
+      case "utr.movie.reopened":
       case "utr.member.left":
         break
       default: {

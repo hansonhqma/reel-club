@@ -20,7 +20,7 @@ function idOf(username: string): number {
   return user.id
 }
 
-test("movies hide an open score until the viewer answers, and picks use the stored close", () => {
+test("open movies hide every other score until close, and picks use the stored close", () => {
   createMember({ username: "ada", name: "Ada", password: "correct-horse", isAdmin: true })
   createMember({ username: "bea", name: "Bea", password: "correct-horse", isAdmin: false })
   createMember({ username: "cyo", name: "Cy", password: "correct-horse", isAdmin: false })
@@ -32,6 +32,15 @@ test("movies hide an open score until the viewer answers, and picks use the stor
   assert.equal(startUtrRating(ada, heat.id, "a_lot").done, true)
   assert.equal(startUtrRating(bea, heat.id, "kinda").done, true)
   skipUtrMovie(cy, heat.id)
+  assert.equal(utrMovieFeed(bea).find((movie) => movie.title === "Heat")?.status, "open")
+  assert.equal(utrMovieFeed(ada).find((movie) => movie.title === "Heat")?.groupScore, null)
+  assert.equal(
+    utrMovieFeed(ada)
+      .find((movie) => movie.title === "Heat")
+      ?.people.every((person) => person.userId === ada || (person.score == null && person.bucket == null)),
+    true,
+  )
+  closeUtrMovie(ada, heat.id)
 
   const closed = utrMovieFeed(bea).find((movie) => movie.title === "Heat")
   assert.equal(closed?.status, "closed")
@@ -57,17 +66,23 @@ test("movies hide an open score until the viewer answers, and picks use the stor
 
   assert.equal(startUtrRating(ada, night.id, "not_really").done, true)
   const seen = utrMovieFeed(ada).find((movie) => movie.title === "Night")
-  assert.equal(seen?.revealed, true)
-  assert.equal(seen?.ratingCount, 1)
-  assert.equal(seen?.groupScore, 2)
+  assert.equal(seen?.revealed, false)
+  assert.equal(seen?.ratingCount, 0)
+  assert.equal(seen?.groupScore, null)
   assert.equal(seen?.people.find((person) => person.name === "Ada")?.bucket, "not_really")
+  assert.equal(seen?.people.find((person) => person.name === "Ada")?.score, 2)
   assert.equal(seen?.people.find((person) => person.name === "Bea")?.role, "waiting")
+  assert.equal(seen?.people.filter((person) => person.name !== "Ada").every((person) => person.score == null && person.bucket == null), true)
+  const asSuggester = utrMovieFeed(bea).find((movie) => movie.title === "Night")
+  assert.equal(asSuggester?.groupScore, null)
+  assert.equal(asSuggester?.people.find((person) => person.name === "Ada")?.bucket, null)
   assert.equal(utrMovieFeed(dez).find((movie) => movie.title === "Night")?.revealed, false)
 
   const openPick = utrPicksBySuggester(ada).get("Bea")?.picks.find((pick) => pick.title === "Night")
   assert.equal(openPick?.impact, null)
   assert.equal(openPick?.status, "open")
-  assert.equal(openPick?.groupScore, 2)
+  assert.equal(openPick?.revealed, false)
+  assert.equal(openPick?.groupScore, null)
 
   skipUtrMovie(cy, night.id)
   closeUtrMovie(bea, night.id)
@@ -89,6 +104,8 @@ test("movies hide an open score until the viewer answers, and picks use the stor
   skipUtrMovie(ada, solo.id)
   skipUtrMovie(bea, solo.id)
   skipUtrMovie(dez, solo.id)
+  assert.ok(utrMovieFeed(cy).find((movie) => movie.title === "Solo")?.status === "open")
+  closeUtrMovie(cy, solo.id)
   const soloPick = utrPicksBySuggester(cy).get("Cy")?.picks.find((pick) => pick.title === "Solo")
   assert.equal(soloPick?.impact, 0)
   assert.equal(soloPick?.groupScore, null)

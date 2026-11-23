@@ -132,7 +132,9 @@ export function nextClose(
 }
 
 // Fill utr_closes for closed movies that do not have a snapshot yet.
-// Older snapshots stay put. A new close uses today's list scores for every movie.
+// A snapshot stays put while its seq still matches. A movie closed again has a
+// new seq, so that one snapshot is replaced and the change is measured from
+// the Elo it stored last time. A new close uses today's list scores.
 export function recordUtrCloses(db: Database.Database): void {
   const members = membersOf(db)
   const closed = db
@@ -143,8 +145,11 @@ export function recordUtrCloses(db: Database.Database): void {
        ORDER BY seq ASC, id ASC`,
     )
     .all() as Movie[]
-  const have = new Set(
-    (db.prepare("SELECT movie_id FROM utr_closes").all() as { movie_id: number }[]).map((row) => row.movie_id),
+  const stored = new Map(
+    (db.prepare("SELECT movie_id, seq FROM utr_closes").all() as { movie_id: number; seq: number }[]).map((row) => [
+      row.movie_id,
+      row.seq,
+    ]),
   )
   const scores = listScores(db)
   let previous: EloMap | null = null
@@ -161,12 +166,17 @@ export function recordUtrCloses(db: Database.Database): void {
     `INSERT INTO utr_closes (movie_id, seq, scores_json, elo_json, from_new_json, from_older_json)
      VALUES (?, ?, ?, ?, ?, ?)`,
   )
+  const drop = db.prepare("DELETE FROM utr_closes WHERE movie_id = ?")
   const seen: Movie[] = []
   for (const movie of closed) {
-    if (have.has(movie.id)) {
+    const storedSeq = stored.get(movie.id)
+    if (storedSeq != null && storedSeq === movie.seq) {
       seen.push(movie)
       continue
     }
+    // A movie closed again gets a new seq. Replace that one snapshot and
+    // measure the change from the Elo it stored last time.
+    if (storedSeq != null) drop.run(movie.id)
     const closedNow = nextClose(members, seen, movie, scores, previous)
     const { elo: now, fromNew, fromOlder } = closedNow
     const scoreObject: Record<string, Record<string, number>> = {}

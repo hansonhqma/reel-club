@@ -149,16 +149,6 @@ function log(db: Database.Database, event: RatingEventInput): void {
   appendRatingEvent(db, event)
 }
 
-function maybeClose(db: Database.Database, movie: UtrMovie, actorId: number): void {
-  const active = activeIds(db)
-  const answered = new Set(
-    (db.prepare("SELECT user_id FROM utr_responses WHERE movie_id = ?").all(movie.id) as { user_id: number }[]).map(
-      (row) => row.user_id,
-    ),
-  )
-  if (active.every((id) => answered.has(id))) closeMovie(db, movie, actorId, "complete", [])
-}
-
 function closeMovie(
   db: Database.Database,
   movie: UtrMovie,
@@ -274,7 +264,6 @@ export function startUtrRating(userId: number, movieId: number, bucketRaw: strin
         movieId: movie.id,
         payload: { movieId: movie.id, title: movie.title, bucket, answers: [], index },
       })
-      maybeClose(db, movie, user.id)
       const placed = bucketIds(db, user.id, bucket)
       return { done: true as const, bucket, score: placed.length ? scoreAt(bucket, placed.indexOf(movie.id), placed.length) : 0 }
     }
@@ -327,7 +316,6 @@ export function answerUtrRating(userId: number, movieId: number, answerRaw: stri
           index,
         },
       })
-      maybeClose(db, movie, user.id)
       const placed = bucketIds(db, user.id, next.bucket)
       return {
         done: true as const,
@@ -380,7 +368,6 @@ export function skipUtrMovie(userId: number, movieId: number): void {
       occurredAt: now,
       payload: { movieId: movie.id, title: movie.title },
     })
-    maybeClose(db, movie, user.id)
   })()
 }
 
@@ -418,7 +405,7 @@ export function closeUtrMovie(userId: number, movieId: number): void {
         payload: { movieId: movie.id, title: movie.title, automatic: true },
       })
     }
-    closeMovie(db, movie, user.id, "early", autoSkipped)
+    closeMovie(db, movie, user.id, autoSkipped.length === 0 ? "complete" : "early", autoSkipped)
   })()
 }
 
@@ -428,8 +415,6 @@ export function leaveUtrClub(userId: number): void {
   db.transaction(() => {
     db.prepare("UPDATE utr_members SET active = 0 WHERE user_id = ?").run(user.id)
     log(db, { actorId: user.id, type: "utr.member.left", payload: { userId: user.id } })
-    const open = getOpenUtrMovie()
-    if (open) maybeClose(db, open, user.id)
   })()
 }
 
