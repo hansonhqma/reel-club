@@ -1,33 +1,51 @@
 import Link from "next/link"
-import { UTR_BUCKET_LABELS, UTR_CHOICES, type UtrBucket } from "@/lib/utr-score"
-
-const BAND_ROW: Record<UtrBucket, [string, string]> = {
-  not_really: ["0–3.9", "2.0"],
-  kinda: ["4.0–6.9", "5.5"],
-  a_lot: ["7.0–10", "8.5"],
-}
+import { Delta } from "@/components/delta"
+import { RankEmblem, STARTING_RANK } from "@/components/rank-emblem"
+import { HOW_STORY } from "@/lib/how-story"
+import { DEMOTION_BUFFER, rankFloor, type UtrRank } from "@/lib/utr-ranks"
 
 export const metadata = { title: "How it works" }
 
+const SILVER_II_FLOOR = rankFloor(STARTING_RANK.label) ?? 1480
+const DROP_BELOW = SILVER_II_FLOOR - DEMOTION_BUFFER
+
 const CONTENTS = [
-  { href: "#enjoy", label: "Enjoyment" },
-  { href: "#comparisons", label: "Comparisons" },
-  { href: "#scores", label: "Scores" },
-  { href: "#one", label: "One movie" },
-  { href: "#close", label: "Closing" },
+  { href: "#suggest", label: "Suggest" },
+  { href: "#rate", label: "Rate" },
+  { href: "#close", label: "Close" },
   { href: "#rankings", label: "Rankings" },
   { href: "#ranks", label: "Ranks" },
+  { href: "#movies", label: "Movies" },
+]
+
+const GROUPS = [
+  { label: "Didn't like it", band: "0–3.9", alone: HOW_STORY.alone.disliked },
+  { label: "Just ok", band: "4.0–6.9", alone: HOW_STORY.alone.justOk },
+  { label: "Loved it", band: "7.0–10", alone: HOW_STORY.alone.loved },
+] as const
+
+const LADDER: { rank: UtrRank; note: string; here?: boolean }[] = [
+  { rank: { tier: "Iron", division: "IV", label: "Iron IV" }, note: "under 1120" },
+  { rank: { tier: "Bronze", division: "IV", label: "Bronze IV" }, note: "1240" },
+  { rank: STARTING_RANK, note: "1480 · you start here", here: true },
+  { rank: { tier: "Gold", division: "IV", label: "Gold IV" }, note: "1560" },
+  { rank: { tier: "Platinum", division: "IV", label: "Platinum IV" }, note: "1720" },
+  { rank: { tier: "Emerald", division: "IV", label: "Emerald IV" }, note: "1800" },
+  { rank: { tier: "Diamond", division: "IV", label: "Diamond IV" }, note: "1920" },
+  { rank: { tier: "Master", division: null, label: "Master" }, note: "2080" },
+  { rank: { tier: "Grandmaster", division: null, label: "Grandmaster" }, note: "#2 seat" },
+  { rank: { tier: "Challenger", division: null, label: "Challenger" }, note: "#1 seat" },
 ]
 
 export default function HowPage() {
+  const story = HOW_STORY
   return (
-    <article className="mx-auto max-w-3xl space-y-12">
+    <article className="mx-auto max-w-3xl space-y-14">
       <header className="space-y-4">
-        <p className="text-xs font-medium tracking-[0.18em] text-primary uppercase">The rules we actually use</p>
-        <h1 className="font-heading text-4xl tracking-tight sm:text-5xl">One movie, one honest group, then Rankings</h1>
+        <p className="text-xs font-medium tracking-[0.18em] text-primary uppercase">A made-up club</p>
+        <h1 className="font-heading text-4xl tracking-tight sm:text-5xl">Ana, Ben, Cam, and Dee go to the movies</h1>
         <p className="max-w-xl text-lg leading-relaxed text-foreground/80">
-          Reel Club keeps a single open movie. You say how much you enjoyed it, place it on your list, and Rankings
-          catches up when that movie closes.
+          Two nights, four friends. They are not in your club. The scores use the same math as the app.
         </p>
         <nav aria-label="On this page" className="flex flex-wrap gap-2">
           {CONTENTS.map((item) => (
@@ -42,104 +60,86 @@ export default function HowPage() {
         </nav>
       </header>
 
-      <section id="enjoy" className="scroll-mt-6 space-y-3">
-        <h2 className="font-heading text-2xl">How much did you enjoy it?</h2>
-        <p className="text-sm leading-relaxed">
-          The first question has three answers: <span className="font-medium">Didn&apos;t like it</span>,{" "}
-          <span className="font-medium">Just ok</span>, and <span className="font-medium">Loved it</span>. That choice is a
-          group, not a number you type. Everything after it happens inside the group you picked.
+      <section id="suggest" className="scroll-mt-6 space-y-4">
+        <Step n={1} title="Ana suggests one movie" />
+        <p className="max-w-xl text-sm leading-relaxed">
+          She opens <span className="font-medium">Paper Moon</span>. One movie at a time. Ben, Cam, and Dee cannot
+          suggest anything until this one closes.
         </p>
+        <MovieCard title="Paper Moon" who="Ana" status="Open" />
       </section>
 
-      <section id="comparisons" className="scroll-mt-6 space-y-3">
-        <h2 className="font-heading text-2xl">Then a few comparisons, in that group only</h2>
-        <p className="text-sm leading-relaxed">
-          If you already have movies in that group, the site asks which you enjoyed more: the new one, or one already
-          on your list. You always pick a side. Back steps to the previous question, and it stays quiet until you have
-          answered one. Start over throws the draft away, including a slot you already saved, while the movie is still
-          open.
-        </p>
-        <p className="text-sm leading-relaxed">
-          An empty group needs no comparisons. The movie takes the middle of that band and your list updates right
-          away. I didn&apos;t watch leaves it off your list. You can say that about a movie you suggested, too.
-        </p>
-      </section>
-
-      <section id="scores" className="scroll-mt-6 space-y-3">
-        <h2 className="font-heading text-2xl">What the 0–10 scores mean</h2>
-        <p className="text-sm leading-relaxed">
-          Best first. Loved it always sits above Just ok, and Just ok always sits above Didn&apos;t like it. Inside a group the scores
-          spread from the top of the band to the bottom.
-        </p>
-        <div className="overflow-x-auto rounded-2xl bg-card ring-1 ring-foreground/10">
-          <table className="w-full min-w-[18rem] text-sm">
-            <thead className="text-left text-xs tracking-wide text-muted-foreground uppercase">
-              <tr>
-                <th className="px-4 py-2 font-medium">Group</th>
-                <th className="px-2 py-2 font-medium">Band</th>
-                <th className="px-4 py-2 font-medium">Alone</th>
-              </tr>
-            </thead>
-            <tbody>
-              {UTR_CHOICES.map((bucket) => {
-                const [band, alone] = BAND_ROW[bucket]
-                const group = UTR_BUCKET_LABELS[bucket]
-                return (
-                  <tr key={group} className="border-t border-border">
-                    <th className="px-4 py-2 text-left font-medium">{group}</th>
-                    <td className="px-2 py-2 tabular-nums">{band}</td>
-                    <td className="px-4 py-2 tabular-nums">{alone}</td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
+      <section id="rate" className="scroll-mt-6 space-y-4">
+        <Step n={2} title="They say how it felt" />
+        <p className="max-w-xl text-sm leading-relaxed">First, pick a group. Worst on the left, best on the right.</p>
+        <div id="groups" className="grid grid-cols-3 gap-2">
+          {GROUPS.map((group) => (
+            <div key={group.label} className="rounded-2xl bg-card px-3 py-4 text-center ring-1 ring-foreground/10">
+              <p className="font-heading text-xl leading-tight sm:text-2xl">{group.label}</p>
+            </div>
+          ))}
         </div>
-        <p className="text-sm leading-relaxed">
-          A movie alone in its group gets 8.5, 5.5, or 2.0. A second movie in that group spreads the scores, so an old
-          8.5 can move. The number on your list changes as soon as the slot is saved. It does not wait for Rankings.
-          Movies shows a group score: the average of those current scores, leaving out the suggester and anyone who
-          didn&apos;t watch. When nobody else has rated, the card shows a dash. The suggester&apos;s own score is listed
-          with the others and marked as their pick. Until you answer the open movie, you see who is done, not the scores.
+        <p className="max-w-xl text-sm leading-relaxed">
+          Then, only if that group already has movies: pick the one you enjoyed more. I didn&apos;t watch leaves it off
+          your list.
+        </p>
+        <p className="max-w-xl text-sm leading-relaxed">
+          A movie alone in its group sits in the middle of the band.
+        </p>
+        <ul className="grid gap-2 sm:grid-cols-3">
+          {GROUPS.map((group) => (
+            <li key={group.band} className="rounded-2xl bg-card px-3 py-3 ring-1 ring-foreground/10">
+              <p className="text-sm font-medium">{group.label}</p>
+              <p className="mt-1 font-heading text-2xl tabular-nums">{group.alone}</p>
+              <p className="text-sm text-muted-foreground">alone in {group.band}</p>
+            </li>
+          ))}
+        </ul>
+        <p className="max-w-xl text-sm leading-relaxed">
+          Dee&apos;s Just ok list starts with only Paper Moon, so it is {story.alone.justOk}. She later adds The Long
+          Table and still prefers Paper Moon. The two scores spread to the ends of 4.0–6.9.
+        </p>
+        <div id="list" className="space-y-2">
+          <ListRow title="Paper Moon" group="Just ok" score={story.justOkPair.top} />
+          <ListRow title="The Long Table" group="Just ok" score={story.justOkPair.bottom} />
+        </div>
+      </section>
+
+      <section id="close" className="scroll-mt-6 space-y-4">
+        <Step n={3} title="The night closes" />
+        <p className="max-w-xl text-sm leading-relaxed">
+          Paper Moon closes when Ana, Ben, Cam, and Dee have all answered. Ana, or an admin, can close it early.
+          Anyone still silent counts as didn&apos;t watch. After close, those answers stay put.
         </p>
       </section>
 
-      <section id="one" className="scroll-mt-6 space-y-3">
-        <h2 className="font-heading text-2xl">One movie at a time</h2>
-        <p className="text-sm leading-relaxed">
-          Suggesting another title is refused while one is open. The open movie stays at the top of Rate, with who has
-          answered and who is still to go. There is no queue of several unwatched films.
+      <section id="rankings" className="scroll-mt-6 space-y-4">
+        <Step n={4} title="Elo scores the picks" />
+        <p className="max-w-xl text-sm leading-relaxed">
+          Elo is a score for how good your picks are. Everyone starts at {story.startElo}.
         </p>
-      </section>
-
-      <section id="close" className="scroll-mt-6 space-y-3">
-        <h2 className="font-heading text-2xl">When a movie closes</h2>
-        <p className="text-sm leading-relaxed">
-          It closes on its own once every active member has rated it or said they didn&apos;t watch. The person who
-          suggested it, or an admin, can close it early. Closing asks you to confirm, because anyone still silent is
-          stored as didn&apos;t watch. There is no timer. After close, that movie can&apos;t be edited.
+        <p className="max-w-xl text-sm leading-relaxed">
+          Paper Moon is the first movie, so it has nothing earlier to play. All four stay at {story.startElo}.
         </p>
-      </section>
-
-      <section id="rankings" className="scroll-mt-6 space-y-3">
-        <h2 className="font-heading text-2xl">What Rankings is doing</h2>
-        <p className="text-sm leading-relaxed">
-          You rate a movie you suggested, and that score stays on your list. It is left out of the Elo for that movie,
-          so you don&apos;t grade your own pick. If nobody except the suggester rated it, the movie does not enter
-          Rankings at all.
+        <p className="max-w-xl text-sm leading-relaxed">
+          Ben suggests The Long Table. Cam scores it {story.alone.loved} and Paper Moon {story.alone.justOk}. Dee
+          scores Paper Moon {story.justOkPair.top} and The Long Table {story.justOkPair.bottom}. They split, so the
+          move is small. Ben&apos;s own rating does not count.
         </p>
-        <p className="text-sm leading-relaxed">
-          Every close rebuilds Elo from the lists as they stand, using those 0–10 scores. The change since the previous
-          close has two parts, labeled on Rankings. <span className="font-medium">new movie</span> is this close
-          itself. <span className="font-medium">re-sorted</span> is earlier movies whose scores shifted because the
-          lists changed. Those two parts add up to the change you see.
+        <ul className="space-y-2">
+          <EloRow name="Ana" before={story.startElo} after={story.afterLongTable.Ana} change={story.newMovie.Ana} />
+          <EloRow name="Ben" before={story.startElo} after={story.afterLongTable.Ben} change={story.newMovie.Ben} />
+          <EloRow name="Cam" before={story.startElo} after={story.afterLongTable.Cam} change={story.newMovie.Cam} />
+          <EloRow name="Dee" before={story.startElo} after={story.afterLongTable.Dee} change={story.newMovie.Dee} />
+        </ul>
+        <p className="max-w-xl text-sm leading-relaxed">
+          <span className="font-medium">new movie</span> is this night&apos;s match.{" "}
+          <span className="font-medium">re-sorted</span> is an older night played again because a list score moved.
+          This night, re-sorted is 0.0.
         </p>
-        <p className="text-sm leading-relaxed">
-          The first closed movie doesn&apos;t play anyone. There is nothing earlier to compare it with, so everyone
-          stays at 1500, Silver II, until a second movie closes. Before any movie has closed, Rankings is that same
-          starting line. Each person can open their picks. A closed pick shows the Elo it added for them, the new-movie
-          part of that close. An open pick says Open. A pick nobody else scored shows 0. Those changes add up next to
-          the re-sorted total from every close.
+        <p className="max-w-xl text-sm leading-relaxed">
+          Later, Dee&apos;s Paper Moon slips from {story.justOkPair.top} to {story.alone.justOk}. The old match is
+          replayed. re-sorted is Ana {story.reSortedLater.Ana} and Ben {story.reSortedLater.Ben}.
         </p>
         <p className="text-sm">
           <Link href="/rankings" className="text-primary underline-offset-4 hover:underline">
@@ -148,41 +148,156 @@ export default function HowPage() {
         </p>
       </section>
 
-      <section id="ranks" className="scroll-mt-6 space-y-3">
-        <h2 className="font-heading text-2xl">Ranks</h2>
-        <p className="text-sm leading-relaxed">
-          A rank is a label on your Elo. Everyone starts at <span className="font-medium">Silver II</span>. You step up
-          the moment your Elo crosses the next line. You step down only after your Elo is 10 points below the line you
-          are holding, so a short dip does not knock you down. The crest remembers that, which is why the label is not
-          just a lookup of tonight&apos;s number.
+      <section id="ranks" className="scroll-mt-6 space-y-4">
+        <Step n={5} title="Crests sit on that score" />
+        <p className="max-w-xl text-sm leading-relaxed">
+          You start at <span className="font-medium">Silver II</span>, from {SILVER_II_FLOOR}. You step up
+          the moment you cross the next line. You drop only after you fall {DEMOTION_BUFFER} below the line you hold.
+          Ana&apos;s {story.afterLongTable.Ana} is still Silver II. She would have to go below {DROP_BELOW}.
         </p>
-        <p className="text-sm leading-relaxed">
-          Iron through Diamond have four divisions, IV up to I. Master has no division. The floors are Iron below 1120,
-          then Bronze 1240, Silver 1400, Gold 1560, Platinum 1720, Emerald 1800, Diamond 1920, and Master 2080. Silver
-          II, the start, is 1480 to 1519.
-        </p>
-        <p className="text-sm leading-relaxed">
-          Challenger and Grandmaster are chairs, not score lines. A rated pick is a movie you suggested that at least
-          one other member scored.
-        </p>
-        <ul className="space-y-2 text-sm leading-relaxed">
-          <li>
-            <span className="font-medium">Challenger</span> is only the current number 1, and only with Elo of at least
-            1800 and at least 6 rated picks.
-          </li>
-          <li>
-            <span className="font-medium">Grandmaster</span> is only the current number 2, and only while someone is
-            Challenger, with Elo of at least 1720 and at least 6 rated picks.
-          </li>
-          <li>If the leader is not there yet, both chairs stay empty. Second place does not become Challenger.</li>
-          <li>A tie breaks by name, A to Z.</li>
+        <ul className="grid grid-cols-2 gap-2 sm:grid-cols-5">
+          {LADDER.map((step) => (
+            <li
+              key={step.rank.label}
+              className={
+                step.here
+                  ? "rounded-2xl bg-primary/10 px-2 py-3 ring-1 ring-primary/30"
+                  : "rounded-2xl bg-card px-2 py-3 ring-1 ring-foreground/10"
+              }
+            >
+              <RankEmblem rank={step.rank} size="sm" showLabel={false} />
+              <p className="mt-1 text-sm font-medium leading-tight">{step.rank.label}</p>
+              <p className="text-xs text-muted-foreground">{step.note}</p>
+            </li>
+          ))}
         </ul>
-        <p className="text-sm leading-relaxed text-muted-foreground">
+        <p className="max-w-xl text-sm leading-relaxed">
+          Inside a tier the divisions run IV, III, II, I. Challenger is only the #1 seat: Elo at least 1800 and at
+          least 6 rated picks. Grandmaster is only #2, and only while someone is Challenger: Elo at least 1720 and at
+          least 6 rated picks. If the leader is not there yet, both seats stay empty.
+        </p>
+        <p className="max-w-xl text-sm leading-relaxed text-muted-foreground">
           The crests are League of Legends ranked emblems. Reel Club isn&apos;t endorsed by Riot Games and doesn&apos;t
           reflect the views or opinions of Riot Games or anyone officially involved in producing or managing League of
           Legends.
         </p>
       </section>
+
+      <section id="movies" className="scroll-mt-6 space-y-4">
+        <Step n={6} title="Movies shows the group, not your own grade" />
+        <p className="max-w-xl text-sm leading-relaxed">
+          The group score is the average of the other people&apos;s current scores. The suggester is left out. So is
+          anyone who didn&apos;t watch.
+        </p>
+        <div className="rounded-2xl bg-card p-4 ring-1 ring-foreground/10">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="font-heading text-2xl">Paper Moon</p>
+              <p className="text-sm text-muted-foreground">Ana</p>
+            </div>
+            <div className="text-right">
+              <p className="text-xs font-medium tracking-wide text-primary uppercase">Closed</p>
+              <p className="font-heading text-2xl tabular-nums">{story.groupScoreFirstNight}</p>
+              <p className="text-sm text-muted-foreground">3 ratings</p>
+            </div>
+          </div>
+          <ul className="mt-3 divide-y divide-border text-sm">
+            <ScoreLine name="Ben" score="8.5" />
+            <ScoreLine name="Cam" score="5.5" />
+            <ScoreLine name="Dee" score="5.5" />
+            <ScoreLine name="Ana" score="8.5" note="Her pick" />
+          </ul>
+        </div>
+        <p className="max-w-xl text-sm leading-relaxed">
+          That {story.groupScoreFirstNight} is Ben, Cam, and Dee. When Dee&apos;s score later moves to{" "}
+          {story.justOkPair.top}, the average becomes {story.groupScoreAfterDeeMoves}. You see an open movie&apos;s
+          scores only after you answer. On Rankings, each pick shows the Elo it added: the new-movie number from the
+          night it closed.
+        </p>
+      </section>
     </article>
+  )
+}
+
+function Step({ n, title }: { n: number; title: string }) {
+  return (
+    <h2 className="font-heading text-2xl tracking-tight sm:text-3xl">
+      <span className="text-primary">{n}.</span> {title}
+    </h2>
+  )
+}
+
+function MovieCard({ title, who, status }: { title: string; who: string; status: string }) {
+  return (
+    <div className="flex max-w-md items-center justify-between gap-3 rounded-2xl bg-card px-4 py-3 ring-1 ring-foreground/10">
+      <div>
+        <p className="font-heading text-2xl">{title}</p>
+        <p className="text-sm text-muted-foreground">{who}</p>
+      </div>
+      <p className="text-xs font-medium tracking-wide text-primary uppercase">{status}</p>
+    </div>
+  )
+}
+
+function ListRow({ title, group, score }: { title: string; group: string; score: string }) {
+  return (
+    <div className="flex max-w-md items-center gap-3 rounded-2xl bg-card px-3 py-3 ring-1 ring-foreground/10">
+      <div className="min-w-0 flex-1">
+        <p className="truncate font-heading text-xl">{title}</p>
+        <p className="text-sm text-muted-foreground">{group}</p>
+      </div>
+      <p className="font-heading text-2xl tabular-nums">{score}</p>
+    </div>
+  )
+}
+
+function EloRow({
+  name,
+  before,
+  after,
+  change,
+}: {
+  name: string
+  before: string
+  after: string
+  change: string
+}) {
+  const value = Number(change)
+  return (
+    <li className="rounded-2xl bg-card px-3 py-3 ring-1 ring-foreground/10">
+      <div className="flex items-baseline justify-between gap-3">
+        <p className="font-heading text-xl">{name}</p>
+        <p className="text-sm tabular-nums text-muted-foreground">
+          {before}
+          <span aria-hidden className="px-1">
+            →
+          </span>
+          <span className="font-medium text-foreground">{after}</span>
+        </p>
+      </div>
+      <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-muted">
+        <div
+          className="h-full rounded-full bg-primary"
+          style={{ width: `${Math.min(100, Math.max(12, ((Number(after) - 1496) / 8) * 100))}%` }}
+        />
+      </div>
+      <p className="mt-2 text-sm text-muted-foreground">
+        <Delta value={value} /> new movie
+        {" · "}
+        <Delta value={0} /> re-sorted
+      </p>
+    </li>
+  )
+}
+
+function ScoreLine({ name, score, note }: { name: string; score: string; note?: string }) {
+  return (
+    <li className="flex items-center justify-between gap-3 py-2">
+      <span>
+        {name}
+        {note ? <span className="text-muted-foreground"> · {note}</span> : null}
+      </span>
+      <span className="tabular-nums">{score}</span>
+    </li>
   )
 }
