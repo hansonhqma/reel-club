@@ -38,8 +38,8 @@ export default function HowPage() {
       <section id="enjoy" className="scroll-mt-6 space-y-3">
         <h2 className="font-heading text-2xl">How much did you enjoy it?</h2>
         <p className="text-sm leading-relaxed">
-          The first question has three answers: <span className="font-medium">Not really</span>,{" "}
-          <span className="font-medium">Kinda</span>, and <span className="font-medium">A lot</span>. That choice is a
+          The first question has three answers: <span className="font-medium">Didn&apos;t like it</span>,{" "}
+          <span className="font-medium">Just ok</span>, and <span className="font-medium">Loved it</span>. That choice is a
           group, not a number you type. Everything after it happens inside the group you picked.
         </p>
       </section>
@@ -61,7 +61,7 @@ export default function HowPage() {
       <section id="scores" className="scroll-mt-6 space-y-3">
         <h2 className="font-heading text-2xl">What the 0–10 scores mean</h2>
         <p className="text-sm leading-relaxed">
-          Best first. A lot always sits above Kinda, and Kinda always sits above Not really. Inside a group the scores
+          Best first. Loved it always sits above Just ok, and Just ok always sits above Didn&apos;t like it. Inside a group the scores
           spread from the top of the band to the bottom.
         </p>
         <div className="overflow-x-auto rounded-2xl bg-card ring-1 ring-foreground/10">
@@ -75,9 +75,9 @@ export default function HowPage() {
             </thead>
             <tbody>
               {[
-                ["A lot", "7.0–10", "8.5"],
-                ["Kinda", "4.0–6.9", "5.5"],
-                ["Not really", "0–3.9", "2.0"],
+                ["Loved it", "7.0–10", "8.5"],
+                ["Just ok", "4.0–6.9", "5.5"],
+                ["Didn't like it", "0–3.9", "2.0"],
               ].map(([group, band, alone]) => (
                 <tr key={group} className="border-t border-border">
                   <th className="px-4 py-2 text-left font-medium">{group}</th>

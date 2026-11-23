@@ -79,7 +79,7 @@ export default async function UtrPage({ searchParams }: { searchParams: Promise<
         <div>
           <h2 className="font-heading text-2xl">Your list</h2>
           <p className="text-sm text-muted-foreground">
-            Best first. A lot sits above Kinda, and Kinda sits above Not really. Scores run from 0 to 10.
+            Best first. Loved it sits above Just ok, and Just ok sits above Didn&apos;t like it. Scores run from 0 to 10.
           </p>
         </div>
         {list.length === 0 ? (

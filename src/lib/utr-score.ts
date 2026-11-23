@@ -5,9 +5,9 @@ export const UTR_BUCKETS = ["a_lot", "kinda", "not_really"] as const
 export type UtrBucket = (typeof UTR_BUCKETS)[number]
 
 export const UTR_BUCKET_LABELS: Record<UtrBucket, string> = {
-  a_lot: "A lot",
-  kinda: "Kinda",
-  not_really: "Not really",
+  a_lot: "Loved it",
+  kinda: "Just ok",
+  not_really: "Didn't like it",
 }
 
 const BELI_BUCKET = { a_lot: "liked", kinda: "fine", not_really: "disliked" } as const

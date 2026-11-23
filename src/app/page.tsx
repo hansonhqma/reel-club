@@ -37,7 +37,7 @@ function Landing() {
       <ol className="grid gap-4 sm:grid-cols-3">
         {[
           ["One movie open", "Suggest the next title only after this one closes. Everyone is on the same film."],
-          ["Enjoyed it?", "Not really, kinda, or a lot. Then a few comparisons inside that group."],
+          ["Enjoyed it?", "Loved it, Just ok, or Didn't like it. Then a few comparisons inside that group."],
           ["The board waits", "Your list updates now. Elo is rebuilt from those scores when the movie closes."],
         ].map(([title, body], index) => (
           <li key={title} className="rounded-2xl bg-card p-4 ring-1 ring-foreground/10">
