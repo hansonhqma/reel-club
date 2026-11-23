@@ -46,6 +46,13 @@ export function utrOpenRoster(movieId: number, viewerId: number): UtrRosterEntry
   })
 }
 
+// People who have neither rated nor chosen "I didn't watch." Names only.
+export function utrUnanswered(movieId: number, viewerId: number): { userId: number; name: string }[] {
+  return utrOpenRoster(movieId, viewerId)
+    .filter((row) => row.kind == null)
+    .map((row) => ({ userId: row.userId, name: row.name }))
+}
+
 export function utrActiveNames(): string[] {
   const rows = getDb()
     .prepare(

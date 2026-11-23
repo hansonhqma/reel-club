@@ -1,11 +1,10 @@
 import {
   answerUtrAction,
-  closeUtrAction,
   restartUtrAction,
   skipUtrAction,
   startUtrAction,
 } from "@/app/utr/actions"
-import { ConfirmSubmit } from "@/components/confirm-submit"
+import { CloseRatingsDialog } from "@/components/close-ratings-dialog"
 import { PendingForm } from "@/components/pending-form"
 import { RankEmblem, STARTING_RANK } from "@/components/rank-emblem"
 import { buttonVariants } from "@/components/ui/button"
@@ -134,16 +133,7 @@ export function OpenMovie({
             </button>
           </PendingForm>
         ) : null}
-        {canClose ? (
-          <ConfirmSubmit
-            action={closeUtrAction}
-            fields={[{ name: "movieId", value: String(movie.id) }]}
-            label="Close ratings"
-            confirmLabel="Close it"
-            pendingLabel="Closing…"
-            warning="Anyone still out counts as didn't watch."
-          />
-        ) : null}
+        {canClose ? <CloseRatingsDialog movieId={movie.id} /> : null}
         {waiting.length === 0 ? (
           <p className="text-sm text-muted-foreground">
             {canClose ? "Everyone\u2019s in" : `Waiting for ${movie.suggesterName} to close`}
