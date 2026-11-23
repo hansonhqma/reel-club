@@ -102,7 +102,11 @@ test("version 4 seeds Shawshank from blended scores and keeps the old rows", () 
   assert.equal((db.prepare("SELECT COUNT(*) AS c FROM beli_movies").get() as { c: number }).c, 0)
 
   const movies = db.prepare("SELECT title, status, close_reason, seq, suggester_id FROM utr_movies").all()
-  assert.deepEqual(movies, [{ title: "Shawshank Redemption", status: "closed", close_reason: "seed", seq: 1, suggester_id: 5 }])
+  assert.deepEqual(movies, [{ title: "Shawshank Redemption", status: "open", close_reason: null, seq: 1, suggester_id: 5 }])
+  assert.equal(
+    readRatingEvents(db).filter((event) => event.type === "utr.movie.reopened").length,
+    1,
+  )
 
   const list = (userId: number) => utrList(userId).map((row) => [row.title, row.bucket, row.score])
   assert.deepEqual(list(1), [["Shawshank Redemption", "a_lot", 8.5]])
