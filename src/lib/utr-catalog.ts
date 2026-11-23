@@ -166,12 +166,9 @@ export function utrMovieFeed(viewerId: number): UtrMovieCard[] {
   const names = namesById(db)
   const placed = currentPlacements(lists)
   const ranks = loadRanks()
-  const answeredByViewer = new Set(
-    responses.filter((row) => row.user_id === viewerId).map((row) => row.movie_id),
-  )
 
   return movies.map((movie) => {
-    const revealed = movie.status === "closed" || answeredByViewer.has(movie.id)
+    const revealed = movie.status === "closed"
     const group = groupScoreFor(movie.id, movie.suggester_id, responses, placed)
     const movieResponses = responses.filter((row) => row.movie_id === movie.id)
     const answeredIds = new Set(movieResponses.map((row) => row.user_id))
@@ -181,7 +178,8 @@ export function utrMovieFeed(viewerId: number): UtrMovieCard[] {
       const name = names.get(response.user_id) ?? "Member"
       const spot = placed.get(response.user_id)?.get(movie.id) ?? null
       const suggester = response.user_id === movie.suggester_id
-      if (!revealed) {
+      const own = response.user_id === viewerId
+      if (!revealed && !own) {
         people.push({
           userId: response.user_id,
           name,
@@ -189,7 +187,7 @@ export function utrMovieFeed(viewerId: number): UtrMovieCard[] {
           role: "done",
           bucket: null,
           score: null,
-          suggester: false,
+          suggester,
         })
         continue
       }
@@ -254,7 +252,7 @@ export function utrMovieFeed(viewerId: number): UtrMovieCard[] {
   })
 }
 
-export function utrPicksBySuggester(viewerId: number): Map<string, UtrSuggesterPicks> {
+export function utrPicksBySuggester(_viewerId: number): Map<string, UtrSuggesterPicks> {
   const db = getDb()
   const movies = db
     .prepare(
@@ -272,9 +270,6 @@ export function utrPicksBySuggester(viewerId: number): Map<string, UtrSuggesterP
     .prepare("SELECT user_id, movie_id, bucket, position FROM utr_lists")
     .all() as ListRow[]
   const placed = currentPlacements(lists)
-  const answeredByViewer = new Set(
-    responses.filter((row) => row.user_id === viewerId).map((row) => row.movie_id),
-  )
   const closes = utrCloses()
   const closeByMovie = new Map(closes.map((close) => [close.movieId, close]))
   const reSortedByName = new Map<string, number>()
@@ -286,7 +281,7 @@ export function utrPicksBySuggester(viewerId: number): Map<string, UtrSuggesterP
 
   const byName = new Map<string, UtrSuggesterPicks>()
   for (const movie of movies) {
-    const revealed = movie.status === "closed" || answeredByViewer.has(movie.id)
+    const revealed = movie.status === "closed"
     const group = groupScoreFor(movie.id, movie.suggester_id, responses, placed)
     const close = closeByMovie.get(movie.id)
     const impact = movie.status === "open" ? null : (close?.fromNew[movie.suggester_name] ?? 0)

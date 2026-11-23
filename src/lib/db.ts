@@ -3,6 +3,7 @@ import path from "node:path"
 import Database from "better-sqlite3"
 import { backfillRatingEvents, cleanupUnwatchedMovies, RATING_EVENTS_SCHEMA } from "@/lib/rating-events"
 import { seedUtrFromLegacy, UTR_SCHEMA } from "@/lib/utr-migrate"
+import { reopenShawshankForJason } from "@/lib/shawshank-reopen"
 
 const globalForDb = globalThis as unknown as {
   __reelDb?: Database.Database
@@ -251,6 +252,7 @@ export function migrate(db: Database.Database): void {
   backfillRatingEvents(db)
   cleanupUnwatchedMovies(db)
   seedUtrFromLegacy(db)
+  reopenShawshankForJason(db)
 }
 
 export function getDb(): Database.Database {

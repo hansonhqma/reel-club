@@ -55,6 +55,7 @@ Password hashes, session tokens, and the invite code are not written.
 | `utr.search.restarted` | Draft thrown away while the movie is still open | `movieId`, `title` |
 | `utr.skipped` | "I didn't watch", including a silent member on an early close (`automatic`) | `movieId`, `title`, optional `automatic` |
 | `utr.movie.closed` | Every active member has answered, or the suggester or an admin closed early | `movieId`, `title`, `reason`, `autoSkipped` |
+| `utr.movie.reopened` | One-time migration puts the seeded Shawshank close back in play for Jason. Earlier answers stay | `movieId`, `title`, `reason`, `userId`, `username` |
 | `utr.member.left` | The member stops blocking later movies. Old scores stay | `userId` |
 
 `reduceRatingEvents` ignores `utr.*` events. The unified list has its own replay. See `docs/utr.md`.

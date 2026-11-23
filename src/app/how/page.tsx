@@ -108,8 +108,8 @@ export default function HowPage() {
       <section id="close" className="scroll-mt-6 space-y-4">
         <Step n={3} title="The night closes" />
         <p className="max-w-xl text-sm leading-relaxed">
-          Paper Moon closes when Ana, Ben, Cam, and Dee have all answered. Ana, or an admin, can close it early.
-          Anyone still silent counts as didn&apos;t watch. After close, those answers stay put.
+          Only Ana, or an admin, closes Paper Moon. Until then, anyone can change an answer. Anyone still silent
+          counts as didn&apos;t watch. After close, those answers stay put.
         </p>
       </section>
 
@@ -210,9 +210,9 @@ export default function HowPage() {
         </div>
         <p className="max-w-xl text-sm leading-relaxed">
           That {story.groupScoreFirstNight} is Ben, Cam, and Dee. When Dee&apos;s score later moves to{" "}
-          {story.justOkPair.top}, the average becomes {story.groupScoreAfterDeeMoves}. You see an open movie&apos;s
-          scores only after you answer. On Rankings, each pick shows the Elo it added: the new-movie number from the
-          night it closed.
+          {story.justOkPair.top}, the average becomes {story.groupScoreAfterDeeMoves}. An open movie&apos;s scores stay
+          hidden until it closes. On Rankings, each pick shows the Elo it added: the new-movie number from the night it
+          closed.
         </p>
       </section>
     </article>

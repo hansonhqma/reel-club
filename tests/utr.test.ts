@@ -91,6 +91,8 @@ describe("utr", { concurrency: 1 }, () => {
     assert.equal(utrList(ada)[0].score, 8.5)
     assert.equal(startUtrRating(bea, heat.id, "kinda").done, true)
     assert.equal(startUtrRating(cy, heat.id, "a_lot").done, true)
+    assert.ok(getOpenUtrMovie())
+    closeUtrMovie(ada, heat.id)
     assert.equal(getOpenUtrMovie(), null)
     assert.throws(() => startUtrRating(bea, heat.id, "not_really"), /not open/)
 
@@ -145,6 +147,8 @@ describe("utr", { concurrency: 1 }, () => {
     assert.equal(startUtrRating(ada, alien.id, "not_really").done, true)
     assert.equal(startUtrRating(bea, alien.id, "not_really").done, true)
     assert.equal(startUtrRating(cy, alien.id, "not_really").done, true)
+    assert.ok(getOpenUtrMovie())
+    closeUtrMovie(bea, alien.id)
     assert.equal(getOpenUtrMovie(), null)
     assert.equal(utrList(cy).find((row) => row.title === "Heat")?.score, 8.5)
 
@@ -158,6 +162,8 @@ describe("utr", { concurrency: 1 }, () => {
     }
     assert.equal(startUtrRating(ada, drive.id, "kinda").done, true)
     assert.equal(startUtrRating(bea, drive.id, "a_lot").done, true)
+    assert.ok(getOpenUtrMovie())
+    closeUtrMovie(cy, drive.id)
     assert.equal(getOpenUtrMovie(), null)
     assert.deepEqual(
       utrList(cy).filter((row) => row.bucket === "a_lot").map((row) => [row.title, row.score]),
@@ -190,6 +196,8 @@ describe("utr", { concurrency: 1 }, () => {
     leaveUtrClub(ada)
     assert.ok(getOpenUtrMovie())
     skipUtrMovie(bea, once.id)
+    assert.ok(getOpenUtrMovie())
+    closeUtrMovie(bea, once.id)
     assert.equal(getOpenUtrMovie(), null)
 
     const closes = utrCloses()

@@ -30,6 +30,7 @@ export type UtrReplay = {
     scores: Map<number, Map<number, number>>
     ranks: Record<number, UtrRank>
     ratedPicks: Record<number, number>
+    seq: number
   }[]
 }
 
@@ -62,9 +63,20 @@ function scoresOf(model: UtrReplay): Map<number, Map<number, number>> {
 function snapshotNewCloses(model: UtrReplay): void {
   const members = model.members.map(({ id, name }) => ({ id, name }))
   const closed = model.movies.filter((movie) => movie.status === "closed").sort((a, b) => (a.seq ?? 0) - (b.seq ?? 0))
+  const newest = [...closed].sort((a, b) => b.seq - a.seq || b.id - a.id)[0]
+  let carried: EloMap | null = null
+  const stale = new Set<number>()
+  for (const movie of closed) {
+    const snap = model.closes.find((row) => row.movieId === movie.id)
+    if (snap && snap.seq !== movie.seq) {
+      if (newest && movie.id === newest.id) carried = snap.elo
+      stale.add(movie.id)
+    }
+  }
+  if (stale.size > 0) model.closes = model.closes.filter((row) => !stale.has(row.movieId))
   const done = new Set(model.closes.map((row) => row.movieId))
   const scores = scoresOf(model)
-  let previous: EloMap | null = model.closes.length ? model.closes[model.closes.length - 1].elo : null
+  let previous: EloMap | null = model.closes.length ? model.closes[model.closes.length - 1].elo : carried
   const seen: Movie[] = []
   for (const movie of closed) {
     if (done.has(movie.id)) {
@@ -81,6 +93,7 @@ function snapshotNewCloses(model: UtrReplay): void {
       scores,
       ranks: {},
       ratedPicks: {},
+      seq: movie.seq,
     })
     previous = result.elo
     seen.push(movie)
@@ -157,13 +170,21 @@ export function replayUtr(events: RatingEvent[]): UtrReplay {
       }
       continue
     }
+    if (event.type === "utr.movie.reopened") {
+      const movie = model.movies.find((item) => item.id === event.movieId)
+      if (movie) {
+        movie.status = "open"
+        movie.seq = 0
+      }
+      continue
+    }
     if (event.type === "utr.seed.closed" || event.type === "utr.movie.closed") {
       if (event.type === "utr.movie.closed" && event.movieId != null) {
         const movie = model.movies.find((item) => item.id === event.movieId)
         if (movie) {
-          const seq = model.movies.filter((item) => item.status === "closed" && item.seq > 0).length + 1
+          const seqs = [...model.movies.map((item) => item.seq || 0), ...model.closes.map((item) => item.seq || 0)]
           movie.status = "closed"
-          movie.seq = seq
+          movie.seq = Math.max(0, ...seqs) + 1
         }
         const autoSkipped = (payload.autoSkipped as number[]) ?? []
         for (const userId of autoSkipped) {

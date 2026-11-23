@@ -52,7 +52,7 @@ export default async function UtrPage({ searchParams }: { searchParams: Promise<
           canClose={canClose}
           pending={pending && !pending.done ? pending : null}
           response={response}
-          roster={utrOpenRoster(open.id)}
+          roster={utrOpenRoster(open.id, user.id)}
         />
       ) : (
         <Card>

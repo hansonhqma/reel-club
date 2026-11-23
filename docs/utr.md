@@ -16,7 +16,7 @@ All of these take the signed-in user's id. They throw `UtrError` with a `message
 | `answerUtrRating(userId, movieId, "new" \| "old" \| "back", historyLength)` | One comparison. `new` places it above the pivot, `old` below. Pass `historyLength` from the pending step so a double submit is refused. |
 | `restartUtrRating(userId, movieId)` | Throws away the draft, including a slot already saved for this open movie. |
 | `skipUtrMovie(userId, movieId)` | "I didn't watch." Allowed for the suggester too. |
-| `closeUtrMovie(userId, movieId)` | Suggester or admin. Everyone still silent, including a silent suggester, is stored as didn't-watch. No timer. |
+| `closeUtrMovie(userId, movieId)` | Only the suggester or an admin. Anyone still silent counts as didn't-watch. Rating never closes a movie. |
 | `leaveUtrClub(userId)` | Stops blocking later movies. Old ratings stay in Elo. |
 | `utrList(userId)` | Personal list, best first, with 0–10 Beli-band scores. |
 | `utrPending(userId, movieId)` | The current comparison, or null. |
@@ -64,6 +64,12 @@ Challenger and Grandmaster are chairs, not score lines. A rated pick is a movie 
 ## Migration
 
 Version 4 runs once. A member with any Beli rankings keeps that order and those groups, and their old Elo scores are not mixed in. Everyone else is seeded from `(enjoyment + quality) / 2`, highest first, title as the tie-break, with 7 and 4 as the cuts. Movies nobody scored and that nobody ranked on Beli are not copied. No comparison steps are invented. Seeded movies are closed, in order of the old `ranked_at`, otherwise the suggestion or submit time. Because the seeded lists are complete before that replay, the re-sort half of those historical closes is zero. The old movie, rating, and Beli tables stay. The new board will not match the old Elo board: the scale is 0–10, the suggester is left out of their own movie, and a lone score becomes the band baseline.
+
+## One-time Shawshank reopen
+
+Migration version 5 runs once. It opens the seeded Shawshank movie only when that is the only UTR movie, it is closed, nothing else is open, and jason is an active member with no answer for it. The stored title matches with or without a leading "The". The actor is the first admin. The reason on `utr.movie.reopened` is `admin one-time reopen for Jason`. Other members' answers and list rows stay, and the suggester stays. If any guard fails, nothing changes. Jason then uses the normal Rate flow. The movie stays open until the suggester or an admin closes it. That close rebuilds Elo from the snapshot stored at the previous close.
+
+An open movie's group score and other members' buckets are omitted from `utrMovieFeed`, `utrPicksBySuggester`, and `utrOpenRoster`. The viewer still receives their own answer, and the roster still says who has answered.
 
 ## Differences from the prototype
 
