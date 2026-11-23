@@ -28,6 +28,17 @@ export const RATING_EVENT_TYPES = [
   "elo.rating.set",
   "elo.rating.changed",
   "elo.rating.removed",
+  "utr.movie.seeded",
+  "utr.list.seeded",
+  "utr.seed.closed",
+  "utr.movie.suggested",
+  "utr.bucket.chosen",
+  "utr.comparison.answered",
+  "utr.search.restarted",
+  "utr.rating.committed",
+  "utr.skipped",
+  "utr.movie.closed",
+  "utr.member.left",
   "beli.movie.submitted",
   "beli.movie.deleted",
   "beli.bucket.chosen",
@@ -188,6 +199,17 @@ const BACKFILL_KIND_PRIORITY: Record<RatingEventType, number> = {
   "beli.search.abandoned": 12,
   "beli.movie.deleted": 13,
   "elo.rating.removed": 14,
+  "utr.movie.seeded": 15,
+  "utr.list.seeded": 16,
+  "utr.seed.closed": 17,
+  "utr.movie.suggested": 18,
+  "utr.bucket.chosen": 19,
+  "utr.comparison.answered": 20,
+  "utr.search.restarted": 21,
+  "utr.rating.committed": 22,
+  "utr.skipped": 23,
+  "utr.movie.closed": 24,
+  "utr.member.left": 25,
 }
 
 type BackfillDraft = RatingEventInput & {
@@ -866,6 +888,18 @@ export function reduceRatingEvents(events: RatingEvent[]): RebuiltClub {
       }
       case "beli.search.abandoned":
         model.beliPending.delete(event.actorId)
+        break
+      case "utr.movie.seeded":
+      case "utr.list.seeded":
+      case "utr.seed.closed":
+      case "utr.movie.suggested":
+      case "utr.bucket.chosen":
+      case "utr.comparison.answered":
+      case "utr.search.restarted":
+      case "utr.rating.committed":
+      case "utr.skipped":
+      case "utr.movie.closed":
+      case "utr.member.left":
         break
       default: {
         const neverType: never = event.type

@@ -2,6 +2,7 @@ import fs from "node:fs"
 import path from "node:path"
 import Database from "better-sqlite3"
 import { backfillRatingEvents, cleanupUnwatchedMovies, RATING_EVENTS_SCHEMA } from "@/lib/rating-events"
+import { seedUtrFromLegacy, UTR_SCHEMA } from "@/lib/utr-migrate"
 
 const globalForDb = globalThis as unknown as {
   __reelDb?: Database.Database
@@ -238,6 +239,7 @@ export function migrate(db: Database.Database): void {
   db.exec(CORE_SCHEMA)
   db.exec(BELI_SCHEMA)
   db.exec(RATING_EVENTS_SCHEMA)
+  db.exec(UTR_SCHEMA)
   if (tableExists(db, "weeks")) {
     migrateLegacyWeeks(db)
   } else {
@@ -248,6 +250,7 @@ export function migrate(db: Database.Database): void {
   }
   backfillRatingEvents(db)
   cleanupUnwatchedMovies(db)
+  seedUtrFromLegacy(db)
 }
 
 export function getDb(): Database.Database {

@@ -1,8 +1,10 @@
 import Link from "next/link"
 import { logoutAction } from "@/app/actions"
 import { MainNav } from "@/components/main-nav"
+import { RankEmblem, STARTING_RANK } from "@/components/rank-emblem"
 import { Button, buttonVariants } from "@/components/ui/button"
 import type { PublicUser } from "@/lib/auth"
+import { utrBoard } from "@/lib/utr"
 import { cn } from "cn"
 
 export function Shell({
@@ -12,6 +14,7 @@ export function Shell({
   user: PublicUser | null
   children: React.ReactNode
 }) {
+  const mine = user ? (utrBoard()?.rows.find((row) => row.name === user.name)?.rank ?? STARTING_RANK) : null
   return (
     <div className="min-h-dvh">
       <header className="bg-primary text-primary-foreground">
@@ -23,7 +26,10 @@ export function Shell({
           <div className={cn("flex items-center gap-2", user ? "ml-auto md:ml-3" : "ml-auto")}>
             {user ? (
               <>
-                <span className="hidden text-sm text-primary-foreground/80 sm:inline">{user.name}</span>
+                <span className="hidden items-center gap-2 text-sm text-primary-foreground/90 sm:inline-flex">
+                  {mine ? <RankEmblem rank={mine} size="sm" className="text-primary-foreground" /> : null}
+                  <span>{user.name}</span>
+                </span>
                 {user.isAdmin ? (
                   <Link href="/admin" className="text-sm underline-offset-4 hover:underline md:hidden">
                     Members
@@ -60,9 +66,14 @@ export function Shell({
           ))}
         </div>
       </header>
-      <main className={cn("mx-auto w-full max-w-5xl px-4 py-6", user ? "pb-24 md:pb-10" : "pb-10")}>
+      <main className="mx-auto w-full max-w-5xl px-4 py-6">
         {children}
       </main>
+      <footer className={cn("mx-auto w-full max-w-5xl px-4 text-xs leading-relaxed text-muted-foreground", user ? "pb-24 md:pb-8" : "pb-8")}>
+        Reel Club isn&apos;t endorsed by Riot Games and doesn&apos;t reflect the views or opinions of Riot Games or
+        anyone officially involved in producing or managing League of Legends. League of Legends and Riot Games are
+        trademarks or registered trademarks of Riot Games, Inc. League of Legends © Riot Games, Inc.
+      </footer>
       {user ? <MainNav variant="bottom" /> : null}
     </div>
   )

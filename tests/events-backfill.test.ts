@@ -158,11 +158,12 @@ test("backfill replays to the live rankings and does not invent comparison steps
   assert.equal(events.some((event) => event.type === "beli.ranking.placed"), true)
   assert.equal(events.some((event) => event.type === "beli.search.started"), true)
 
-  const labels = events.map((event) => {
+  const labelOf = (event: (typeof events)[number]) => {
     const title = typeof event.payload.title === "string" ? event.payload.title : ""
     const name = typeof event.payload.name === "string" ? event.payload.name : ""
     return `${event.type}:${title || name || event.movieId}`
-  })
+  }
+  const labels = events.filter((event) => !event.type.startsWith("utr.")).map(labelOf)
   assert.deepEqual(labels, [
     "member.joined:Ada",
     "member.joined:Bea",
@@ -176,6 +177,24 @@ test("backfill replays to the live rankings and does not invent comparison steps
     "member.joined:Cy",
     "elo.movie.suggested:Too Early",
   ])
+  const seeded = events.filter((event) => event.type.startsWith("utr."))
+  assert.deepEqual(
+    seeded.map((event) => event.type),
+    [
+      "utr.movie.seeded",
+      "utr.movie.seeded",
+      "utr.list.seeded",
+      "utr.list.seeded",
+      "utr.list.seeded",
+      "utr.seed.closed",
+    ],
+  )
+  assert.deepEqual(
+    seeded.filter((event) => event.type === "utr.movie.seeded").map((event) => event.payload.title),
+    ["Ranked Earlier", "Beli One"],
+  )
+  assert.equal(seeded.every((event) => event.backfilled), true)
+  assert.equal(events.some((event) => event.type === "utr.comparison.answered"), false)
   for (let index = 1; index < events.length; index += 1) {
     assert.ok(Date.parse(events[index].occurredAt) >= Date.parse(events[index - 1].occurredAt))
   }

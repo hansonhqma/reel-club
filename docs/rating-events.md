@@ -45,6 +45,19 @@ Password hashes, session tokens, and the invite code are not written.
 | `beli.search.started` | The engine was asked to start a search, including a bucket choice that places the movie with no questions. `startedAt` is set only when a pending row is stored. Backfill uses this type for a pending snapshot | `movieId`, `title`, `bucket`, `rerank`, optional `startedAt`, and `insertion` when backfilled |
 | `beli.search.resumed` | Same movie and bucket started again, or a page view that moved the search | `movieId`, `title`, `bucket` |
 | `beli.search.abandoned` | Start over, a replaced search, a removal that drops the search, or the engine rejecting the step | `movieId`, `reason`, optional `detail` and `answer` |
+| `utr.movie.seeded` | Migration copies one old title into the unified list | `title`, `suggesterId`, `at`, `source`, `seq` |
+| `utr.list.seeded` | Migration copies one member's starting order. No comparison steps | `userId`, `source` (`beli` or `blended`), `entries` |
+| `utr.seed.closed` | Those seeded movies are closed and Elo is rebuilt once | `movies` |
+| `utr.movie.suggested` | A member opens the next movie | `title`, `suggesterId` |
+| `utr.bucket.chosen` | Enjoyment group chosen. Starts a search, or places the movie when the group is empty | `movieId`, `title`, `bucket`, `candidateIds` |
+| `utr.comparison.answered` | Better (`new`), worse (`old`), or Back | `movieId`, `title`, `bucket`, `answer` |
+| `utr.rating.committed` | The slot is saved. This is the insert; the answers before it are not | `movieId`, `title`, `bucket`, `answers`, `index` |
+| `utr.search.restarted` | Draft thrown away while the movie is still open | `movieId`, `title` |
+| `utr.skipped` | "I didn't watch", including a silent member on an early close (`automatic`) | `movieId`, `title`, optional `automatic` |
+| `utr.movie.closed` | Every active member has answered, or the suggester or an admin closed early | `movieId`, `title`, `reason`, `autoSkipped` |
+| `utr.member.left` | The member stops blocking later movies. Old scores stay | `userId` |
+
+`reduceRatingEvents` ignores `utr.*` events. The unified list has its own replay. See `docs/utr.md`.
 
 Each write of club state and its events share one SQLite transaction.
 
@@ -63,6 +76,8 @@ That time is clamped forward when it would precede something the event needs. A 
 Equal timestamps break ties in this order: kind priority, then source row id, then actor id. Kind priority, lowest first, is `member.joined`, `elo.movie.suggested`, `beli.movie.submitted`, `elo.rating.set`, `beli.ranking.placed`, `beli.search.started`. Source ids are `users.id`, `movies.id`, `ratings.id`, `beli_movies.id`, `beli_rankings.movie_id`, and `beli_pending.user_id`. The same inputs always produce the same sequence.
 
 An empty database still records version 2, so later activity is not mistaken for history.
+
+Migration version 4 then copies the surviving rows into a UTR list. Those events are `backfilled`. `occurred_at` is the migration time, at or after the last existing event, so the log does not move backwards. The historical time stays in the payload (`at`). Version 4 is recorded even when there is nothing to copy.
 
 What cannot be recovered:
 

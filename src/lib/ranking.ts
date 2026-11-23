@@ -96,6 +96,7 @@ export function computeLeague(input: {
   members: string[]
   weeks: WeekInput[]
   preview?: WeekInput | null
+  params?: { k?: number; d?: number; scale_min?: number; scale_max?: number }
 }): LeagueView {
   const python = process.env.PYTHON ?? "python3"
   const script = path.join(process.cwd(), "scripts", "elo_bridge.py")
@@ -104,6 +105,7 @@ export function computeLeague(input: {
       members: input.members,
       weeks: input.weeks,
       preview: input.preview ?? null,
+      ...(input.params ? { params: input.params } : {}),
     }),
     encoding: "utf8",
     cwd: process.cwd(),
