@@ -24,7 +24,7 @@ All of these take the signed-in user's id. They throw `UtrError` with a `message
 | `utrBoard()` | The latest close, one row per member: Elo, rank, and rated-pick count, best Elo first. Null before any movie has closed. |
 | `questionBudgetFor(userId, bucket)` | Most questions that group will ask. |
 
-Buckets, shown as **Loved it** (`a_lot`) 7.0–10.0 (alone 8.5), **Just ok** (`kinda`) 4.0–6.9 (alone 5.5), and **Didn't like it** (`not_really`) 0.0–3.9 (alone 2.0). There is no "too tough." A movie that is alone in its group sits on the baseline, so an old 8 and an old 9 in the same group both become 8.5 until a second movie joins that group.
+Buckets, shown worst to best as **Didn't like it** (`not_really`) 0.0–3.9 (alone 2.0), **Just ok** (`kinda`) 4.0–6.9 (alone 5.5), and **Loved it** (`a_lot`) 7.0–10.0 (alone 8.5). There is no "too tough." A movie that is alone in its group sits on the baseline, so an old 8 and an old 9 in the same group both become 8.5 until a second movie joins that group.
 
 `UtrError.code` is one of `no_user`, `inactive`, `bad_title`, `movie_open`, `suggest_failed`, `bad_bucket`, `not_open`, `search_open`, `no_search`, `stale_step`, `bad_answer`, `forbidden`. `stale_step` means the comparison on screen was already sent. Show `error.message`.
 

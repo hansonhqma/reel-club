@@ -1,4 +1,11 @@
 import Link from "next/link"
+import { UTR_BUCKET_LABELS, UTR_CHOICES, type UtrBucket } from "@/lib/utr-score"
+
+const BAND_ROW: Record<UtrBucket, [string, string]> = {
+  not_really: ["0–3.9", "2.0"],
+  kinda: ["4.0–6.9", "5.5"],
+  a_lot: ["7.0–10", "8.5"],
+}
 
 export const metadata = { title: "How it works" }
 
@@ -74,17 +81,17 @@ export default function HowPage() {
               </tr>
             </thead>
             <tbody>
-              {[
-                ["Loved it", "7.0–10", "8.5"],
-                ["Just ok", "4.0–6.9", "5.5"],
-                ["Didn't like it", "0–3.9", "2.0"],
-              ].map(([group, band, alone]) => (
-                <tr key={group} className="border-t border-border">
-                  <th className="px-4 py-2 text-left font-medium">{group}</th>
-                  <td className="px-2 py-2 tabular-nums">{band}</td>
-                  <td className="px-4 py-2 tabular-nums">{alone}</td>
-                </tr>
-              ))}
+              {UTR_CHOICES.map((bucket) => {
+                const [band, alone] = BAND_ROW[bucket]
+                const group = UTR_BUCKET_LABELS[bucket]
+                return (
+                  <tr key={group} className="border-t border-border">
+                    <th className="px-4 py-2 text-left font-medium">{group}</th>
+                    <td className="px-2 py-2 tabular-nums">{band}</td>
+                    <td className="px-4 py-2 tabular-nums">{alone}</td>
+                  </tr>
+                )
+              })}
             </tbody>
           </table>
         </div>

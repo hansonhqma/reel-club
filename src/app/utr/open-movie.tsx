@@ -11,7 +11,7 @@ import { RankEmblem, STARTING_RANK } from "@/components/rank-emblem"
 import { buttonVariants } from "@/components/ui/button"
 import { utrBoard, type UtrMovie } from "@/lib/utr"
 import type { UtrRosterEntry } from "@/lib/utr-roster"
-import { UTR_BUCKET_LABELS, UTR_BUCKETS, type UtrBucket } from "@/lib/utr-score"
+import { UTR_BUCKET_LABELS, UTR_CHOICES, type UtrBucket } from "@/lib/utr-score"
 import { cn } from "cn"
 
 const BAND_HINT: Record<UtrBucket, string> = {
@@ -121,7 +121,7 @@ export function OpenMovie({
           </div>
           <PendingForm action={startUtrAction} pendingLabel="Starting…" className="grid gap-3 sm:grid-cols-3">
             <input type="hidden" name="movieId" value={movie.id} className="hidden" />
-            {UTR_BUCKETS.map((bucket) => (
+            {UTR_CHOICES.map((bucket) => (
               <button
                 key={bucket}
                 type="submit"

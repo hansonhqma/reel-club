@@ -248,7 +248,7 @@ function commitSearch(db: Database.Database, userId: number, movie: UtrMovie, se
 
 export function startUtrRating(userId: number, movieId: number, bucketRaw: string): UtrStep {
   const user = requireUser(userId)
-  if (!isUtrBucket(bucketRaw)) throw new UtrError("Enjoyment is Loved it, Just ok, or Didn't like it.", "bad_bucket")
+  if (!isUtrBucket(bucketRaw)) throw new UtrError("Enjoyment is Didn't like it, Just ok, or Loved it.", "bad_bucket")
   const bucket = bucketRaw
   const db = getDb()
   return db.transaction(() => {

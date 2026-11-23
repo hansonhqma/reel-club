@@ -1,8 +1,12 @@
 // Personal taste lists. Three enjoyment groups, best first inside each group.
 // Scores use the Beli bands. No "too tough": every comparison picks a side.
 
+// Best first. Lists and score math walk the groups in this order.
 export const UTR_BUCKETS = ["a_lot", "kinda", "not_really"] as const
 export type UtrBucket = (typeof UTR_BUCKETS)[number]
+
+// Worst to best. Buttons and other side-by-side lists use this order.
+export const UTR_CHOICES: readonly UtrBucket[] = ["not_really", "kinda", "a_lot"]
 
 export const UTR_BUCKET_LABELS: Record<UtrBucket, string> = {
   a_lot: "Loved it",
