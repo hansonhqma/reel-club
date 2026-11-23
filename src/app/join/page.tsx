@@ -17,7 +17,7 @@ export default async function JoinPage() {
         <CardHeader>
           <CardTitle className="font-heading text-3xl">Join the club</CardTitle>
           <CardDescription>
-            Your name on the board is what the ranking uses. Pick it carefully; it stays put. If nobody
+            Your name on Rankings is what the ranking uses. Pick it carefully; it stays put. If nobody
             has joined yet, you become the admin.
           </CardDescription>
         </CardHeader>

@@ -23,6 +23,8 @@ All of these take the signed-in user's id. They throw `UtrError` with a `message
 | `utrCloses()` | One row per closed movie: Elo, `fromNew`, `fromOlder`, `ranks`, and `ratedPicks`, by member name. The Elo parts add up to the change since the previous close. |
 | `utrBoard()` | The latest close, one row per member: Elo, rank, and rated-pick count, best Elo first. Null before any movie has closed. |
 | `questionBudgetFor(userId, bucket)` | Most questions that group will ask. |
+| `utrMovieFeed(viewerId)` | Read-only. Movies newest first, open one pinned first. Group score is the mean of current 0–10 list scores, excluding the suggester and skips, rounded to one decimal. Closed movies include every response. The open movie hides scores and the group score until this viewer has rated or skipped. |
+| `utrPicksBySuggester(viewerId)` | Read-only. Each suggester's movies, newest first. `impact` is that close's stored `fromNew` for them, `null` while the movie is open, and 0 when nobody else scored. `picksNet` sums those impacts. `reSorted` sums stored `fromOlder` across every close. The open movie's group score stays hidden until this viewer has answered. |
 
 Buckets, shown worst to best as **Didn't like it** (`not_really`) 0.0–3.9 (alone 2.0), **Just ok** (`kinda`) 4.0–6.9 (alone 5.5), and **Loved it** (`a_lot`) 7.0–10.0 (alone 8.5). There is no "too tough." A movie that is alone in its group sits on the baseline, so an old 8 and an old 9 in the same group both become 8.5 until a second movie joins that group.
 

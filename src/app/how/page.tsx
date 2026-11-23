@@ -15,7 +15,7 @@ const CONTENTS = [
   { href: "#scores", label: "Scores" },
   { href: "#one", label: "One movie" },
   { href: "#close", label: "Closing" },
-  { href: "#board", label: "The board" },
+  { href: "#rankings", label: "Rankings" },
   { href: "#ranks", label: "Ranks" },
 ]
 
@@ -24,10 +24,10 @@ export default function HowPage() {
     <article className="mx-auto max-w-3xl space-y-12">
       <header className="space-y-4">
         <p className="text-xs font-medium tracking-[0.18em] text-primary uppercase">The rules we actually use</p>
-        <h1 className="font-heading text-4xl tracking-tight sm:text-5xl">One movie, one honest group, then the board</h1>
+        <h1 className="font-heading text-4xl tracking-tight sm:text-5xl">One movie, one honest group, then Rankings</h1>
         <p className="max-w-xl text-lg leading-relaxed text-foreground/80">
-          Reel Club keeps a single open movie. You say how much you enjoyed it, place it on your list, and the shared
-          board catches up when that movie closes.
+          Reel Club keeps a single open movie. You say how much you enjoyed it, place it on your list, and Rankings
+          catches up when that movie closes.
         </p>
         <nav aria-label="On this page" className="flex flex-wrap gap-2">
           {CONTENTS.map((item) => (
@@ -97,7 +97,10 @@ export default function HowPage() {
         </div>
         <p className="text-sm leading-relaxed">
           A movie alone in its group gets 8.5, 5.5, or 2.0. A second movie in that group spreads the scores, so an old
-          8.5 can move. The number on your list changes as soon as the slot is saved. It does not wait for the board.
+          8.5 can move. The number on your list changes as soon as the slot is saved. It does not wait for Rankings.
+          Movies shows a group score: the average of those current scores, leaving out the suggester and anyone who
+          didn&apos;t watch. When nobody else has rated, the card shows a dash. The suggester&apos;s own score is listed
+          with the others and marked as their pick. Until you answer the open movie, you see who is done, not the scores.
         </p>
       </section>
 
@@ -118,27 +121,29 @@ export default function HowPage() {
         </p>
       </section>
 
-      <section id="board" className="scroll-mt-6 space-y-3">
-        <h2 className="font-heading text-2xl">What the board is doing</h2>
+      <section id="rankings" className="scroll-mt-6 space-y-3">
+        <h2 className="font-heading text-2xl">What Rankings is doing</h2>
         <p className="text-sm leading-relaxed">
           You rate a movie you suggested, and that score stays on your list. It is left out of the Elo for that movie,
-          so you don&apos;t grade your own pick. If nobody except the suggester rated it, the movie does not enter the
-          board at all.
+          so you don&apos;t grade your own pick. If nobody except the suggester rated it, the movie does not enter
+          Rankings at all.
         </p>
         <p className="text-sm leading-relaxed">
           Every close rebuilds Elo from the lists as they stand, using those 0–10 scores. The change since the previous
-          close has two parts, labeled on the board. <span className="font-medium">new movie</span> is this close
+          close has two parts, labeled on Rankings. <span className="font-medium">new movie</span> is this close
           itself. <span className="font-medium">re-sorted</span> is earlier movies whose scores shifted because the
           lists changed. Those two parts add up to the change you see.
         </p>
         <p className="text-sm leading-relaxed">
           The first closed movie doesn&apos;t play anyone. There is nothing earlier to compare it with, so everyone
-          stays at 1500, Silver II, until a second movie closes. Before any movie has closed, the board is that same
-          starting line.
+          stays at 1500, Silver II, until a second movie closes. Before any movie has closed, Rankings is that same
+          starting line. Each person can open their picks. A closed pick shows the Elo it added for them, the new-movie
+          part of that close. An open pick says Open. A pick nobody else scored shows 0. Those changes add up next to
+          the re-sorted total from every close.
         </p>
         <p className="text-sm">
-          <Link href="/leaderboard" className="text-primary underline-offset-4 hover:underline">
-            See the board
+          <Link href="/rankings" className="text-primary underline-offset-4 hover:underline">
+            See Rankings
           </Link>
         </p>
       </section>
