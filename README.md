@@ -4,7 +4,7 @@ A private web app for a group of friends who run a movie club. Anyone can sugges
 
 ## Ranking engine
 
-`movie_elo` is a dependency-free Python library, not an HTTP service. This repo vendors it unchanged from [hansonhqma/elo-grouprating](https://github.com/hansonhqma/elo-grouprating) at commit `bef8ba41c5c1cf4c2946d826e4891c1e6a6b8aa7` (`movie-night-elo` 1.0.0):
+`movie_elo` is a dependency-free Python library in this repo, not an HTTP service. The package is `vendor/movie_elo` (`movie-night-elo` 1.0.0). Nothing during install, test, or the Railway image build fetches it:
 
 - Package: `vendor/movie_elo`
 - Upstream guide: `vendor/MOVIE_ELO_README.md`
@@ -105,7 +105,7 @@ npm test
 
 `/beli` is a second, independent ranking in the style of the Beli app. Members add movies and rank the other members' picks: pick a bucket (Liked, Fine, Didn't like), then answer a few "which did you like more?" questions that binary-search the movie into that bucket. Each member gets a sorted list with 0–10 scores derived from position, every movie gets a community score (mean of members' scores), and `/beli/leaderboard` ranks members by the average score their picks received. Nobody ranks their own pick.
 
-The math is [`movie_beli`](vendor/UPSTREAM.md), vendored from `hansonhqma/elo-grouprating` (branch `feature/beli-rankings`), reached through `scripts/beli_bridge.py` the same way `movie_elo` is. SQLite holds the ordered lists in `beli_movies`, `beli_rankings` and `beli_pending` (one unfinished search per member, resumable). The Elo flow (`/movies`, `/leaderboard`, `club.ts`, `ranking.ts`, `elo_bridge.py`) is not involved and does not change.
+The math is [`movie_beli`](vendor/UPSTREAM.md) in `vendor/movie_beli`, reached through `scripts/beli_bridge.py` the same way `movie_elo` is. SQLite holds the ordered lists in `beli_movies`, `beli_rankings` and `beli_pending` (one unfinished search per member, resumable). The Elo flow (`/movies`, `/leaderboard`, `club.ts`, `ranking.ts`, `elo_bridge.py`) is not involved and does not change.
 
 ## Deploying on Railway
 
