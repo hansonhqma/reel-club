@@ -15,7 +15,7 @@ export function MemberForm() {
         <Input id="new-username" name="username" required autoComplete="off" className="h-11 text-base md:text-base" />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="new-name">Name on the board</Label>
+        <Label htmlFor="new-name">Name on Rankings</Label>
         <Input id="new-name" name="name" required autoComplete="off" className="h-11 text-base md:text-base" />
       </div>
       <div className="space-y-2">

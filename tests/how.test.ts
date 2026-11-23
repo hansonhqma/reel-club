@@ -120,36 +120,74 @@ test("two members never produce a neutral judge", () => {
   assert.ok(Math.abs(league.total_elo - 3000) < 1e-6)
 })
 
-test("the how page explains the unified rating in plain language", async () => {
+test("the how page walks a made-up club with the live elo numbers", async () => {
   const { default: HowPage } = await import("../src/app/how/page.tsx")
+  const { HOW_STORY } = await import("../src/lib/how-story.ts")
+  const { utrEloParams } = await import("../src/lib/utr-elo.ts")
   const html = renderToStaticMarkup(createElement(HowPage))
-  assert.match(html, /How much did you enjoy it/)
-  assert.match(html, /Didn&#x27;t like it|Didn't like it/)
-  assert.match(html, /Just ok/)
-  assert.match(html, /Loved it/)
-  assert.doesNotMatch(html, /Not really/)
-  assert.doesNotMatch(html, /Kinda/)
-  assert.doesNotMatch(html, /\bA lot\b/)
-  assert.match(html, /8\.5/)
-  assert.match(html, /5\.5/)
-  assert.match(html, /2\.0/)
-  assert.match(html, /7\.0/)
-  assert.match(html, /4\.0/)
-  const bands = html.slice(html.indexOf(">Group<"), html.indexOf("A movie alone"))
-  const disliked = bands.search(/Didn&#x27;t like it|Didn't like it/)
-  const justOk = bands.indexOf("Just ok")
-  const loved = bands.indexOf("Loved it")
-  assert.ok(disliked >= 0 && disliked < justOk && justOk < loved)
+  const params = utrEloParams(4)
+  const rate = (score: number) => ({ experience: score, quality: score })
+  const league = computeLeague({
+    members: ["Ana", "Ben", "Cam", "Dee"],
+    params,
+    weeks: [
+      {
+        week_id: "1",
+        suggester: "Ana",
+        movie: "Paper Moon",
+        ratings: { Ben: rate(8.5), Cam: rate(5.5), Dee: rate(6.9) },
+      },
+      {
+        week_id: "2",
+        suggester: "Ben",
+        movie: "The Long Table",
+        ratings: { Cam: rate(8.5), Dee: rate(4) },
+      },
+    ],
+  })
+  const night = league.history[1]
+  assert.equal(HOW_STORY.afterLongTable.Ben, formatElo(night.elo_after.Ben))
+  assert.equal(HOW_STORY.afterLongTable.Ana, formatElo(night.elo_after.Ana))
+  assert.equal(HOW_STORY.newMovie.Ben, formatDelta(night.deltas.Ben ?? 0))
+  assert.equal(HOW_STORY.newMovie.Ana, formatDelta(night.deltas.Ana ?? 0))
+  assert.equal(params.d, 1.25)
+  assert.equal(params.k, 160 / 3)
+
+  assert.match(html, /not in your club/)
+  assert.match(html, /Paper Moon/)
+  assert.match(html, /The Long Table/)
   assert.match(html, /One movie at a time/)
+  const groups = html.slice(html.indexOf('id="groups"'), html.indexOf('id="list"'))
+  const disliked = groups.search(/Didn&#x27;t like it|Didn't like it/)
+  const justOk = groups.indexOf("Just ok")
+  const loved = groups.indexOf("Loved it")
+  assert.ok(disliked >= 0 && disliked < justOk && justOk < loved)
+  assert.ok(html.includes(HOW_STORY.alone.loved))
+  assert.ok(html.includes(HOW_STORY.alone.justOk))
+  assert.ok(html.includes(HOW_STORY.alone.disliked))
+  assert.match(html, /7\.0–10/)
+  assert.match(html, /4\.0–6\.9/)
+  assert.match(html, /0–3\.9/)
   assert.match(html, /didn&#x27;t watch|didn't watch/)
-  assert.match(html, /Start over/)
-  assert.match(html, /1500/)
+  assert.ok(html.includes(HOW_STORY.startElo))
+  assert.ok(html.includes(HOW_STORY.afterLongTable.Ben))
+  assert.ok(html.includes(HOW_STORY.afterLongTable.Ana))
+  assert.ok(html.includes(HOW_STORY.reSortedLater.Ben))
   assert.match(html, /new movie/)
   assert.match(html, /re-sorted/)
   assert.match(html, /Silver II/)
   assert.match(html, /left out/)
+  assert.match(html, /group score/)
+  assert.match(html, /See Rankings/)
+  assert.match(html, /Challenger/)
+  assert.match(html, /Grandmaster/)
+  assert.match(html, /Riot Games/)
+  assert.doesNotMatch(html, /Not really/)
+  assert.doesNotMatch(html, /Kinda/)
+  assert.doesNotMatch(html, /\bA lot\b/)
   assert.doesNotMatch(html, /too tough/i)
   assert.doesNotMatch(html, /voter/)
+  assert.doesNotMatch(html, /See the board/)
   assert.equal(html.includes("redirect"), false)
 })
 
@@ -322,11 +360,19 @@ test("rate and the board link to how, and the nav no longer offers the old modes
   assert.match(nav, /href:\s*"\/how"/)
   assert.match(nav, /label:\s*"How"/)
   assert.match(nav, /href:\s*"\/utr"/)
+  assert.match(nav, /href:\s*"\/movies"/)
+  assert.match(nav, /label:\s*"Movies"/)
+  assert.match(nav, /href:\s*"\/rankings"/)
+  assert.match(nav, /label:\s*"Rankings"/)
   assert.doesNotMatch(nav, /href:\s*"\/beli"/)
-  assert.doesNotMatch(nav, /href:\s*"\/movies"/)
+  assert.doesNotMatch(nav, /label:\s*"Board"/)
   const rate = fs.readFileSync(new URL("../src/app/utr/page.tsx", import.meta.url), "utf8")
   const open = fs.readFileSync(new URL("../src/app/utr/open-movie.tsx", import.meta.url), "utf8")
-  const board = fs.readFileSync(new URL("../src/app/leaderboard/page.tsx", import.meta.url), "utf8")
+  const board = fs.readFileSync(new URL("../src/app/rankings/page.tsx", import.meta.url), "utf8")
+  const oldBoard = fs.readFileSync(new URL("../src/app/leaderboard/page.tsx", import.meta.url), "utf8")
+  const alias = fs.readFileSync(new URL("../src/app/board/page.tsx", import.meta.url), "utf8")
+  assert.match(oldBoard, /redirect\("\/rankings"\)/)
+  assert.match(alias, /redirect\("\/rankings"\)/)
   assert.match(open, /name="history"/)
   assert.match(rate, /href="\/how"/)
   assert.match(board, /href="\/how"/)

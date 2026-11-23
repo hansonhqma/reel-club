@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation"
 
 export default function MoviePage() {
-  redirect("/utr")
+  redirect("/movies")
 }

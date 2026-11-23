@@ -15,7 +15,7 @@ export default async function LoginPage() {
       <Card>
         <CardHeader>
           <CardTitle className="font-heading text-3xl">Welcome back</CardTitle>
-          <CardDescription>The board is for members. Same username as always.</CardDescription>
+          <CardDescription>For members. Same username as always.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <LoginForm />

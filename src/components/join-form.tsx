@@ -30,7 +30,7 @@ export function JoinForm({ inviteDisabled }: { inviteDisabled: boolean }) {
         <p className="text-xs text-muted-foreground">Used to log in. Letters, numbers, underscores.</p>
       </div>
       <div className="space-y-2">
-        <Label htmlFor="name">Name on the board</Label>
+        <Label htmlFor="name">Name on Rankings</Label>
         <Input
           id="name"
           name="name"
