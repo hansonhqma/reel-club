@@ -127,13 +127,14 @@ export default function HowPage() {
         </p>
         <p className="text-sm leading-relaxed">
           Every close rebuilds Elo from the lists as they stand, using those 0–10 scores. The change since the previous
-          close has two parts. <span className="font-medium">From the new movie</span> is this close itself.{" "}
-          <span className="font-medium">Older ratings re-sorted</span> is earlier movies whose scores shifted because
-          the lists changed. Those two parts add up to the change you see.
+          close has two parts, labeled on the board. <span className="font-medium">new movie</span> is this close
+          itself. <span className="font-medium">re-sorted</span> is earlier movies whose scores shifted because the
+          lists changed. Those two parts add up to the change you see.
         </p>
         <p className="text-sm leading-relaxed">
           The first closed movie doesn&apos;t play anyone. There is nothing earlier to compare it with, so everyone
-          stays at 1500 until a second movie closes.
+          stays at 1500, Silver II, until a second movie closes. Before any movie has closed, the board is that same
+          starting line.
         </p>
         <p className="text-sm">
           <Link href="/leaderboard" className="text-primary underline-offset-4 hover:underline">

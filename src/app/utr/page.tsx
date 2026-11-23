@@ -3,7 +3,7 @@ import { redirect } from "next/navigation"
 import { suggestUtrAction } from "@/app/utr/actions"
 import { OpenMovie } from "@/app/utr/open-movie"
 import { SuggestUtrForm } from "@/app/utr/suggest-form"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { getOpenUtrMovie, utrList, utrPending } from "@/lib/utr"
 import { utrOpenRoster } from "@/lib/utr-roster"
 import { UTR_BUCKET_LABELS, isUtrBucket, type UtrBucket } from "@/lib/utr-score"
@@ -30,17 +30,10 @@ export default async function UtrPage({ searchParams }: { searchParams: Promise<
   return (
     <div className="mx-auto max-w-3xl space-y-8">
       <div>
-        <p className="text-xs font-medium tracking-[0.18em] text-primary uppercase">One movie at a time</p>
-        <h1 className="mt-1 font-heading text-4xl tracking-tight">Rate</h1>
-        <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground">
-          Say how much you enjoyed the open movie, then place it among the others in that group. Your list updates as
-          soon as it has a slot. The board updates when the movie closes.{" "}
+        <h1 className="font-heading text-4xl tracking-tight">Rate</h1>
+        <p className="mt-2 text-sm">
           <Link href="/how" className="text-primary underline-offset-4 hover:underline">
             How this works
-          </Link>
-          {" · "}
-          <Link href="/leaderboard" className="text-primary underline-offset-4 hover:underline">
-            The board
           </Link>
         </p>
       </div>
@@ -65,9 +58,6 @@ export default async function UtrPage({ searchParams }: { searchParams: Promise<
         <Card>
           <CardHeader>
             <CardTitle className="font-heading text-2xl">Suggest the next movie</CardTitle>
-            <CardDescription className="text-base">
-              Only one movie can be open. Everyone rates this one before the next suggestion.
-            </CardDescription>
           </CardHeader>
           <CardContent>
             <SuggestUtrForm action={suggestUtrAction} />
@@ -76,16 +66,9 @@ export default async function UtrPage({ searchParams }: { searchParams: Promise<
       )}
 
       <section className="space-y-3">
-        <div>
-          <h2 className="font-heading text-2xl">Your list</h2>
-          <p className="text-sm text-muted-foreground">
-            Best first. Loved it sits above Just ok, and Just ok sits above Didn&apos;t like it. Scores run from 0 to 10.
-          </p>
-        </div>
+        <h2 className="font-heading text-2xl">Your list</h2>
         {list.length === 0 ? (
-          <p className="rounded-xl bg-card px-4 py-6 text-sm ring-1 ring-foreground/10">
-            Nothing placed yet. Rate the open movie and it will show up here.
-          </p>
+          <p className="rounded-xl bg-card px-4 py-6 text-sm ring-1 ring-foreground/10">Nothing placed yet.</p>
         ) : (
           <ol className="space-y-2">
             {list.map((row) => (

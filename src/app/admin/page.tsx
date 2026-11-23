@@ -40,11 +40,7 @@ export default async function AdminPage({
       <Card>
         <CardHeader>
           <CardTitle className="font-heading text-2xl">Who&apos;s in</CardTitle>
-          <CardDescription>
-            {invite
-              ? `Friends can also join themselves with the invite code “${invite}”.`
-              : "Invite codes are off. Add people from this page."}
-          </CardDescription>
+          <CardDescription>{invite ? `Invite code: ${invite}` : "Invite codes are off."}</CardDescription>
         </CardHeader>
         <CardContent>
           <ul className="divide-y divide-border">
@@ -64,7 +60,6 @@ export default async function AdminPage({
       <Card>
         <CardHeader>
           <CardTitle className="font-heading text-2xl">Add someone</CardTitle>
-          <CardDescription>They show up at the club average until their picks start playing.</CardDescription>
         </CardHeader>
         <CardContent>
           <MemberForm />

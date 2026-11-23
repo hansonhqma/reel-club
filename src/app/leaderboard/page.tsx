@@ -28,29 +28,13 @@ export default async function LeaderboardPage() {
   return (
     <div className="mx-auto max-w-3xl space-y-8">
       <div>
-        <p className="text-xs font-medium tracking-[0.18em] text-primary uppercase">The board</p>
-        <h1 className="mt-1 font-heading text-4xl tracking-tight">Who&apos;s picking well</h1>
-        <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground">
-          {board
-            ? `These numbers are from after ${board.title} closed. Each change since the previous close splits into the new movie and older ratings that were re-sorted.`
-            : "No movie has closed yet, so everyone is still at 1500, which is Silver II."}{" "}
+        <h1 className="font-heading text-4xl tracking-tight">Who&apos;s picking well</h1>
+        <p className="mt-2 text-sm">
           <Link href="/how" className="text-primary underline-offset-4 hover:underline">
             How this works
           </Link>
         </p>
       </div>
-
-      {closes.length === 0 ? (
-        <p className="rounded-xl bg-accent px-4 py-3 text-sm leading-relaxed">
-          The board waits for a movie to close. Rating updates your list immediately, and Elo waits until then.
-        </p>
-      ) : null}
-      {closes.length === 1 ? (
-        <p className="rounded-xl bg-accent px-4 py-3 text-sm leading-relaxed">
-          {board?.title} was the first movie to close, so it only took the field. Nobody&apos;s number moved. Everyone
-          stays at 1500, Silver II, until a second movie closes.
-        </p>
-      ) : null}
 
       <ol className="space-y-2">
         {rows.map((row, index) => (
@@ -68,13 +52,11 @@ export default async function LeaderboardPage() {
               </p>
               {board && closes.length > 1 ? (
                 <p className="text-sm text-muted-foreground">
-                  <Delta value={row.fromNew} /> from the new movie
+                  <Delta value={row.fromNew} /> new movie
                   {" · "}
-                  <Delta value={row.fromOlder} /> older ratings re-sorted
+                  <Delta value={row.fromOlder} /> re-sorted
                 </p>
-              ) : (
-                <p className="text-sm text-muted-foreground">Starting score</p>
-              )}
+              ) : null}
             </div>
             <div className="text-right">
               <p className="font-heading text-2xl tabular-nums">{row.elo.toFixed(1)}</p>

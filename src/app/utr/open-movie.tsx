@@ -14,12 +14,6 @@ import type { UtrRosterEntry } from "@/lib/utr-roster"
 import { UTR_BUCKET_LABELS, UTR_CHOICES, type UtrBucket } from "@/lib/utr-score"
 import { cn } from "cn"
 
-const BAND_HINT: Record<UtrBucket, string> = {
-  a_lot: "7.0–10. Alone, this group is 8.5.",
-  kinda: "4.0–6.9. Alone, this group is 5.5.",
-  not_really: "0–3.9. Alone, this group is 2.0.",
-}
-
 export function OpenMovie({
   movie,
   youId,
@@ -55,21 +49,13 @@ export function OpenMovie({
           Suggested by {movie.suggesterName}
           {youSuggested ? " (you)" : ""}
         </p>
-        {youSuggested ? (
-          <p className="max-w-xl text-sm leading-relaxed">
-            You still rate this one for your own list. That score is left out when the board counts this movie.
-          </p>
-        ) : null}
       </div>
 
       {pending ? (
         <div className="space-y-3">
           <div>
             <h3 className="font-heading text-2xl">Which did you enjoy more?</h3>
-            <p className="text-sm text-muted-foreground">
-              Only movies you already put in {UTR_BUCKET_LABELS[pending.bucket]}. Up to {pending.questionsLeft}{" "}
-              {pending.questionsLeft === 1 ? "comparison" : "comparisons"} left.
-            </p>
+            <p className="text-sm text-muted-foreground">Pick the one you enjoyed more.</p>
           </div>
           <PendingForm action={answerUtrAction} pendingLabel="Saving…" className="grid gap-3 sm:grid-cols-2">
             <input type="hidden" name="movieId" value={movie.id} className="hidden" />
@@ -108,16 +94,13 @@ export function OpenMovie({
       ) : response ? (
         <p className="rounded-xl bg-muted px-4 py-3 text-sm leading-relaxed">
           {response.kind === "skip"
-            ? "You didn't watch this one. It stays off your list."
-            : `Saved in ${response.bucket ? UTR_BUCKET_LABELS[response.bucket] : "your list"}. Your list already includes it.`}
+            ? "You didn't watch this one."
+            : `Saved in ${response.bucket ? UTR_BUCKET_LABELS[response.bucket] : "your list"}.`}
         </p>
       ) : (
         <div className="space-y-3">
           <div>
             <h3 className="font-heading text-2xl">How much did you enjoy it?</h3>
-            <p className="text-sm text-muted-foreground">
-              Then a few comparisons place it among movies you already put in that group.
-            </p>
           </div>
           <PendingForm action={startUtrAction} pendingLabel="Starting…" className="grid gap-3 sm:grid-cols-3">
             <input type="hidden" name="movieId" value={movie.id} className="hidden" />
@@ -130,7 +113,6 @@ export function OpenMovie({
                 className="rounded-2xl bg-background px-4 py-5 text-left ring-1 ring-foreground/10 hover:bg-accent"
               >
                 <span className="block font-heading text-2xl leading-tight">{UTR_BUCKET_LABELS[bucket]}</span>
-                <span className="mt-1 block text-sm text-muted-foreground">{BAND_HINT[bucket]}</span>
               </button>
             ))}
           </PendingForm>
@@ -157,7 +139,7 @@ export function OpenMovie({
             label="Close ratings"
             confirmLabel="Close it"
             pendingLabel="Closing…"
-            warning="Close ratings now? Anyone who hasn't answered, including a silent suggester, is stored as didn't watch. After this, the movie can't be edited."
+            warning="Close ratings? Anyone who hasn't answered counts as didn't watch. This can't be undone."
           />
         ) : null}
       </div>
@@ -165,10 +147,11 @@ export function OpenMovie({
       <div className="space-y-4 border-t border-border pt-4">
         <div>
           <h3 className="font-heading text-2xl">Who&apos;s in</h3>
-          <p className="text-sm text-muted-foreground">
-            {answered.length} of {roster.length} have answered. The movie closes when that is everyone, or when{" "}
-            {movie.suggesterName} or an admin closes it early.
-          </p>
+          {waiting.length > 0 ? (
+            <p className="text-sm text-muted-foreground">
+              Waiting on {waiting.length} {waiting.length === 1 ? "person" : "people"}.
+            </p>
+          ) : null}
         </div>
         <Roster title="Answered" rows={answered} youId={youId} ranks={ranks} empty="Nobody yet." />
         <Roster title="Still to go" rows={waiting} youId={youId} ranks={ranks} empty="Everyone has answered." />
